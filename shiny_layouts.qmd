@@ -190,12 +190,12 @@ ui <- page_navbar(
     layout_columns(
       col_widths = c(2, 10),
       card(
-        title = "Resultados por selección",
-        p("Contenido de la tarjeta")
+        card_header("Resultados por selección"),
+        card_body(p("Contenido de la tarjeta"))
       ),
       card(
-        title = "Resultados por torneo",
-        p("Contenido de la tarjeta")
+        card_header("Resultados por torneo"),
+        card_body(p("Contenido de la tarjeta")) 
       )
     )
   ),
