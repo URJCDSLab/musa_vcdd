@@ -1,0 +1,261 @@
+[
+  {
+    "objectID": "intro_shiny.html#unión-no-intersección",
+    "href": "intro_shiny.html#unión-no-intersección",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Unión, no intersección",
+    "text": "Unión, no intersección\n\n\nThere is quite a bit of consensus about what Data Science is as a sort of mixture between Statistics, Computer Science and domain knowledge. A number of representations as Venn Diagrams have been developed. I prefer to see Data Science as the union of the three sets rather than the intersection, which is almost impossible to have in one person."
+  },
+  {
+    "objectID": "intro_shiny.html#r-for-data-science",
+    "href": "intro_shiny.html#r-for-data-science",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "R for Data Science",
+    "text": "R for Data Science\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\nSource: R for Data Science (Wickham, Çetinkaya-Rundel and Grolemund, 2023)"
+  },
+  {
+    "objectID": "intro_shiny.html#crisp-dm",
+    "href": "intro_shiny.html#crisp-dm",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "CRISP-DM",
+    "text": "CRISP-DM\n\n\n\nDespliegue puede incluir muchas cosas distintas\nEl uso de los modelos\nLa Visualización de resultados\nMLOps: como DevOps en informática\nExplicabilidad de modelos\n\n\n\n\n\n\n\n\n\nSource: Kenneth Jensen, CC BY-SA 3.0, via Wikimedia Commons"
+  },
+  {
+    "objectID": "intro_shiny.html#informes-estáticos",
+    "href": "intro_shiny.html#informes-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Informes estáticos",
+    "text": "Informes estáticos\n\n\n\nCuadro de mando integral: ejemplo clásico en la empresa\nInformes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista\nPor diseño, pensados para ser impresos en papel, formato pdf\n\n\n\n\n\n\n\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#dashboards-estáticos",
+    "href": "intro_shiny.html#dashboards-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards estáticos",
+    "text": "Dashboards estáticos\nMás compactos, diseñado para pantalla\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#dashboards-interactivos",
+    "href": "intro_shiny.html#dashboards-interactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards interactivos",
+    "text": "Dashboards interactivos\nInforme estático con elementos interactivos (widgets)\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#limitaciones-y-alternativas",
+    "href": "intro_shiny.html#limitaciones-y-alternativas",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Limitaciones y alternativas",
+    "text": "Limitaciones y alternativas\n\nLimitados a lo que el estadístico quiere mostrar\nNo solo lo van a usar personas expertas en estadística\nToma de decisiones a distintos niveles\n\n\n\nAplicaciones Reactivas guían a las partes interesadas en la obtención e interpretación de resultados\nLos interfaces bien diseñados para modelos avanzados favorecen la explicabilidad"
+  },
+  {
+    "objectID": "intro_shiny.html#reactive-programming",
+    "href": "intro_shiny.html#reactive-programming",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Reactive programming",
+    "text": "Reactive programming\n\nThe key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.\n\n\nHadley Wickham, Mastering Shiny\n\n\n\n\n\nLos outputs, i.e., gráficos, tablas, etc., se generan con R cuando los inputs, i.e., selecciones del usuario, cambian."
+  },
+  {
+    "objectID": "intro_shiny.html#aplicaciones-shiny",
+    "href": "intro_shiny.html#aplicaciones-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicaciones Shiny",
+    "text": "Aplicaciones Shiny\n\nCódigo “estándar” de R\nNo hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente\nDos “componentes”\nui (interfaz de usuario, página web). Contiene inputs y outputs\nserver. Contiene objetos reactivos y funciones generadoras (rendering)\n\n\n\n\nDescargar Shiny cheetsheet\nVisitar la Shiny gallery"
+  },
+  {
+    "objectID": "intro_shiny.html#una-aplicación-shiny-simple",
+    "href": "intro_shiny.html#una-aplicación-shiny-simple",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Una aplicación shiny simple",
+    "text": "Una aplicación shiny simple\n\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#añadiendo-características-interesantes",
+    "href": "intro_shiny.html#añadiendo-características-interesantes",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo características interesantes",
+    "text": "Añadiendo características interesantes\n\n\nDashboards\n\nshinydashboard\nbs4dash\nbslib\n\nConfiguración\n\nAplicaciones Multilenguaje with shiny.i18n\nAplicación como paquete\n\n\nBuenas prácticas de Ing.Soft.\n\nVersiones de paquetes con renv\nPruebas unitarias con testthat y shinytest\nControl de versiones e integración continua, e.g., con GitHub\nDespliegue como contenedor Docker"
+  },
+  {
+    "objectID": "intro_shiny.html#shiny-modules",
+    "href": "intro_shiny.html#shiny-modules",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Shiny modules",
+    "text": "Shiny modules\n\nComponentes reutilizables\nCon su propio espacio de nombres (namespace)\nFacilitan pruebas y depuración\nComplejo de entender al principio\n\n👉Modularizing Shiny app code"
+  },
+  {
+    "objectID": "intro_shiny.html#afciot---tiva-indicators",
+    "href": "intro_shiny.html#afciot---tiva-indicators",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\nJoint project with UNECA, WTO, and OECD\nInternational Trade, Environmental and Employment Indicators\nInternational and multidisciplinar team\nIndustry and product classification, gap estimation, policy simulation and visualisation\nKey result: A shiny app for reporting, visualisation and policy simulation\nSeveral important challenges for the multinational scope"
+  },
+  {
+    "objectID": "intro_shiny.html#afciot---tiva-indicators-1",
+    "href": "intro_shiny.html#afciot---tiva-indicators-1",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#evastur",
+    "href": "intro_shiny.html#evastur",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR",
+    "text": "EVASTUR\n\nProyecto con la empresa Dephimática\nEspecializada en estadística pública\nCapacity building en Ciencia de Datos\nSistema de indicadores de turismo sostenible: exploración, visualización, análisis"
+  },
+  {
+    "objectID": "intro_shiny.html#evastur---dashboard",
+    "href": "intro_shiny.html#evastur---dashboard",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR - Dashboard",
+    "text": "EVASTUR - Dashboard\n\n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#epe-brasil",
+    "href": "intro_shiny.html#epe-brasil",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EPE Brasil",
+    "text": "EPE Brasil\n\nWeaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)\nProyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)\nETL, Modelo de datos, visualización\nIndicadores de pobreza energética (UCM)\nPresentado en reunión del G20"
+  },
+  {
+    "objectID": "intro_shiny.html#obepe",
+    "href": "intro_shiny.html#obepe",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "OBEPE",
+    "text": "OBEPE\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#analítica-deportiva",
+    "href": "intro_shiny.html#analítica-deportiva",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Analítica deportiva",
+    "text": "Analítica deportiva"
+  },
+  {
+    "objectID": "intro_shiny.html#proyectos-de-investigación-dicyme",
+    "href": "intro_shiny.html#proyectos-de-investigación-dicyme",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Proyectos de investigación: DICYME",
+    "text": "Proyectos de investigación: DICYME\n\nDynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)\nProyecto de colaboración público-privada con DeNexus TECH SL.\nDashboard (no publicado aún)\nConexión con MongoDB\nApp relacionada: CRAS"
+  },
+  {
+    "objectID": "intro_shiny.html#aplicación-shiny-cras",
+    "href": "intro_shiny.html#aplicación-shiny-cras",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicación shiny CRAS",
+    "text": "Aplicación shiny CRAS\n\nAnálisis de riesgos\nPrimer paso: se simulan los eventos en n años\nSegundo paso: se simula el gasto de cada evento"
+  },
+  {
+    "objectID": "intro_shiny.html#resultados",
+    "href": "intro_shiny.html#resultados",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Resultados",
+    "text": "Resultados"
+  },
+  {
+    "objectID": "intro_shiny.html#smart-cities",
+    "href": "intro_shiny.html#smart-cities",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Smart Cities",
+    "text": "Smart Cities\n\nCasos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid\nAplicaciones coherentes paso a paso para los casos de uso (cargar datos - visualización - modelización - obtención de resultados)\nAlgunos casos con Shiny, otros con Python o Power BI\nEjemplo: http://www.citizenlabhub.es/cu/55"
+  },
+  {
+    "objectID": "intro_shiny.html#síagro---animal-production-spc",
+    "href": "intro_shiny.html#síagro---animal-production-spc",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Síagro - Animal production SPC",
+    "text": "Síagro - Animal production SPC\n\n\n\nCRO clinical and nutritional trials\nShiny app for their customers as a value added service\nImportant [productivity improvements]\nSimulation and parameterised reports\n\n\n\n\n\nhttps://www.siagro.es | 🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#placido-app-para-muestreo-de-aceptación",
+    "href": "intro_shiny.html#placido-app-para-muestreo-de-aceptación",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "placido: app para muestreo de aceptación",
+    "text": "placido: app para muestreo de aceptación\n\nResultado de un TFG\nDisponible en: https://dleo.shinyapps.io/placidoproject/\nControl de versiones con git y GitHub: https://github.com/DavidALeo/PlacidoProject/\nDocumentación con {pkgdown}: https://davidaleo.github.io/PlacidoProject/\n\nSlides: emilio.lcano.com/p/seio2023"
+  },
+  {
+    "objectID": "intro_shiny.html#simulación-de-proceso",
+    "href": "intro_shiny.html#simulación-de-proceso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Simulación de proceso",
+    "text": "Simulación de proceso\n\nSimula la producción de lotes\nSe extraen muestras\nSPC + muestreo de aceptación\nApp disponible en: https://lcano.shinyapps.io/demo-shiny-quality/"
+  },
+  {
+    "objectID": "intro_shiny.html#caso-de-uso",
+    "href": "intro_shiny.html#caso-de-uso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Caso de uso",
+    "text": "Caso de uso\n\nGráficos de control de la media, el rango y la desviación típica\nAnálisis de capacidad\nPaquete qcc\nDatos de ejemplo del paquete\n\n\nSe extiende fácilmente para otros datos y paquetes"
+  },
+  {
+    "objectID": "intro_shiny.html#configuración-inicial",
+    "href": "intro_shiny.html#configuración-inicial",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Configuración inicial",
+    "text": "Configuración inicial\n\nCrear un proyecto en RStudio\nInstalar paquetes shiny, bslib, qcc\nCrear script vacío\nInsertar estructura ui + server (por ejemplo con el snippet)\nIr añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)"
+  },
+  {
+    "objectID": "intro_shiny.html#estructura-básica-app-shiny",
+    "href": "intro_shiny.html#estructura-básica-app-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Estructura básica app shiny",
+    "text": "Estructura básica app shiny\n\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  \n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#disposición-del-dashboard-layout",
+    "href": "intro_shiny.html#disposición-del-dashboard-layout",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Disposición del dashboard (layout)",
+    "text": "Disposición del dashboard (layout)\n\nbslib tiene muchas opciones\n\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Gráfico de Control\"),\n  nav_panel(title = \"Análisis de la capacidad del proceso\")\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
+    "href": "intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo inputs y outputs al ui",
+    "text": "Añadiendo inputs y outputs al ui\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos (fake)\", \n                data(package = \"qcc\")$results[,3])\n  ),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#añadiendo-objetos-reactivos",
+    "href": "intro_shiny.html#añadiendo-objetos-reactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo objetos reactivos",
+    "text": "Añadiendo objetos reactivos\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$tipo, input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#renderizando-outputs",
+    "href": "intro_shiny.html#renderizando-outputs",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Renderizando outputs",
+    "text": "Renderizando outputs\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
+    "href": "intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - ver cómo queda un tema",
+    "text": "Dale color - ver cómo queda un tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#dale-color---configura-el-tema",
+    "href": "intro_shiny.html#dale-color---configura-el-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - configura el tema",
+    "text": "Dale color - configura el tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny.html#implentación-real",
+    "href": "intro_shiny.html#implentación-real",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Implentación real",
+    "text": "Implentación real\n\nLectura de datos del proceso en tiempo real\nMonitorizar proceso en fase II\nAñadir análisis exploratorio\nAñadir modelos\nMejorar interfaz\nComplejidad de la app"
+  },
+  {
+    "objectID": "intro_shiny.html#algunos-ejemplos",
+    "href": "intro_shiny.html#algunos-ejemplos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Algunos ejemplos",
+    "text": "Algunos ejemplos\n\nDSLAB apps\nShiny Gallery"
+  }
+]

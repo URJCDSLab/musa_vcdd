@@ -1,0 +1,248 @@
+---
+title: Introducción a la visualización mediante dashboards
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
+---
+
+# Data Science
+  
+  
+## Unión, no intersección
+  
+  ![](img/ds2.png){width=70% fig-align=center}
+
+::: {.notes}
+There is quite a bit of consensus about what Data Science is as a sort of 
+mixture between Statistics, Computer Science and domain knowledge. A number 
+of representations as Venn Diagrams have been developed. I prefer to see 
+Data Science as the union of the three sets rather than the intersection, which is 
+almost impossible to have in one person.
+:::
+  
+## R for Data Science
+  
+::: {layout="[[-1], [1], [-1]]"}
+
+![](https://r4ds.hadley.nz/diagrams/data-science/base.png){fig-align=center}
+:::
+  
+::: footer
+Source: [R for Data Science](https://r4ds.hadley.nz) (Wickham, Çetinkaya-Rundel and Grolemund, 2023)
+:::
+  
+## CRISP-DM
+  
+:::: {.columns}
+
+::: {.column}
+
+* [Despliegue]{.red} puede incluir muchas cosas distintas
+
+* El [uso]{.red} de los modelos
+
+* La [Visualización]{.red} de resultados
+
+* [MLOps]{.red}: como _DevOps_ en informática
+
+* [Explicabilidad]{.red} de modelos
+
+
+
+
+:::
+  
+::: {.column}
+
+![](https://upload.wikimedia.org/wikipedia/commons/b/b9/CRISP-DM_Process_Diagram.png){width=120% fig-align=center}
+
+:::
+  
+::::
+  
+  
+::: footer
+Source: <a href="https://commons.wikimedia.org/wiki/File:CRISP-DM_Process_Diagram.png">Kenneth Jensen</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons
+:::
+  
+  
+  
+# Dashboards
+  
+## Informes estáticos
+  
+:::: {.columns} 
+
+::: {.column}
+* Cuadro de mando integral: ejemplo clásico en la empresa
+
+* Informes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista
+
+* Por diseño, pensados para ser impresos en papel, formato [pdf]{.red}
+
+:::
+  
+::: {.column}
+![](img/static_report.png){fig-align=center, width=420}
+:::
+  
+::::
+  
+::: footer
+[Download](http://emilio.lcano.com/p/enbis2023/static_report.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/static_report.pdf)
+:::
+  
+## Dashboards estáticos
+  
+Más compactos, diseñado para pantalla
+
+![](img/static_dashboard.png){fig-align=center}
+
+::: footer
+[Download](http://emilio.lcano.com/p/enbis2023/static_dashboard.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/static_dashboard.html)
+:::
+  
+## Dashboards interactivos
+  
+Informe estático con elementos interactivos (_widgets_)
+
+![](img/interactive_dashboard.png){fig-align=center}
+
+::: footer
+[Download](http://emilio.lcano.com/p/enbis2023/interactive_dashboard.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/interactive_dashboard.html)
+:::
+  
+## Limitaciones y alternativas
+  
+* Limitados a lo que el estadístico quiere mostrar
+
+* No solo lo van a usar personas expertas en estadística
+
+* Toma de decisiones a distintos niveles
+
+. . .
+
+* Aplicaciones [Reactivas]{.red} guían a las partes interesadas en la obtención e interpretación de resultados
+
+* Los interfaces bien diseñados para modelos avanzados favorecen la explicabilidad
+
+
+
+# Aplicaciones reactivas
+
+
+
+## _Reactive programming_
+
+>The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.
+>
+  
+:::{style="text-align:right;"}
+_Hadley Wickham, [Mastering Shiny](https://mastering-shiny.org/basic-reactivity.html)_
+:::
+  
+  
+\
+\
+
+. . .
+
+Los [outputs]{.red}, i.e., gráficos, tablas, etc., se generan con R cuando los [inputs]{.red}, i.e., selecciones del usuario, cambian.
+
+## Aplicaciones Shiny
+
+
+* Código "estándar" de R
+
+* No hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente
+
+* Dos "componentes"
+
+* `ui` (interfaz de usuario, página web). Contiene _inputs_ y _outputs_
+
+* `server`. Contiene objetos _reactivos_ y funciones [generadoras]{.red} (_rendering_)
+
+:::: {.columns}
+
+::: {.column}
+
+- [Descargar](https://shiny.posit.co/r/articles/start/cheatsheet/) Shiny _cheetsheet_
+
+- [Visitar](https://shiny.posit.co/r/gallery/) la _Shiny gallery_
+
+:::
+  
+::: {.column width="25%"}
+
+![](img/shiny.png){fig-align=center width="140"}
+
+:::
+  
+::::
+  
+  
+  
+## Una aplicación shiny simple
+  
+::: {.small}
+
+```{r}
+#| label: shinypenguins
+#| eval: false
+#| echo: true
+library(shiny)
+library(palmerpenguins); library(plotly); library(ggplot2)
+ui <- fluidPage(title = "Simple demo app",
+                sidebarLayout(
+                  sidebarPanel(  
+                    varSelectInput("varx", "Explanatory variable", penguins |> select(where(is.numeric))),
+                    varSelectInput("vary", "Response variable", penguins |> select(where(is.numeric))),
+                    varSelectInput("varcol", "Colour variable", penguins |> select(where(is.factor)))),
+                  mainPanel( 
+                    plotlyOutput("plot"),
+                    verbatimTextOutput("model")))
+)
+server <- function(input, output, session){
+  output$plot <- renderPlotly({
+    p <- penguins |> ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +
+      geom_point()
+    ggplotly(p)})
+  output$model <- renderPrint({
+    m <- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)
+    summary(m)})
+}
+shinyApp(ui = ui, server = server)
+```
+
+:::
+  
+  🖥️ Live demo 🤞🏻
+
+
+## Algunos ejemplos
+
+* [DSLAB apps](https://dslabapps.es)
+* [Shiny Gallery](https://shiny.posit.co/r/gallery/)
+
+
+# Preguntas? 
+
+`r fontawesome::fa("x-twitter", fill = "#749dae")` [@emilopezcano](https://x.com/emilopezcano)
+
+
+[http://emilio.lcano.com](https://emilio.lcano.com)
+
+[emilio.lopez@urjc.es]{.red}
+
+Slides: [emilio.lcano.com/p/udc2025](http://emilio.lcano.com/p/udc2025)
+
+\
+
+¡Gracias!
+  
+:::{style="text-align:center"}
+🖥️ Live demo 🤞🏻
+:::
+  
+  
+  

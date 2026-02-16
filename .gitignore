@@ -8,7 +8,6 @@ aux
 TODO.md
 /.quarto/
 *-files/
-slides/
 renv/
 freeze/
 **/*.quarto_ipynb
