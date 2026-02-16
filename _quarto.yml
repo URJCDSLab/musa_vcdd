@@ -33,7 +33,7 @@ format:
       titleSelector: ""
       side: left
       width: third
-    toc: true
+    # toc: true
     toc-depth: 1
     logo: theme_images/URJClogo.png
     title-slide-attributes:
