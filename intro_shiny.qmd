@@ -238,9 +238,6 @@ shinyApp(ui = ui, server = server)
 
 ¡Gracias!
   
-:::{style="text-align:center"}
-🖥️ Live demo 🤞🏻
-:::
-  
+
   
   

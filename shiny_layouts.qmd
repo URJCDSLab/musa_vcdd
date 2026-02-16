@@ -628,9 +628,7 @@ shinyApp(ui, server)
 
 ¡Gracias!
   
-:::{style="text-align:center"}
-🖥️ Live demo 🤞🏻
-:::
+
   
   
   
