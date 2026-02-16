@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.6.39">
 
   <meta name="author" content="Máster Universitario en Análisis de Datos Deportivos Universidad Rey Juan Carlos">
-  <title>Diseño e interacción de usuario dashboards con Shiny</title>
+  <title>Diseño e interacción de usuario con Shiny</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -28,6 +28,71 @@
       margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
       vertical-align: middle;
     }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-81356f60d1d614b182b680c3c64e4be7.css">
   <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
@@ -129,7 +194,7 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="theme_images/background_fronpage.png" data-background-position="center 70%" data-background-size="33%" class="quarto-title-block center">
-  <h1 class="title">Diseño e interacción de usuario dashboards con Shiny</h1>
+  <h1 class="title">Diseño e interacción de usuario con Shiny</h1>
   <p class="subtitle">Visualización y Comunicación de Datos Deportivos</p>
 
 <div class="quarto-title-authors">
@@ -158,6 +223,12 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </section>
 <section id="ejemplo-con-rhino" class="slide level2">
 <h2>Ejemplo con Rhino</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="co"># install.packages("rhino")</span></span>
+<span id="cb1-2"><a></a>rhino<span class="sc">::</span><span class="fu">init</span>(<span class="st">"RhinoApplication"</span>)</span>
+<span id="cb1-3"><a></a><span class="fu">setwd</span>(<span class="st">"./RhinoApplication"</span>)</span>
+<span id="cb1-4"><a></a>shiny<span class="sc">::</span><span class="fu">runApp</span>()</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="paquetes-generalistas" class="slide level2">
 <h2>Paquetes generalistas</h2>
@@ -175,7 +246,7 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 <li><p>Recomendado para proyectos complejos o a largo plazo</p></li>
 <li><p>Facilita la organización del código, la reutilización de componentes y la colaboración</p></li>
 <li><p>Permite la integración con otras funciones y datos del paquete</p></li>
-<li><p>Recurso: <a href="https://mjfrigaard.github.io/shiny-app-pkgs/">https://mjfrigaard.github.io/shiny-app-pkgs/</a></p></li>
+<li><p>Detalles: <a href="https://mjfrigaard.github.io/shiny-app-pkgs/">https://mjfrigaard.github.io/shiny-app-pkgs/</a></p></li>
 <li><p>IMPORTANTE: manejo de paquetes con <code>NAMESPACE</code>, no <code>library()</code>.</p></li>
 </ul>
 </section></section>
@@ -219,6 +290,492 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </ul>
 </div>
 </div>
+</div>
+</section>
+<section id="ejemplo-con-bslib" class="slide level2">
+<h2>Ejemplo con <code>bslib</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb2-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb2-3"><a></a></span>
+<span id="cb2-4"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb2-5"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb2-6"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(<span class="at">title =</span> <span class="st">"Selección"</span>),</span>
+<span id="cb2-7"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Resultados"</span>),</span>
+<span id="cb2-8"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>)</span>
+<span id="cb2-9"><a></a>)</span>
+<span id="cb2-10"><a></a></span>
+<span id="cb2-11"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {}</span>
+<span id="cb2-12"><a></a></span>
+<span id="cb2-13"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="sidebars" class="slide level2">
+<h2>Sidebars</h2>
+<ul>
+<li><p>El sidebar es un contenedor en sí mismo, se puede incluir cualquier elemento.</p></li>
+<li><p>Principales opciones: ancho, posición, abierto, , título.</p></li>
+<li><p>Barras adicionales con <code>layout_sidebar()</code></p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb3-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb3-3"><a></a></span>
+<span id="cb3-4"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb3-5"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb3-6"><a></a>  <span class="fu">p</span>(<span class="st">"Contenido principal"</span>),</span>
+<span id="cb3-7"><a></a>  <span class="fu">layout_sidebar</span>(</span>
+<span id="cb3-8"><a></a>    <span class="at">sidebar =</span> <span class="fu">sidebar</span>(<span class="at">title =</span> <span class="st">"Selección"</span>),</span>
+<span id="cb3-9"><a></a>    <span class="fu">layout_sidebar</span>(</span>
+<span id="cb3-10"><a></a>      <span class="at">sidebar =</span> <span class="fu">sidebar</span>(<span class="at">title =</span> <span class="st">"Filtros"</span>),</span>
+<span id="cb3-11"><a></a>      <span class="at">position =</span> <span class="st">"right"</span>,</span>
+<span id="cb3-12"><a></a>      <span class="at">open =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-13"><a></a>    )</span>
+<span id="cb3-14"><a></a>  ),</span>
+<span id="cb3-15"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Resultados"</span>),</span>
+<span id="cb3-16"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>)</span>
+<span id="cb3-17"><a></a>)</span>
+<span id="cb3-18"><a></a></span>
+<span id="cb3-19"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {}</span>
+<span id="cb3-20"><a></a></span>
+<span id="cb3-21"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pestañas-tabs" class="slide level2">
+<h2>Pestañas (tabs)</h2>
+<ul>
+<li><p>Permiten organizar el contenido en secciones dentro de la misma página</p></li>
+<li><p>Estructura: <code>navset_*()</code> para el contenedor de pestañas, <code>nav_panel()</code> para cada pestaña</p></li>
+<li><p><code>pill</code>s: estilo de pestañas con bordes redondeados</p></li>
+<li><p><code>card</code>s: estilo de pestañas con fondo y bordes, similar a las tarjetas</p></li>
+<li><p><code>tab</code>’s: estilo de pestañas clásico, sin bordes ni fondo</p></li>
+<li><p><code>list</code>’s: pestañas en vertical</p></li>
+</ul>
+</section>
+<section id="cards" class="slide level2">
+<h2>Cards</h2>
+<ul>
+<li><p>Contenedores con estilo para agrupar elementos relacionados</p></li>
+<li><p>Personalizables con títulos, colores, iconos, etc.</p></li>
+<li><p>Ancho completo o dividido en filas y columnas</p></li>
+</ul>
+</section>
+<section id="ejemplo-con-bslib-1" class="slide level2">
+<h2>Ejemplo con {bslib}</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb4-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb4-3"><a></a></span>
+<span id="cb4-4"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb4-5"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb4-6"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(<span class="at">title =</span> <span class="st">"Selección"</span>),</span>
+<span id="cb4-7"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb4-8"><a></a>    <span class="at">title =</span> <span class="st">"Resultados"</span>,</span>
+<span id="cb4-9"><a></a>    <span class="fu">layout_columns</span>(</span>
+<span id="cb4-10"><a></a>      <span class="at">col_widths =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">10</span>),</span>
+<span id="cb4-11"><a></a>      <span class="fu">card</span>(</span>
+<span id="cb4-12"><a></a>        <span class="at">title =</span> <span class="st">"Resultados por selección"</span>,</span>
+<span id="cb4-13"><a></a>        <span class="fu">p</span>(<span class="st">"Contenido de la tarjeta"</span>)</span>
+<span id="cb4-14"><a></a>      ),</span>
+<span id="cb4-15"><a></a>      <span class="fu">card</span>(</span>
+<span id="cb4-16"><a></a>        <span class="at">title =</span> <span class="st">"Resultados por torneo"</span>,</span>
+<span id="cb4-17"><a></a>        <span class="fu">p</span>(<span class="st">"Contenido de la tarjeta"</span>)</span>
+<span id="cb4-18"><a></a>      )</span>
+<span id="cb4-19"><a></a>    )</span>
+<span id="cb4-20"><a></a>  ),</span>
+<span id="cb4-21"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb4-22"><a></a>    <span class="at">title =</span> <span class="st">"Goleadores"</span>,</span>
+<span id="cb4-23"><a></a>    <span class="fu">navset_pill</span>(</span>
+<span id="cb4-24"><a></a>      <span class="fu">nav_panel</span>(</span>
+<span id="cb4-25"><a></a>        <span class="at">title =</span> <span class="st">"Goleadores por selección"</span>,</span>
+<span id="cb4-26"><a></a>        <span class="fu">p</span>(<span class="st">"Contenido de la pestaña 1"</span>)</span>
+<span id="cb4-27"><a></a>      ),</span>
+<span id="cb4-28"><a></a>      <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores por torneo"</span>, <span class="fu">p</span>(<span class="st">"Contenido de la pestaña 2"</span>))</span>
+<span id="cb4-29"><a></a>    )</span>
+<span id="cb4-30"><a></a>  )</span>
+<span id="cb4-31"><a></a>)</span>
+<span id="cb4-32"><a></a></span>
+<span id="cb4-33"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {}</span>
+<span id="cb4-34"><a></a></span>
+<span id="cb4-35"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="componentes---inputs" class="slide level2">
+<h2>Componentes - inputs</h2>
+<ul>
+<li><p><strong>Cajas de texto</strong>: numéricas, texto, texto multilina, fecha, contraseña</p></li>
+<li><p><strong>Acciones</strong>: botón, botón de tarea, link, descarga, upload, submit</p></li>
+<li><p><strong>Selección</strong>: checkbox, checkbox group, select, slider, rangos</p></li>
+<li><p>Selectize vs select clásico: más opciones</p></li>
+<li><p><strong>shinywidgets</strong>: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.</p></li>
+<li><p><strong>Paneles condicionales</strong>: según selecciones en el UI se muestran o no</p></li>
+</ul>
+<p><a href="https://shiny.posit.co/r/components/">shiny components</a> | <a href="https://shinywidgets.com/">shinywidgets</a></p>
+</section>
+<section id="componentes---outputs" class="slide level2">
+<h2>Componentes - outputs</h2>
+<ul>
+<li><strong>Textos</strong>: texto, texto HTML, verbatim text</li>
+<li><strong>Tablas</strong>: tabla renderizada, tabla interactiva (DT, reactable, gt)</li>
+<li><strong>Gráficos</strong>: gráficos estáticos (ggplot2, base),</li>
+<li><strong>Gráficos interactivos</strong>: plotly, echarts4r, highcharter, ggiraph, etc.</li>
+<li><strong>Mapas</strong>: leaflet, mapview, tmap, etc.</li>
+<li><strong>Imágenes</strong></li>
+<li><strong>Diagramas</strong>: diagrammeR, mermaid, etc.</li>
+<li><strong>ValueBox</strong>: cajas de valor para mostrar métricas clave de forma destacada</li>
+<li><strong>UI</strong>: controles que se generan en el server (porque dependen de inputs o datos)</li>
+</ul>
+</section>
+<section id="ejemplo-paneles-condicionales" class="slide level2">
+<h2>Ejemplo: paneles condicionales</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb5-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb5-3"><a></a><span class="fu">library</span>(reactable)</span>
+<span id="cb5-4"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb5-5"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb5-6"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb5-7"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb5-8"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb5-9"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb5-10"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb5-11"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb5-12"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb5-13"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb5-14"><a></a>    ),</span>
+<span id="cb5-15"><a></a>    <span class="fu">checkboxInput</span>(<span class="st">"chk_partidos"</span>, <span class="st">"Mostrar número partidos"</span>, <span class="at">value =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb5-16"><a></a>  ),</span>
+<span id="cb5-17"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb5-18"><a></a>    <span class="at">title =</span> <span class="st">"Partidos"</span>,</span>
+<span id="cb5-19"><a></a>    <span class="fu">reactableOutput</span>(<span class="st">"tabla_partidos"</span>),</span>
+<span id="cb5-20"><a></a>    <span class="fu">conditionalPanel</span>(</span>
+<span id="cb5-21"><a></a>      <span class="at">condition =</span> <span class="st">"input.chk_partidos == true"</span>,</span>
+<span id="cb5-22"><a></a>      <span class="fu">verbatimTextOutput</span>(<span class="st">"num_partidos"</span>)</span>
+<span id="cb5-23"><a></a>    )</span>
+<span id="cb5-24"><a></a>  ),</span>
+<span id="cb5-25"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>)</span>
+<span id="cb5-26"><a></a>)</span>
+<span id="cb5-27"><a></a></span>
+<span id="cb5-28"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb5-29"><a></a>  output<span class="sc">$</span>tabla_partidos <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb5-30"><a></a>    resultados <span class="sc">|&gt;</span></span>
+<span id="cb5-31"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb5-32"><a></a>      <span class="fu">reactable</span>()</span>
+<span id="cb5-33"><a></a>  })</span>
+<span id="cb5-34"><a></a></span>
+<span id="cb5-35"><a></a>  output<span class="sc">$</span>num_partidos <span class="ot">&lt;-</span> <span class="fu">renderPrint</span>({</span>
+<span id="cb5-36"><a></a>    num <span class="ot">&lt;-</span> resultados <span class="sc">|&gt;</span></span>
+<span id="cb5-37"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb5-38"><a></a>      <span class="fu">nrow</span>()</span>
+<span id="cb5-39"><a></a>    <span class="fu">paste</span>(<span class="st">"Número de partidos:"</span>, num)</span>
+<span id="cb5-40"><a></a>  })</span>
+<span id="cb5-41"><a></a>}</span>
+<span id="cb5-42"><a></a></span>
+<span id="cb5-43"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ejemplo-ui-dinámica" class="slide level2">
+<h2>Ejemplo: UI dinámica</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb6-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb6-3"><a></a><span class="fu">library</span>(reactable)</span>
+<span id="cb6-4"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb6-5"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb6-6"><a></a>goleadores <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/goalscorers.csv"</span>)</span>
+<span id="cb6-7"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb6-8"><a></a>  <span class="at">selected =</span> <span class="st">"Goleadores"</span>,</span>
+<span id="cb6-9"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb6-10"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb6-11"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb6-12"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb6-13"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb6-14"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb6-15"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb6-16"><a></a>    ),</span>
+<span id="cb6-17"><a></a>    <span class="fu">uiOutput</span>(<span class="st">"ui_jugadores"</span>)</span>
+<span id="cb6-18"><a></a>  ),</span>
+<span id="cb6-19"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb6-20"><a></a>    <span class="at">title =</span> <span class="st">"Partidos"</span></span>
+<span id="cb6-21"><a></a>  ),</span>
+<span id="cb6-22"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>, <span class="fu">reactableOutput</span>(<span class="st">"tabla_jugadores"</span>))</span>
+<span id="cb6-23"><a></a>)</span>
+<span id="cb6-24"><a></a></span>
+<span id="cb6-25"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb6-26"><a></a>  output<span class="sc">$</span>ui_jugadores <span class="ot">&lt;-</span> <span class="fu">renderUI</span>({</span>
+<span id="cb6-27"><a></a>    jugadores <span class="ot">&lt;-</span> goleadores <span class="sc">|&gt;</span></span>
+<span id="cb6-28"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb6-29"><a></a>      <span class="fu">pull</span>(scorer) <span class="sc">|&gt;</span></span>
+<span id="cb6-30"><a></a>      <span class="fu">unique</span>()</span>
+<span id="cb6-31"><a></a>    <span class="fu">selectizeInput</span>(<span class="st">"sel_jugador"</span>, <span class="st">"Selecciona un jugador:"</span>, <span class="at">choices =</span> jugadores)</span>
+<span id="cb6-32"><a></a>  })</span>
+<span id="cb6-33"><a></a>  output<span class="sc">$</span>tabla_jugadores <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb6-34"><a></a>    goleadores <span class="sc">|&gt;</span></span>
+<span id="cb6-35"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais, scorer <span class="sc">==</span> input<span class="sc">$</span>sel_jugador) <span class="sc">|&gt;</span></span>
+<span id="cb6-36"><a></a>      <span class="fu">reactable</span>()</span>
+<span id="cb6-37"><a></a>  })</span>
+<span id="cb6-38"><a></a>}</span>
+<span id="cb6-39"><a></a></span>
+<span id="cb6-40"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section>
+<section>
+<section id="interacción-con-el-usuario" class="title-slide slide level1 center">
+<h1>Interacción con el usuario</h1>
+
+</section>
+<section id="interacción-con-el-usuario-mensajes" class="slide level2">
+<h2>Interacción con el usuario: mensajes</h2>
+<ul>
+<li><p><code>showNotification()</code>: muestra un mensaje temporal en la parte superior de la app, con opciones de tipo (info, success, warning, error), duración, etc.</p></li>
+<li><p><code>showModal()</code>: muestra un cuadro de diálogo modal con contenido personalizado, como texto, imágenes, inputs, etc.</p></li>
+<li><p><code>showAlert()</code>: muestra un mensaje de alerta con opciones de tipo, título, texto, etc.</p></li>
+<li><p>Con shinywidgets: via sweetalert</p></li>
+</ul>
+</section>
+<section id="ejemplo-botones-y-mensajes-shiny-vanilla" class="slide level2">
+<h2>Ejemplo botones y mensajes (shiny vanilla)</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb7-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb7-3"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-4"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb7-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb7-6"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb7-7"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb7-8"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb7-9"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb7-10"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb7-11"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb7-12"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb7-13"><a></a>    )</span>
+<span id="cb7-14"><a></a>  ),</span>
+<span id="cb7-15"><a></a>  <span class="fu">actionButton</span>(<span class="st">"btn_mensaje"</span>, <span class="st">"Mostrar mensaje"</span>),</span>
+<span id="cb7-16"><a></a>  <span class="fu">actionLink</span>(<span class="st">"lnk_mensaje"</span>, <span class="st">"Mostrar mensaje con link"</span>)</span>
+<span id="cb7-17"><a></a>)</span>
+<span id="cb7-18"><a></a></span>
+<span id="cb7-19"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb7-20"><a></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>btn_mensaje, {</span>
+<span id="cb7-21"><a></a>    <span class="fu">showNotification</span>(</span>
+<span id="cb7-22"><a></a>      <span class="fu">paste</span>(<span class="st">"Has seleccionado:"</span>, input<span class="sc">$</span>sel_pais),</span>
+<span id="cb7-23"><a></a>      <span class="at">type =</span> <span class="st">"message"</span></span>
+<span id="cb7-24"><a></a>    )</span>
+<span id="cb7-25"><a></a>  })</span>
+<span id="cb7-26"><a></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>lnk_mensaje, {</span>
+<span id="cb7-27"><a></a>    <span class="fu">showModal</span>(</span>
+<span id="cb7-28"><a></a>      <span class="fu">modalDialog</span>(</span>
+<span id="cb7-29"><a></a>        <span class="at">title =</span> <span class="st">"Mensaje"</span>,</span>
+<span id="cb7-30"><a></a>        <span class="fu">paste</span>(<span class="st">"Has seleccionado:"</span>, input<span class="sc">$</span>sel_pais),</span>
+<span id="cb7-31"><a></a>        <span class="at">footer =</span> <span class="fu">tagList</span>(</span>
+<span id="cb7-32"><a></a>          <span class="fu">modalButton</span>(<span class="st">"Cerrar"</span>),</span>
+<span id="cb7-33"><a></a>          <span class="fu">actionButton</span>(<span class="st">"btn_mas_info"</span>, <span class="st">"Más info"</span>)</span>
+<span id="cb7-34"><a></a>        )</span>
+<span id="cb7-35"><a></a>      )</span>
+<span id="cb7-36"><a></a>    )</span>
+<span id="cb7-37"><a></a>  })</span>
+<span id="cb7-38"><a></a>}</span>
+<span id="cb7-39"><a></a></span>
+<span id="cb7-40"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ejemplo-shinywidgets---sweetalert" class="slide level2">
+<h2>Ejemplo shinyWidgets - sweetalert</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb8-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb8-3"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb8-4"><a></a><span class="fu">library</span>(shinyWidgets)</span>
+<span id="cb8-5"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb8-6"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_sidebar</span>(</span>
+<span id="cb8-7"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb8-8"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb8-9"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb8-10"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb8-11"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb8-12"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb8-13"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb8-14"><a></a>    )</span>
+<span id="cb8-15"><a></a>  ),</span>
+<span id="cb8-16"><a></a>  <span class="fu">actionButton</span>(<span class="st">"btn_mensaje"</span>, <span class="st">"Mostrar mensaje sweet"</span>),</span>
+<span id="cb8-17"><a></a>)</span>
+<span id="cb8-18"><a></a></span>
+<span id="cb8-19"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb8-20"><a></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>btn_mensaje, {</span>
+<span id="cb8-21"><a></a>    <span class="fu">show_alert</span>(</span>
+<span id="cb8-22"><a></a>      <span class="at">title =</span> <span class="st">"Éxito !!"</span>,</span>
+<span id="cb8-23"><a></a>      <span class="at">text =</span> <span class="st">"Todo en orden"</span>,</span>
+<span id="cb8-24"><a></a>      <span class="at">type =</span> <span class="st">"success"</span></span>
+<span id="cb8-25"><a></a>    )</span>
+<span id="cb8-26"><a></a>  })</span>
+<span id="cb8-27"><a></a>}</span>
+<span id="cb8-28"><a></a></span>
+<span id="cb8-29"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="validación" class="slide level2">
+<h2>Validación</h2>
+<ul>
+<li><p><code>validate()</code> y <code>need()</code>: permiten validar condiciones en el server y mostrar mensajes de error personalizados en lugar de errores genéricos.</p></li>
+<li><p><code>req()</code>: requiere que un input o valor esté presente y no sea NULL o vacío, de lo contrario detiene la ejecución. Lo veremos en la siguiente sesión sobre reactividad.</p></li>
+<li><p><a href="https://rstudio.github.io/shinyvalidate/">{shinyvalidate}</a>: ofrece un mayor control sobre la validación, con reglas predefinidas, mensajes personalizados, validación en tiempo real, etc.</p></li>
+</ul>
+</section>
+<section id="ejemplo-validación" class="slide level2">
+<h2>Ejemplo validación</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb9-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb9-3"><a></a><span class="fu">library</span>(reactable)</span>
+<span id="cb9-4"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb9-5"><a></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb9-6"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb9-7"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb9-8"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb9-9"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb9-10"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb9-11"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb9-12"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb9-13"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb9-14"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb9-15"><a></a>    ),</span>
+<span id="cb9-16"><a></a>    <span class="fu">numericInput</span>(<span class="st">"year"</span>, <span class="st">"Selecciona un año:"</span>, <span class="at">value =</span> <span class="dv">2022</span>, <span class="at">min =</span> <span class="dv">1956</span>, <span class="at">max =</span> <span class="dv">2025</span>)</span>
+<span id="cb9-17"><a></a>  ),</span>
+<span id="cb9-18"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb9-19"><a></a>    <span class="at">title =</span> <span class="st">"Partidos"</span>,</span>
+<span id="cb9-20"><a></a>    <span class="fu">reactableOutput</span>(<span class="st">"tabla_partidos"</span>),</span>
+<span id="cb9-21"><a></a>    </span>
+<span id="cb9-22"><a></a>  ),</span>
+<span id="cb9-23"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goles"</span>,</span>
+<span id="cb9-24"><a></a>  <span class="fu">plotOutput</span>(<span class="st">"graf_goles"</span>)</span>
+<span id="cb9-25"><a></a>  )</span>
+<span id="cb9-26"><a></a>)</span>
+<span id="cb9-27"><a></a></span>
+<span id="cb9-28"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb9-29"><a></a>  output<span class="sc">$</span>tabla_partidos <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb9-30"><a></a>    resultados <span class="sc">|&gt;</span></span>
+<span id="cb9-31"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb9-32"><a></a>      <span class="fu">reactable</span>()</span>
+<span id="cb9-33"><a></a>  })</span>
+<span id="cb9-34"><a></a></span>
+<span id="cb9-35"><a></a>  output<span class="sc">$</span>graf_goles <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb9-36"><a></a>    <span class="fu">validate</span>(</span>
+<span id="cb9-37"><a></a>      <span class="fu">need</span>(input<span class="sc">$</span>year <span class="sc">&gt;</span> <span class="dv">2000</span>, <span class="st">"Solo se muestran datos a partir del año 2000"</span>)</span>
+<span id="cb9-38"><a></a>    )</span>
+<span id="cb9-39"><a></a>datos <span class="ot">&lt;-</span> resultados <span class="sc">|&gt;</span></span>
+<span id="cb9-40"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais, <span class="fu">year</span>(date) <span class="sc">==</span> input<span class="sc">$</span>year) <span class="sc">|&gt;</span></span>
+<span id="cb9-41"><a></a>      <span class="fu">group_by</span>(tournament) <span class="sc">|&gt;</span></span>
+<span id="cb9-42"><a></a>      <span class="fu">summarise</span>(<span class="at">diferencia =</span> <span class="fu">sum</span>(home_score <span class="sc">-</span> away_score))</span>
+<span id="cb9-43"><a></a></span>
+<span id="cb9-44"><a></a>    <span class="fu">barplot</span>(datos<span class="sc">$</span>diferencia, <span class="at">names.arg =</span> datos<span class="sc">$</span>tournament, <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">main =</span> <span class="st">"Diferencia de goles por torneo"</span>, <span class="at">ylab =</span> <span class="st">"Diferencia de goles"</span>)</span>
+<span id="cb9-45"><a></a>  })</span>
+<span id="cb9-46"><a></a>}</span>
+<span id="cb9-47"><a></a></span>
+<span id="cb9-48"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section>
+<section>
+<section id="temas-y-estilos" class="title-slide slide level1 center">
+<h1>Temas y estilos</h1>
+
+</section>
+<section id="temas-y-personalización" class="slide level2">
+<h2>Temas y personalización</h2>
+<ul>
+<li><p>Elegir un tema completo con <code>bs_theme()</code></p></li>
+<li><p>Se pueden previsualizar todos con <code>bs_themer()</code> y ver cómo queda nuestro dashboard</p></li>
+<li><p>Se pueden cambiar componentes específicos en <code>bs_theme()</code>, o bien personalizar <code>bs_add_variables()</code></p></li>
+</ul>
+</section>
+<section id="ejemplo-previsualización-de-temas" class="slide level2">
+<h2>Ejemplo previsualización de temas</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb10-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb10-3"><a></a><span class="fu">library</span>(reactable)</span>
+<span id="cb10-4"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb10-5"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb10-6"><a></a>goleadores <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/goalscorers.csv"</span>)</span>
+<span id="cb10-7"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb10-8"><a></a>  <span class="at">selected =</span> <span class="st">"Goleadores"</span>,</span>
+<span id="cb10-9"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb10-10"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb10-11"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb10-12"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb10-13"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb10-14"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb10-15"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb10-16"><a></a>    ),</span>
+<span id="cb10-17"><a></a>    <span class="fu">uiOutput</span>(<span class="st">"ui_jugadores"</span>)</span>
+<span id="cb10-18"><a></a>  ),</span>
+<span id="cb10-19"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb10-20"><a></a>    <span class="at">title =</span> <span class="st">"Partidos"</span></span>
+<span id="cb10-21"><a></a>  ),</span>
+<span id="cb10-22"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>, <span class="fu">reactableOutput</span>(<span class="st">"tabla_jugadores"</span>))</span>
+<span id="cb10-23"><a></a>)</span>
+<span id="cb10-24"><a></a></span>
+<span id="cb10-25"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb10-26"><a></a>  <span class="fu">bs_themer</span>()</span>
+<span id="cb10-27"><a></a>  output<span class="sc">$</span>ui_jugadores <span class="ot">&lt;-</span> <span class="fu">renderUI</span>({</span>
+<span id="cb10-28"><a></a>    jugadores <span class="ot">&lt;-</span> goleadores <span class="sc">|&gt;</span></span>
+<span id="cb10-29"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb10-30"><a></a>      <span class="fu">pull</span>(scorer) <span class="sc">|&gt;</span></span>
+<span id="cb10-31"><a></a>      <span class="fu">unique</span>()</span>
+<span id="cb10-32"><a></a>    <span class="fu">selectizeInput</span>(<span class="st">"sel_jugador"</span>, <span class="st">"Selecciona un jugador:"</span>, <span class="at">choices =</span> jugadores)</span>
+<span id="cb10-33"><a></a>  })</span>
+<span id="cb10-34"><a></a>  output<span class="sc">$</span>tabla_jugadores <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb10-35"><a></a>    goleadores <span class="sc">|&gt;</span></span>
+<span id="cb10-36"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais, scorer <span class="sc">==</span> input<span class="sc">$</span>sel_jugador) <span class="sc">|&gt;</span></span>
+<span id="cb10-37"><a></a>      <span class="fu">reactable</span>()</span>
+<span id="cb10-38"><a></a>  })</span>
+<span id="cb10-39"><a></a>}</span>
+<span id="cb10-40"><a></a></span>
+<span id="cb10-41"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ejemplo-establecer-tema" class="slide level2">
+<h2>Ejemplo establecer tema</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb11-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb11-3"><a></a><span class="fu">library</span>(reactable)</span>
+<span id="cb11-4"><a></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb11-5"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>)</span>
+<span id="cb11-6"><a></a>goleadores <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/goalscorers.csv"</span>)</span>
+<span id="cb11-7"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb11-8"><a></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">bootswatch =</span> <span class="st">"minty"</span>),</span>
+<span id="cb11-9"><a></a>  <span class="at">selected =</span> <span class="st">"Goleadores"</span>,</span>
+<span id="cb11-10"><a></a>  <span class="at">title =</span> <span class="st">"Análisis resultados FIFA"</span>,</span>
+<span id="cb11-11"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb11-12"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb11-13"><a></a>    <span class="fu">selectizeInput</span>(</span>
+<span id="cb11-14"><a></a>      <span class="st">"sel_pais"</span>,</span>
+<span id="cb11-15"><a></a>      <span class="st">"Selecciona un país:"</span>,</span>
+<span id="cb11-16"><a></a>      <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team)</span>
+<span id="cb11-17"><a></a>    ),</span>
+<span id="cb11-18"><a></a>    <span class="fu">uiOutput</span>(<span class="st">"ui_jugadores"</span>)</span>
+<span id="cb11-19"><a></a>  ),</span>
+<span id="cb11-20"><a></a>  <span class="fu">nav_panel</span>(</span>
+<span id="cb11-21"><a></a>    <span class="at">title =</span> <span class="st">"Partidos"</span></span>
+<span id="cb11-22"><a></a>  ),</span>
+<span id="cb11-23"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Goleadores"</span>, <span class="fu">reactableOutput</span>(<span class="st">"tabla_jugadores"</span>))</span>
+<span id="cb11-24"><a></a>)</span>
+<span id="cb11-25"><a></a></span>
+<span id="cb11-26"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb11-27"><a></a>  output<span class="sc">$</span>ui_jugadores <span class="ot">&lt;-</span> <span class="fu">renderUI</span>({</span>
+<span id="cb11-28"><a></a>    jugadores <span class="ot">&lt;-</span> goleadores <span class="sc">|&gt;</span></span>
+<span id="cb11-29"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais) <span class="sc">|&gt;</span></span>
+<span id="cb11-30"><a></a>      <span class="fu">pull</span>(scorer) <span class="sc">|&gt;</span></span>
+<span id="cb11-31"><a></a>      <span class="fu">unique</span>()</span>
+<span id="cb11-32"><a></a>    <span class="fu">selectizeInput</span>(<span class="st">"sel_jugador"</span>, <span class="st">"Selecciona un jugador:"</span>, <span class="at">choices =</span> jugadores)</span>
+<span id="cb11-33"><a></a>  })</span>
+<span id="cb11-34"><a></a>  output<span class="sc">$</span>tabla_jugadores <span class="ot">&lt;-</span> <span class="fu">renderReactable</span>({</span>
+<span id="cb11-35"><a></a>    goleadores <span class="sc">|&gt;</span></span>
+<span id="cb11-36"><a></a>      <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>sel_pais, scorer <span class="sc">==</span> input<span class="sc">$</span>sel_jugador) <span class="sc">|&gt;</span></span>
+<span id="cb11-37"><a></a>      <span class="fu">reactable</span>()</span>
+<span id="cb11-38"><a></a>  })</span>
+<span id="cb11-39"><a></a>}</span>
+<span id="cb11-40"><a></a></span>
+<span id="cb11-41"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section></section>
 <section id="preguntas" class="title-slide slide level1 center">

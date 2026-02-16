@@ -1,508 +1,101 @@
 ---
-title: Introducción a la visualización mediante dashboards
-subtitle: Máster Universitario en Análisis de Datos Deportivos, Universidad Rey Juan Carlos
-authors:
-    author: "Emilio López Cano"
-    corresponding: true
+title: Diseño e interacción de usuario con Shiny
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
 ---
 
-# Data Science
-  
-  
-## Unión, no intersección
-  
-  ![](img/ds2.png){width=70% fig-align=center}
+# Paquetes y metapaquetes para dashboards
 
-::: {.notes}
-There is quite a bit of consensus about what Data Science is as a sort of 
-mixture between Statistics, Computer Science and domain knowledge. A number 
-of representations as Venn Diagrams have been developed. I prefer to see 
-Data Science as the union of the three sets rather than the intersection, which is 
-almost impossible to have in one person.
-:::
-  
-## R for Data Science
-  
-::: {layout="[[-1], [1], [-1]]"}
+## Conjuntos de paquetes
 
-![](https://r4ds.hadley.nz/diagrams/data-science/base.png){fig-align=center}
-:::
-  
-::: footer
-Source: [R for Data Science](https://r4ds.hadley.nz) (Wickham, Çetinkaya-Rundel and Grolemund, 2023)
-:::
-  
-## CRISP-DM
-  
-:::: {.columns}
+* Proporcionan una estructura y un diseño predefinido
 
-::: {.column}
+* Aceleran el desarrollo
 
-* [Despliegue]{.red} puede incluir muchas cosas distintas
+* Automatizan tareas comunes
 
-* El [uso]{.red} de los modelos
+* Personalización limitada
 
-* La [Visualización]{.red} de resultados
+* Ejemplos: [golemverse](https://golemverse.org), [rhinoverse](https://www.appsilon.com/rhinoverse), [leprechaun](https://leprechaun.opifex.org/#/)
 
-* [MLOps]{.red}: como _DevOps_ en informática
-
-* [Explicabilidad]{.red} de modelos
-
-
-
-
-:::
-  
-::: {.column}
-
-![](https://upload.wikimedia.org/wikipedia/commons/b/b9/CRISP-DM_Process_Diagram.png){width=120% fig-align=center}
-
-:::
-  
-::::
-  
-  
-::: footer
-Source: <a href="https://commons.wikimedia.org/wiki/File:CRISP-DM_Process_Diagram.png">Kenneth Jensen</a>, <a href="https://creativecommons.org/licenses/by-sa/3.0">CC BY-SA 3.0</a>, via Wikimedia Commons
-:::
-  
-  
-  
-# Dashboards
-  
-## Informes estáticos
-  
-:::: {.columns} 
-
-::: {.column}
-* Cuadro de mando integral: ejemplo clásico en la empresa
-
-* Informes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista
-
-* Por diseño, pensados para ser impresos en papel, formato [pdf]{.red}
-
-:::
-  
-::: {.column}
-![](img/static_report.png){fig-align=center, width=420}
-:::
-  
-::::
-  
-::: footer
-[Download](http://emilio.lcano.com/p/enbis2023/static_report.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/static_report.pdf)
-:::
-  
-## Dashboards estáticos
-  
-Más compactos, diseñado para pantalla
-
-![](img/static_dashboard.png){fig-align=center}
-
-::: footer
-[Download](http://emilio.lcano.com/p/enbis2023/static_dashboard.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/static_dashboard.html)
-:::
-  
-## Dashboards interactivos
-  
-Informe estático con elementos interactivos (_widgets_)
-
-![](img/interactive_dashboard.png){fig-align=center}
-
-::: footer
-[Download](http://emilio.lcano.com/p/enbis2023/interactive_dashboard.Rmd) .Rmd source | [Ver online](http://emilio.lcano.com/p/enbis2023/interactive_dashboard.html)
-:::
-  
-## Limitaciones y alternativas
-  
-* Limitados a lo que el estadístico quiere mostrar
-
-* No solo lo van a usar personas expertas en estadística
-
-* Toma de decisiones a distintos niveles
-
-. . .
-
-* Aplicaciones [Reactivas]{.red} guían a las partes interesadas en la obtención e interpretación de resultados
-
-* Los interfaces bien diseñados para modelos avanzados favorecen la explicabilidad
-
-
-
-# Aplicaciones reactivas
-
-
-
-## _Reactive programming_
-
->The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.
->
-  
-:::{style="text-align:right;"}
-_Hadley Wickham, [Mastering Shiny](https://mastering-shiny.org/basic-reactivity.html)_
-:::
-  
-  
-\
-\
-
-. . .
-
-Los [outputs]{.red}, i.e., gráficos, tablas, etc., se generan con R cuando los [inputs]{.red}, i.e., selecciones del usuario, cambian.
-
-## Aplicaciones Shiny
-
-
-* Código "estándar" de R
-
-* No hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente
-
-* Dos "componentes"
-
-* `ui` (interfaz de usuario, página web). Contiene _inputs_ y _outputs_
-
-* `server`. Contiene objetos _reactivos_ y funciones [generadoras]{.red} (_rendering_)
-
-:::: {.columns}
-
-::: {.column}
-
-- [Descargar](https://shiny.posit.co/r/articles/start/cheatsheet/) Shiny _cheetsheet_
-
-- [Visitar](https://shiny.posit.co/r/gallery/) la _Shiny gallery_
-
-:::
-  
-::: {.column width="25%"}
-
-![](img/shiny.png){fig-align=center width="140"}
-
-:::
-  
-::::
-  
-  
-  
-## Una aplicación shiny simple
-  
-::: {.small}
-
-```{r}
-#| label: shinypenguins
-#| eval: false
-#| echo: true
-library(shiny)
-library(palmerpenguins); library(plotly); library(ggplot2)
-ui <- fluidPage(title = "Simple demo app",
-                sidebarLayout(
-                  sidebarPanel(  
-                    varSelectInput("varx", "Explanatory variable", penguins |> select(where(is.numeric))),
-                    varSelectInput("vary", "Response variable", penguins |> select(where(is.numeric))),
-                    varSelectInput("varcol", "Colour variable", penguins |> select(where(is.factor)))),
-                  mainPanel( 
-                    plotlyOutput("plot"),
-                    verbatimTextOutput("model")))
-)
-server <- function(input, output, session){
-  output$plot <- renderPlotly({
-    p <- penguins |> ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +
-      geom_point()
-    ggplotly(p)})
-  output$model <- renderPrint({
-    m <- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)
-    summary(m)})
-}
-shinyApp(ui = ui, server = server)
-```
-
-:::
-  
-  🖥️ Live demo 🤞🏻
-
-
-## Añadiendo características interesantes
-
-:::: {.columns}
-
-::: {.column}
-
-### Dashboards
-
-* [shinydashboard](https://rstudio.github.io/shinydashboard/)
-
-* [bs4dash](https://rinterface.github.io/bs4Dash/index.html)
-
-* [bslib](https://rstudio.github.io/bslib/)
-
-### Configuración
-
-* Aplicaciones [Multilenguaje]{.red} with [shiny.i18n](https://appsilon.github.io/shiny.i18n/index.html)
-
-* Aplicación como [paquete](https://mastering-shiny.org/scaling-packaging.html)
-
-:::
-  
-::: {.column}
-
-### Buenas prácticas de Ing.Soft.
-
-* Versiones de paquetes con [renv](https://rstudio.github.io/renv/index.html)
-
-* Pruebas unitarias con [testthat](https://testthat.r-lib.org) y [shinytest](https://rstudio.github.io/shinytest/)
-
-* Control de versiones e integración continua, e.g., con [GitHub](https://github.com)
-
-* [Despliegue como contenedor Docker](https://hosting.analythium.io/running-shiny-server-in-docker/)
-
-:::
-  
-::::
-  
-## Shiny modules
-  
-  * Componentes reutilizables
-
-* Con su propio espacio de nombres (_namespace_)
-
-* Facilitan pruebas y depuración
-
-* Complejo de entender al principio
-
-👉[Modularizing Shiny app code](https://shiny.posit.co/r/articles/improve/modules/)
-
-
-# Casos de éxito y ejemplos en producción
-
-## AfCIOT - TiVA indicators
-
-* Joint project with [UNECA](https://www.uneca.org), [WTO](https://www.wto.org), and [OECD](https://www.oecd.org)
-
-* International Trade, Environmental and Employment Indicators
-
-* International and multidisciplinar team
-
-* Industry and product classification, gap estimation, policy simulation and [visualisation]{.red}
-
-* Key result: A [shiny app]{.red} for reporting, visualisation and policy simulation
-
-* Several important challenges for the [multinational]{.red} scope
-
-## AfCIOT - TiVA indicators
-
-![](img/afciot.png){width="70%" fig-align="center"}
-
-[Acknowledgements:]{.ack} 
-![](img/uneca.png){height="50"}
-![](img/wto.png){height="50"}
-![](img/oecd.png){height="50"}
-
-::: {style="text-align:center"}
-🖥️ Live demo 🤞🏻
-:::
-  
-# Turismo sostenible
-  
-## EVASTUR
-  
--   Proyecto con la empresa [Dephimática](https://www.dephimatica.es)
-
--   Especializada en estadística pública
-
--   _Capacity building_ en Ciencia de Datos
-
-- Sistema de indicadores de turismo sostenible: exploración, visualización, análisis
-
-<!-- <img src="img/dephimatica.png" width="50%"/> -->
-  
-  <div>
-  ![](img/dephimatica.png){width="50%" fig-align="center"}
-</div>
-  
-  
-  
-## EVASTUR - Dashboard
-  
-  ![](img/evastur.png){width="70%" fig-align="center"}
-
-
-::: {style="text-align:center"}
-🖥️ Live demo 🤞🏻
-:::
-  
-# Indicadores de pobreza energética en Brasil
-  
-## EPE Brasil
-  
-  -   Weaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)
-
--   Proyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)
-
--   ETL, Modelo de datos, visualización
-
--   Indicadores de pobreza energética (UCM)
-
--   Presentado en reunión del G20
-
-
-
-
-## OBEPE
-
-![](img/obepe.png){width="70%" fig-align="center"}
-
-[Acknowledgements:]{.ack} 
-![](img/logo_idb.png){height="50"}
-![](img/logo_epe_colors.jpg){height="50"} 
-![](img/logo_mme.png){height="50"}
-
-::: {style="text-align:center"}
-🖥️ Live demo 🤞🏻
-:::
-  
-# Deporte y ciberseguridad
-  
-## Analítica deportiva
-  
-  ![](img/pace.png)
-
-## Proyectos de investigación: DICYME
-
-
-* Dynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)
-
-
-* Proyecto de colaboración público-privada con DeNexus TECH SL.
-
-* Dashboard (no publicado aún)
-
-* Conexión con MongoDB
-
-* App relacionada: [CRAS](http://gondor.etsii.urjc.es:3804/)
-
-## Aplicación shiny CRAS
-
-* Análisis de riesgos
-
-* Primer paso: se simulan los eventos en n años
-
-* Segundo paso: se simula el gasto de cada evento
-
-## Resultados
-
-![](img/3_results_density.png)
-
-## Smart Cities
-  
-  -   Casos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid
-
--   Aplicaciones coherentes paso a paso para los casos de uso (cargar datos -   visualización - modelización - obtención de resultados)
-
--   Algunos casos con [Shiny]{.red}, otros con Python o Power BI
-
--   Ejemplo: <http://www.citizenlabhub.es/cu/55>
-
-# Apps relacionadas con control de calidad
-
-## Síagro - Animal production SPC
-
-::: columns
-::: {.column width="40%"}
--   [CRO clinical and nutritional trials](http://www.testsandtrials.com)
--   Shiny app for their customers as a value added service
--   Important \[**productivity improvements**\]
--   Simulation and parameterised reports
-:::
-  
-::: {.column width="60%"}
-![](img/testsapp.png)
-
-<img src="img/tests.png" style="width:50%;margin-left:auto;margin-right:auto;display:block;"/>
-  
-::: small
-<https://www.siagro.es> \| 🖥️ Live demo 🤞🏻
-:::
-:::
-:::
-  
-
-
-## placido: app para muestreo de aceptación
-
-* Resultado de un TFG
-
-* Disponible en: [https://dleo.shinyapps.io/placidoproject/](https://dleo.shinyapps.io/placidoproject/)
-
-* Control de versiones con git y GitHub: [https://github.com/DavidALeo/PlacidoProject/](https://github.com/DavidALeo/PlacidoProject/)
-
-* Documentación con {pkgdown}: [https://davidaleo.github.io/PlacidoProject/](https://davidaleo.github.io/PlacidoProject/)
-
-
-Slides: [emilio.lcano.com/p/seio2023](http://emilio.lcano.com/p/seio2023/)
-  
-  
-
-
-## Simulación de proceso
-
-* Simula la producción de lotes
-
-* Se extraen muestras
-
-* SPC + muestreo de aceptación
-
-* App disponible en: [https://lcano.shinyapps.io/demo-shiny-quality/](https://lcano.shinyapps.io/demo-shiny-quality/)
-
-
-  
-# Aplicación shiny para SPC paso a paso
-  
-## Caso de uso
-  
-* Gráficos de control de la media, el rango y la desviación típica
-
-* Análisis de capacidad
-
-* Paquete qcc
-
-* Datos de ejemplo del paquete
-
-. . .
-
-Se extiende fácilmente para otros datos y paquetes
-
-## Configuración inicial
-
-1. Crear un proyecto en RStudio
-
-2. Instalar paquetes shiny, bslib, qcc
-
-3. Crear script vacío
-
-4. Insertar estructura ui + server (por ejemplo con el _snippet_) 
-
-5. Ir añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)
-
-## Estructura básica app shiny
+## Ejemplo con Rhino
 
 ```{r}
 #| eval: false
 #| echo: true
-library(shiny)
-
-ui <- fluidPage(
-  
-)
-
-server <- function(input, output, session) {
-  
-}
-
-shinyApp(ui, server)
+# install.packages("rhino")
+rhino::init("RhinoApplication")
+setwd("./RhinoApplication")
+shiny::runApp()
 ```
 
-## Disposición del _dashboard_ (_layout_)
 
-* [bslib](https://rstudio.github.io/bslib/articles/dashboards/) tiene muchas opciones
+## Paquetes generalistas
+
+* Menos dependientes de un diseño específico
+
+* [shinydashboard](https://rstudio.github.io/shinydashboard/). Obsoleto, pero aún muy utilizado.
+
+* [b4dash](https://github.com/ThinkR-open/b4dash). Basado en Bootstrap 4, más moderno y flexible.
+
+* [bslib](https://rstudio.github.io/bslib/). Permite crear temas personalizados para Shiny, incluyendo dashboards.
+
+* [shinywidgets](https://shinywidgets.com/). Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards.
+
+## App dentro de un paquete propio
+
+* Recomendado para proyectos complejos o a largo plazo
+
+* Facilita la organización del código, la reutilización de componentes y la colaboración
+
+* Permite la integración con otras funciones y datos del paquete
+
+* Detalles: [https://mjfrigaard.github.io/shiny-app-pkgs/](https://mjfrigaard.github.io/shiny-app-pkgs/)
+
+* IMPORTANTE: manejo de paquetes con `NAMESPACE`, no `library()`.
+
+
+
+# Diseño (layouts)
+
+## Estructura general de un dashboard
+  
+* Primero se define el tipo de página
+
+* Dependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)
+
+* Se puede añadir pie de página
+
+* Panel principal: pensar en filas y columnas (_bootstrap grid system_, 12 columnas)
+
+* Organización de panel principal y _sidebar_ con pestañas.
+
+* Incluir elementos en _cards_ o _boxes_.
+
+
+## Diseños de página
+
+::: {.panel-tabset}
+### Vanilla shiny 
+
+* `fluidPage()`: diseño fluido, se adapta al tamaño de la ventana
+* `fixedPage()`: diseño fijo, no se adapta al tamaño de la ventana
+* `navbarPage()`: diseño con barra de navegación superior
+* `sidebarPage()`: diseño con barra lateral izquierda
+* `sidebarLayout()`: diseño con barra lateral izquierda y panel principal
+
+### {bslib}
+
+* `page_navbar()`: diseño con barra de navegación superior
+* `page_sidebar()`: diseño con barra lateral izquierda
+* `page_fluid()`: diseño fluido, se adapta al tamaño de la ventana  
+* `page_fixed()`: diseño fijo, no se adapta al tamaño de la ventana
+
+:::
+
+
+## Ejemplo con `bslib`
 
 ```{r}
 #| eval: false
@@ -511,262 +104,508 @@ library(shiny)
 library(bslib)
 
 ui <- page_navbar(
-  title = "Control Estadístico de procesos ACME",
+  title = "Análisis resultados FIFA",
   sidebar = sidebar(title = "Selección"),
-  nav_panel(title = "Gráfico de Control"),
-  nav_panel(title = "Análisis de la capacidad del proceso")
+  nav_panel(title = "Resultados"),
+  nav_panel(title = "Goleadores")
 )
 
-server <- function(input, output, session) {
-  
-}
+server <- function(input, output, session) {}
 
 shinyApp(ui, server)
 ```
 
-## Añadiendo _inputs_ y _outputs_ al _ui_
+
+## Sidebars
+
+* El sidebar es un contenedor en sí mismo, se puede incluir cualquier elemento.
+
+* Principales opciones: ancho, posición, abierto, , título.
+
+* Barras adicionales con `layout_sidebar()`
+
 
 ```{r}
 #| eval: false
 #| echo: true
-#| code-line-numbers: "9-17,20-21,23"
 library(shiny)
 library(bslib)
-library(qcc)
 
 ui <- page_navbar(
-  title = "Control Estadístico de procesos ACME",
-  sidebar = sidebar(
-    title = "Selección",
-    selectInput("tipo", "Tipo de gráfico", 
-                c("xbar", "R", "S" )),
-    numericInput("fase1", "Fase 1 hasta muestra", value = 25),
-    sliderInput("limites", "Límites de especificación",
-                min = 73.90, max = 74.15,
-                value = c(73.95, 74.05), 
-                step = 0.01),
-    selectInput("datos", "Datos (fake)", 
-                data(package = "qcc")$results[,3])
+  title = "Análisis resultados FIFA",
+  p("Contenido principal"),
+  layout_sidebar(
+    sidebar = sidebar(title = "Selección"),
+    layout_sidebar(
+      sidebar = sidebar(title = "Filtros"),
+      position = "right",
+      open = FALSE
+    )
   ),
-  nav_panel(title = "Gráfico de Control",
-            plotOutput("grafico_control"),
-            verbatimTextOutput("salida_control")),
-  nav_panel(title = "Análisis de la capacidad del proceso",
-            plotOutput("grafico_capacidad"))
+  nav_panel(title = "Resultados"),
+  nav_panel(title = "Goleadores")
+)
+
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)
+```
+
+
+## Pestañas (tabs)
+
+* Permiten organizar el contenido en secciones dentro de la misma página
+
+* Estructura: `navset_*()` para el contenedor de pestañas, `nav_panel()` para cada pestaña
+
+* `pill`s: estilo de pestañas con bordes redondeados
+
+* `card`s: estilo de pestañas con fondo y bordes, similar a las tarjetas
+
+* `tab`'s: estilo de pestañas clásico, sin bordes ni fondo
+
+* `list`'s: pestañas en vertical
+
+## Cards
+
+* Contenedores con estilo para agrupar elementos relacionados
+
+* Personalizables con títulos, colores, iconos, etc.
+
+* Ancho completo o dividido en filas y columnas
+
+## Ejemplo con {bslib}
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)
+library(bslib)
+
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(title = "Selección"),
+  nav_panel(
+    title = "Resultados",
+    layout_columns(
+      col_widths = c(2, 10),
+      card(
+        title = "Resultados por selección",
+        p("Contenido de la tarjeta")
+      ),
+      card(
+        title = "Resultados por torneo",
+        p("Contenido de la tarjeta")
+      )
+    )
+  ),
+  nav_panel(
+    title = "Goleadores",
+    navset_pill(
+      nav_panel(
+        title = "Goleadores por selección",
+        p("Contenido de la pestaña 1")
+      ),
+      nav_panel(title = "Goleadores por torneo", p("Contenido de la pestaña 2"))
+    )
+  )
+)
+
+server <- function(input, output, session) {}
+
+shinyApp(ui, server)
+```
+
+## Componentes - inputs
+
+* **Cajas de texto**: numéricas, texto, texto multilina, fecha, contraseña
+
+* **Acciones**: botón, botón de tarea, link, descarga, upload, submit
+
+* **Selección**: checkbox, checkbox group, select, slider, rangos
+
+* Selectize vs select clásico: más opciones
+
+* **shinywidgets**: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.
+
+* **Paneles condicionales**: según selecciones en el UI se muestran o no
+
+[shiny components](https://shiny.posit.co/r/components/) | [shinywidgets](https://shinywidgets.com/) 
+
+## Componentes - outputs
+
+* **Textos**: texto, texto HTML, verbatim text
+* **Tablas**: tabla renderizada, tabla interactiva (DT, reactable, gt)
+* **Gráficos**: gráficos estáticos (ggplot2, base), 
+* **Gráficos interactivos**: plotly, echarts4r, highcharter, ggiraph, etc.
+* **Mapas**: leaflet, mapview, tmap, etc.
+* **Imágenes**
+* **Diagramas**: diagrammeR, mermaid, etc.
++ **ValueBox**: cajas de valor para mostrar métricas clave de forma destacada
+* **UI**: controles que se generan en el server (porque dependen de inputs o datos)
+
+
+## Ejemplo: paneles condicionales
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)
+library(bslib)
+library(reactable)
+library(dplyr)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    checkboxInput("chk_partidos", "Mostrar número partidos", value = FALSE),
+  ),
+  nav_panel(
+    title = "Partidos",
+    reactableOutput("tabla_partidos"),
+    conditionalPanel(
+      condition = "input.chk_partidos == true",
+      verbatimTextOutput("num_partidos")
+    )
+  ),
+  nav_panel(title = "Goleadores")
 )
 
 server <- function(input, output, session) {
-  
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+
+  output$num_partidos <- renderPrint({
+    num <- resultados |>
+      filter(home_team == input$sel_pais) |>
+      nrow()
+    paste("Número de partidos:", num)
+  })
 }
 
 shinyApp(ui, server)
 ```
 
 
-## Añadiendo objetos reactivos
+
+
+## Ejemplo: UI dinámica
 
 ```{r}
 #| eval: false
 #| echo: true
-#| code-line-numbers: "25-32"
 library(shiny)
 library(bslib)
-library(qcc)
-
+library(reactable)
+library(dplyr)
+resultados <- read.csv("data/results.csv")
+goleadores <- read.csv("data/goalscorers.csv")
 ui <- page_navbar(
-  title = "Control Estadístico de procesos ACME",
+  selected = "Goleadores",
+  title = "Análisis resultados FIFA",
   sidebar = sidebar(
     title = "Selección",
-    selectInput("tipo", "Tipo de gráfico", 
-                c("xbar", "R", "S" )),
-    numericInput("fase1", "Fase 1 hasta muestra", value = 25),
-    sliderInput("limites", "Límites de especificación",
-                min = 73.90, max = 74.15,
-                value = c(73.95, 74.05), 
-                step = 0.01),
-    selectInput("datos", "Datos", data(package = "qcc")$results[,3])),
-  nav_panel(title = "Gráfico de Control",
-            plotOutput("grafico_control"),
-            verbatimTextOutput("salida_control")),
-  nav_panel(title = "Análisis de la capacidad del proceso",
-            plotOutput("grafico_capacidad")
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    uiOutput("ui_jugadores")
+  ),
+  nav_panel(
+    title = "Partidos"
+  ),
+  nav_panel(title = "Goleadores", reactableOutput("tabla_jugadores"))
+)
+
+server <- function(input, output, session) {
+  output$ui_jugadores <- renderUI({
+    jugadores <- goleadores |>
+      filter(home_team == input$sel_pais) |>
+      pull(scorer) |>
+      unique()
+    selectizeInput("sel_jugador", "Selecciona un jugador:", choices = jugadores)
+  })
+  output$tabla_jugadores <- renderReactable({
+    goleadores |>
+      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |>
+      reactable()
+  })
+}
+
+shinyApp(ui, server)
+```
+
+# Interacción con el usuario
+
+## Interacción con el usuario: mensajes
+
+* `showNotification()`: muestra un mensaje temporal en la parte superior de la app, con opciones de tipo (info, success, warning, error), duración, etc.
+
+* `showModal()`: muestra un cuadro de diálogo modal con contenido personalizado, como texto, imágenes, inputs, etc.
+
+* `showAlert()`: muestra un mensaje de alerta con opciones de tipo, título, texto, etc.
+
+* Con shinywidgets: via sweetalert
+
+## Ejemplo botones y mensajes (shiny vanilla)
+
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)
+library(bslib)
+library(dplyr)
+resultados <- read.csv("data/results.csv")
+ui <- page_sidebar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    )
+  ),
+  actionButton("btn_mensaje", "Mostrar mensaje"),
+  actionLink("lnk_mensaje", "Mostrar mensaje con link")
+)
+
+server <- function(input, output, session) {
+  observeEvent(input$btn_mensaje, {
+    showNotification(
+      paste("Has seleccionado:", input$sel_pais),
+      type = "message"
+    )
+  })
+  observeEvent(input$lnk_mensaje, {
+    showModal(
+      modalDialog(
+        title = "Mensaje",
+        paste("Has seleccionado:", input$sel_pais),
+        footer = tagList(
+          modalButton("Cerrar"),
+          actionButton("btn_mas_info", "Más info")
+        )
+      )
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Ejemplo shinyWidgets - sweetalert
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)
+library(bslib)
+library(dplyr)
+library(shinyWidgets)
+resultados <- read.csv("data/results.csv")
+ui <- page_sidebar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    )
+  ),
+  actionButton("btn_mensaje", "Mostrar mensaje sweet"),
+)
+
+server <- function(input, output, session) {
+  observeEvent(input$btn_mensaje, {
+    show_alert(
+      title = "Éxito !!",
+      text = "Todo en orden",
+      type = "success"
+    )
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Validación
+
+* `validate()` y `need()`: permiten validar condiciones en el server y mostrar mensajes de error personalizados en lugar de errores genéricos.
+
+* `req()`: requiere que un input o valor esté presente y no sea NULL o vacío, de lo contrario detiene la ejecución. Lo veremos en la siguiente sesión sobre reactividad.
+
+* [{shinyvalidate}](https://rstudio.github.io/shinyvalidate/): ofrece un mayor control sobre la validación, con reglas predefinidas, mensajes personalizados, validación en tiempo real, etc.
+
+## Ejemplo validación
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)
+library(bslib)
+library(reactable)
+library(dplyr)
+library(lubridate)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    numericInput("year", "Selecciona un año:", value = 2022, min = 1956, max = 2025)
+  ),
+  nav_panel(
+    title = "Partidos",
+    reactableOutput("tabla_partidos"),
+    
+  ),
+  nav_panel(title = "Goles",
+  plotOutput("graf_goles")
   )
 )
 
 server <- function(input, output, session) {
-  gc <- reactive({
-    req(input$tipo, input$fase1)
-    data("pistonrings")
-    diameter <- qcc.groups(pistonrings$diameter, pistonrings$sample)
-    qcc(diameter[1:as.numeric(input$fase1),], 
-        type = input$tipo, plot = FALSE)
-  }) 
-}
-
-shinyApp(ui, server)
-```
-
-
-
-## Renderizando _outputs_
-
-```{r}
-#| eval: false
-#| echo: true
-#| code-line-numbers: "34-43"
-library(shiny)
-library(bslib)
-library(qcc)
-
-ui <- page_navbar(
-  title = "Control Estadístico de procesos ACME",
-  sidebar = sidebar(
-    title = "Selección",
-    selectInput("tipo", "Tipo de gráfico", c("xbar", "R", "S" )),
-    numericInput("fase1", "Fase 1 hasta muestra", value = 25),
-    sliderInput("limites", "Límites de especificación",
-                min = 73.90, max = 74.15,
-                value = c(73.95, 74.05), 
-                step = 0.01),
-    selectInput("datos", "Datos", data(package = "qcc")$results[,3])),
-  
-  nav_panel(title = "Gráfico de Control",
-            card(plotOutput("grafico_control"),
-                 verbatimTextOutput("salida_control"),
-                 fill = FALSE)),
-  nav_panel(title = "Análisis de la capacidad del proceso",
-            plotOutput("grafico_capacidad"))
-)
-
-server <- function(input, output, session) {
-  gc <- reactive({
-    req(input$fase1)
-    data("pistonrings")
-    diameter <- qcc.groups(pistonrings$diameter, pistonrings$sample)
-    qcc(diameter[1:as.numeric(input$fase1),], 
-        type = input$tipo, plot = FALSE)
-  }) 
-  
-  output$grafico_control <- renderPlot({
-    plot(gc())
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
   })
-  output$salida_control <- renderText({
-    paste(capture.output(summary(gc())), collapse = "\n")
-  })
-  output$grafico_capacidad <- renderPlot({
-    req(input$tipo == "xbar")
-    process.capability(gc(), input$limites)
+
+  output$graf_goles <- renderPlot({
+    validate(
+      need(input$year > 2000, "Solo se muestran datos a partir del año 2000")
+    )
+datos <- resultados |>
+      filter(home_team == input$sel_pais, year(date) == input$year) |>
+      group_by(tournament) |>
+      summarise(diferencia = sum(home_score - away_score))
+
+    barplot(datos$diferencia, names.arg = datos$tournament, col = "steelblue", main = "Diferencia de goles por torneo", ylab = "Diferencia de goles")
   })
 }
 
 shinyApp(ui, server)
 ```
 
+# Temas y estilos
 
-## Dale color - ver cómo queda un tema
+## Temas y personalización
+
+* Elegir un tema completo con `bs_theme()`
+
+* Se pueden previsualizar todos con `bs_themer()` y ver cómo queda nuestro dashboard
+
+* Se pueden cambiar componentes específicos en `bs_theme()`, o bien personalizar `  bs_add_variables()`
+
+
+## Ejemplo previsualización de temas
 
 ```{r}
 #| eval: false
 #| echo: true
-#| code-line-numbers: "26"
 library(shiny)
 library(bslib)
-library(qcc)
-
+library(reactable)
+library(dplyr)
+resultados <- read.csv("data/results.csv")
+goleadores <- read.csv("data/goalscorers.csv")
 ui <- page_navbar(
-  title = "Control Estadístico de procesos ACME",
+  selected = "Goleadores",
+  title = "Análisis resultados FIFA",
   sidebar = sidebar(
     title = "Selección",
-    selectInput("tipo", "Tipo de gráfico", c("xbar", "R", "S" )),
-    numericInput("fase1", "Fase 1 hasta muestra", value = 25),
-    sliderInput("limites", "Límites de especificación",
-                min = 73.90, max = 74.15,
-                value = c(73.95, 74.05), 
-                step = 0.01),
-    selectInput("datos", "Datos", data(package = "qcc")$results[,3])),
-  
-  nav_panel(title = "Gráfico de Control",
-            card(plotOutput("grafico_control"),
-                 verbatimTextOutput("salida_control"),
-                 fill = FALSE)),
-  nav_panel(title = "Análisis de la capacidad del proceso",
-            plotOutput("grafico_capacidad"))
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    uiOutput("ui_jugadores")
+  ),
+  nav_panel(
+    title = "Partidos"
+  ),
+  nav_panel(title = "Goleadores", reactableOutput("tabla_jugadores"))
 )
 
 server <- function(input, output, session) {
   bs_themer()
-  gc <- reactive({
-    req(input$fase1)
-    data("pistonrings")
-    diameter <- qcc.groups(pistonrings$diameter, pistonrings$sample)
-    qcc(diameter[1:as.numeric(input$fase1),], 
-        type = input$tipo, plot = FALSE)
-  }) 
-  
-  output$grafico_control <- renderPlot({
-    plot(gc())
+  output$ui_jugadores <- renderUI({
+    jugadores <- goleadores |>
+      filter(home_team == input$sel_pais) |>
+      pull(scorer) |>
+      unique()
+    selectizeInput("sel_jugador", "Selecciona un jugador:", choices = jugadores)
   })
-  output$salida_control <- renderText({
-    paste(capture.output(summary(gc())), collapse = "\n")
-  })
-  output$grafico_capacidad <- renderPlot({
-    req(input$tipo == "xbar")
-    process.capability(gc(), input$limites)
+  output$tabla_jugadores <- renderReactable({
+    goleadores |>
+      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |>
+      reactable()
   })
 }
 
 shinyApp(ui, server)
 ```
 
-## Dale color - configura el tema
+
+## Ejemplo establecer tema
 
 ```{r}
 #| eval: false
 #| echo: true
-#| code-line-numbers: "6"
 library(shiny)
 library(bslib)
-library(qcc)
-
+library(reactable)
+library(dplyr)
+resultados <- read.csv("data/results.csv")
+goleadores <- read.csv("data/goalscorers.csv")
 ui <- page_navbar(
   theme = bs_theme(bootswatch = "minty"),
-  title = "Control Estadístico de procesos ACME",
+  selected = "Goleadores",
+  title = "Análisis resultados FIFA",
   sidebar = sidebar(
     title = "Selección",
-    selectInput("tipo", "Tipo de gráfico", c("xbar", "R", "S" )),
-    numericInput("fase1", "Fase 1 hasta muestra", value = 25),
-    sliderInput("limites", "Límites de especificación",
-                min = 73.90, max = 74.15,
-                value = c(73.95, 74.05), 
-                step = 0.01),
-    selectInput("datos", "Datos", data(package = "qcc")$results[,3])),
-  
-  nav_panel(title = "Gráfico de Control",
-            card(plotOutput("grafico_control"),
-                 verbatimTextOutput("salida_control"),
-                 fill = FALSE)),
-  nav_panel(title = "Análisis de la capacidad del proceso",
-            plotOutput("grafico_capacidad"))
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    uiOutput("ui_jugadores")
+  ),
+  nav_panel(
+    title = "Partidos"
+  ),
+  nav_panel(title = "Goleadores", reactableOutput("tabla_jugadores"))
 )
 
 server <- function(input, output, session) {
-  gc <- reactive({
-    req(input$fase1)
-    data("pistonrings")
-    diameter <- qcc.groups(pistonrings$diameter, pistonrings$sample)
-    qcc(diameter[1:as.numeric(input$fase1),], 
-        type = input$tipo, plot = FALSE)
-  }) 
-  
-  output$grafico_control <- renderPlot({
-    plot(gc())
+  output$ui_jugadores <- renderUI({
+    jugadores <- goleadores |>
+      filter(home_team == input$sel_pais) |>
+      pull(scorer) |>
+      unique()
+    selectizeInput("sel_jugador", "Selecciona un jugador:", choices = jugadores)
   })
-  output$salida_control <- renderText({
-    paste(capture.output(summary(gc())), collapse = "\n")
-  })
-  output$grafico_capacidad <- renderPlot({
-    req(input$tipo == "xbar")
-    process.capability(gc(), input$limites)
+  output$tabla_jugadores <- renderReactable({
+    goleadores |>
+      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |>
+      reactable()
   })
 }
 
@@ -775,24 +614,6 @@ shinyApp(ui, server)
 
 
 
-
-## Implentación real
-
-* Lectura de datos del proceso en tiempo real
-
-* Monitorizar proceso en fase II
-
-* Añadir análisis exploratorio
-
-* Añadir modelos
-
-* Mejorar interfaz
-
-* Complejidad de la app
-
-# Ejercicio
-
-Modifica el código de la aplicación para hacer el análisis en fase 2 tomando el resto de datos como en el ejemplo de la ayuda de la función `qcc()`
 
 # Preguntas? 
 

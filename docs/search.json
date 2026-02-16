@@ -268,42 +268,42 @@
   {
     "objectID": "shiny_layouts.html#conjuntos-de-paquetes",
     "href": "shiny_layouts.html#conjuntos-de-paquetes",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "Conjuntos de paquetes",
     "text": "Conjuntos de paquetes\n\nProporcionan una estructura y un diseño predefinido\nAceleran el desarrollo\nAutomatizan tareas comunes\nPersonalización limitada\nEjemplos: golemverse, rhinoverse, leprechaun"
   },
   {
     "objectID": "shiny_layouts.html#ejemplo-con-rhino",
     "href": "shiny_layouts.html#ejemplo-con-rhino",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "Ejemplo con Rhino",
-    "text": "Ejemplo con Rhino"
+    "text": "Ejemplo con Rhino\n\n# install.packages(\"rhino\")\nrhino::init(\"RhinoApplication\")\nsetwd(\"./RhinoApplication\")\nshiny::runApp()"
   },
   {
     "objectID": "shiny_layouts.html#paquetes-generalistas",
     "href": "shiny_layouts.html#paquetes-generalistas",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "Paquetes generalistas",
     "text": "Paquetes generalistas\n\nMenos dependientes de un diseño específico\nshinydashboard. Obsoleto, pero aún muy utilizado.\nb4dash. Basado en Bootstrap 4, más moderno y flexible.\nbslib. Permite crear temas personalizados para Shiny, incluyendo dashboards.\nshinywidgets. Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards."
   },
   {
     "objectID": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
     "href": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "App dentro de un paquete propio",
-    "text": "App dentro de un paquete propio\n\nRecomendado para proyectos complejos o a largo plazo\nFacilita la organización del código, la reutilización de componentes y la colaboración\nPermite la integración con otras funciones y datos del paquete\nRecurso: https://mjfrigaard.github.io/shiny-app-pkgs/\nIMPORTANTE: manejo de paquetes con NAMESPACE, no library()."
+    "text": "App dentro de un paquete propio\n\nRecomendado para proyectos complejos o a largo plazo\nFacilita la organización del código, la reutilización de componentes y la colaboración\nPermite la integración con otras funciones y datos del paquete\nDetalles: https://mjfrigaard.github.io/shiny-app-pkgs/\nIMPORTANTE: manejo de paquetes con NAMESPACE, no library()."
   },
   {
     "objectID": "shiny_layouts.html#estructura-general-de-un-dashboard",
     "href": "shiny_layouts.html#estructura-general-de-un-dashboard",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "Estructura general de un dashboard",
     "text": "Estructura general de un dashboard\n\nPrimero se define el tipo de página\nDependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)\nSe puede añadir pie de página\nPanel principal: pensar en filas y columnas (bootstrap grid system, 12 columnas)\nOrganización de panel principal y sidebar con pestañas.\nIncluir elementos en cards o boxes."
   },
   {
     "objectID": "shiny_layouts.html#diseños-de-página",
     "href": "shiny_layouts.html#diseños-de-página",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "title": "Diseño e interacción de usuario con Shiny",
     "section": "Diseños de página",
     "text": "Diseños de página\n\nVanilla shiny{bslib}\n\n\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n\n\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
   },
@@ -313,5 +313,145 @@
     "title": "Diseño e interacción de usuario dashboards con Shiny",
     "section": "Pestañas",
     "text": "Pestañas\nVanilla shiny\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n{bslib}\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-bslib",
+    "href": "shiny_layouts.html#ejemplo-con-bslib",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo con bslib",
+    "text": "Ejemplo con bslib\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#temas-y-personalización",
+    "href": "shiny_layouts.html#temas-y-personalización",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Temas y personalización",
+    "text": "Temas y personalización\n\nElegir un tema completo con bs_theme()\nSe pueden previsualizar todos con bs_themer() y ver cómo queda nuestro dashboard\nSe pueden cambiar componentes específicos en bs_theme(), o bien personalizar bs_add_variables()"
+  },
+  {
+    "objectID": "shiny_layouts.html#sidebars",
+    "href": "shiny_layouts.html#sidebars",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Sidebars",
+    "text": "Sidebars\n\nEl sidebar es un contenedor en sí mismo, se puede incluir cualquier elemento.\nPrincipales opciones: ancho, posición, abierto, , título.\nBarras adicionales con layout_sidebar()\n\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  p(\"Contenido principal\"),\n  layout_sidebar(\n    sidebar = sidebar(title = \"Selección\"),\n    layout_sidebar(\n      sidebar = sidebar(title = \"Filtros\"),\n      position = \"right\",\n      open = FALSE\n    )\n  ),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#pestañas-tabs",
+    "href": "shiny_layouts.html#pestañas-tabs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Pestañas (tabs)",
+    "text": "Pestañas (tabs)\n\nPermiten organizar el contenido en secciones dentro de la misma página\nEstructura: navset_*() para el contenedor de pestañas, nav_panel() para cada pestaña\npills: estilo de pestañas con bordes redondeados\ncards: estilo de pestañas con fondo y bordes, similar a las tarjetas\ntab’s: estilo de pestañas clásico, sin bordes ni fondo\nlist’s: pestañas en vertical"
+  },
+  {
+    "objectID": "shiny_layouts.html#cards",
+    "href": "shiny_layouts.html#cards",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Cards",
+    "text": "Cards\n\nContenedores con estilo para agrupar elementos relacionados\nPersonalizables con títulos, colores, iconos, etc.\nAncho completo o dividido en filas y columnas"
+  },
+  {
+    "objectID": "shiny_layouts.html#componentes",
+    "href": "shiny_layouts.html#componentes",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Componentes",
+    "text": "Componentes"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-bslib-1",
+    "href": "shiny_layouts.html#ejemplo-con-bslib-1",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo con {bslib}",
+    "text": "Ejemplo con {bslib}\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(\n    title = \"Resultados\",\n    layout_columns(\n      col_widths = c(2, 10),\n      card(\n        title = \"Resultados por selección\",\n        p(\"Contenido de la tarjeta\")\n      ),\n      card(\n        title = \"Resultados por torneo\",\n        p(\"Contenido de la tarjeta\")\n      )\n    )\n  ),\n  nav_panel(\n    title = \"Goleadores\",\n    navset_pill(\n      nav_panel(\n        title = \"Goleadores por selección\",\n        p(\"Contenido de la pestaña 1\")\n      ),\n      nav_panel(title = \"Goleadores por torneo\", p(\"Contenido de la pestaña 2\"))\n    )\n  )\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#componentes---inputs",
+    "href": "shiny_layouts.html#componentes---inputs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Componentes - inputs",
+    "text": "Componentes - inputs\n\nCajas de texto: numéricas, texto, texto multilina, fecha, contraseña\nAcciones: botón, botón de tarea, link, descarga, upload, submit\nSelección: checkbox, checkbox group, select, slider, rangos\nSelectize vs select clásico: más opciones\nshinywidgets: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.\nPaneles condicionales: según selecciones en el UI se muestran o no\n\nshiny components | shinywidgets"
+  },
+  {
+    "objectID": "shiny_layouts.html#componentes---outputs",
+    "href": "shiny_layouts.html#componentes---outputs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Componentes - outputs",
+    "text": "Componentes - outputs\n\nTextos: texto, texto HTML, verbatim text\nTablas: tabla renderizada, tabla interactiva (DT, reactable, gt)\nGráficos: gráficos estáticos (ggplot2, base),\nGráficos interactivos: plotly, echarts4r, highcharter, ggiraph, etc.\nMapas: leaflet, mapview, tmap, etc.\nImágenes\nDiagramas: diagrammeR, mermaid, etc.\nValueBox: cajas de valor para mostrar métricas clave de forma destacada\nUI: controles que se generan en el server (porque dependen de inputs o datos)"
+  },
+  {
+    "objectID": "shiny_reactive.html#carga-de-datos",
+    "href": "shiny_reactive.html#carga-de-datos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Carga de datos",
+    "text": "Carga de datos\n\nPermite subir ficheros desde el ordenador del usuario\nfileInput(): input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.\nEn el server, se asigna a objetos que se pueden usar"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-paneles-condicionales",
+    "href": "shiny_layouts.html#ejemplo-paneles-condicionales",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo: paneles condicionales",
+    "text": "Ejemplo: paneles condicionales\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    checkboxInput(\"chk_partidos\", \"Mostrar número partidos\", value = FALSE),\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    conditionalPanel(\n      condition = \"input.chk_partidos == true\",\n      verbatimTextOutput(\"num_partidos\")\n    )\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    num &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n    paste(\"Número de partidos:\", num)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-ui-dinámica",
+    "href": "shiny_layouts.html#ejemplo-ui-dinámica",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo: UI dinámica",
+    "text": "Ejemplo: UI dinámica\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
+    "href": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Interacción con el usuario: mensajes",
+    "text": "Interacción con el usuario: mensajes\n\nshowNotification(): muestra un mensaje temporal en la parte superior de la app, con opciones de tipo (info, success, warning, error), duración, etc.\nshowModal(): muestra un cuadro de diálogo modal con contenido personalizado, como texto, imágenes, inputs, etc.\nshowAlert(): muestra un mensaje de alerta con opciones de tipo, título, texto, etc.\nCon shinywidgets: via sweetalert"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
+    "href": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo botones y mensajes (shiny vanilla)",
+    "text": "Ejemplo botones y mensajes (shiny vanilla)\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje\"),\n  actionLink(\"lnk_mensaje\", \"Mostrar mensaje con link\")\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    showNotification(\n      paste(\"Has seleccionado:\", input$sel_pais),\n      type = \"message\"\n    )\n  })\n  observeEvent(input$lnk_mensaje, {\n    showModal(\n      modalDialog(\n        title = \"Mensaje\",\n        paste(\"Has seleccionado:\", input$sel_pais),\n        footer = tagList(\n          modalButton(\"Cerrar\"),\n          actionButton(\"btn_mas_info\", \"Más info\")\n        )\n      )\n    )\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
+    "href": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo shinyWidgets - sweetalert",
+    "text": "Ejemplo shinyWidgets - sweetalert\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nlibrary(shinyWidgets)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje sweet\"),\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    show_alert(\n      title = \"Éxito !!\",\n      text = \"Todo en orden\",\n      type = \"success\"\n    )\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#validación",
+    "href": "shiny_layouts.html#validación",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Validación",
+    "text": "Validación\n\nvalidate() y need(): permiten validar condiciones en el server y mostrar mensajes de error personalizados en lugar de errores genéricos.\nreq(): requiere que un input o valor esté presente y no sea NULL o vacío, de lo contrario detiene la ejecución. Lo veremos en la siguiente sesión sobre reactividad.\n{shinyvalidate}: ofrece un mayor control sobre la validación, con reglas predefinidas, mensajes personalizados, validación en tiempo real, etc."
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-validación",
+    "href": "shiny_layouts.html#ejemplo-validación",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo validación",
+    "text": "Ejemplo validación\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    numericInput(\"year\", \"Selecciona un año:\", value = 2022, min = 1956, max = 2025)\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    \n  ),\n  nav_panel(title = \"Goles\",\n  plotOutput(\"graf_goles\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$graf_goles &lt;- renderPlot({\n    validate(\n      need(input$year &gt; 2000, \"Solo se muestran datos a partir del año 2000\")\n    )\ndatos &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, year(date) == input$year) |&gt;\n      group_by(tournament) |&gt;\n      summarise(diferencia = sum(home_score - away_score))\n\n    barplot(datos$diferencia, names.arg = datos$tournament, col = \"steelblue\", main = \"Diferencia de goles por torneo\", ylab = \"Diferencia de goles\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-previsualización-de-temas",
+    "href": "shiny_layouts.html#ejemplo-previsualización-de-temas",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo previsualización de temas",
+    "text": "Ejemplo previsualización de temas\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-establecer-tema",
+    "href": "shiny_layouts.html#ejemplo-establecer-tema",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo establecer tema",
+    "text": "Ejemplo establecer tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#contenidos",
+    "href": "shiny_reactive.html#contenidos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "contenidos",
+    "text": "contenidos\n\nobjetos reactivos: reactive(), reactiveValues(), eventReactive(), observeEvent()\nreq()\nficheros reactivos: fileInput() y descarga de ficheros con downloadHandler()\nadvanced plots: network, alluvial, radar, maps, sankey, etc. con ggiraph y plotly"
   }
 ]

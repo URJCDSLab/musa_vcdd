@@ -1,0 +1,42 @@
+---
+title: Objetos reactivos y gráficos interactivos
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
+---
+
+
+## contenidos
+
+* objetos reactivos: `reactive()`, `reactiveValues()`, `eventReactive()`, `observeEvent()`
+* req()
+* ficheros reactivos: `fileInput()` y descarga de ficheros con `downloadHandler()`
+* advanced plots: network, alluvial, radar, maps, sankey, etc. con `ggiraph` y `plotly`
+
+## Carga de datos
+
+* Permite subir ficheros desde el ordenador del usuario
+
+* `fileInput()`: input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.
+
+* En el server, se asigna a objetos que se pueden usar
+
+
+# Preguntas? 
+
+`r fontawesome::fa("x-twitter", fill = "#749dae")` [@emilopezcano](https://x.com/emilopezcano)
+
+
+[http://emilio.lcano.com](https://emilio.lcano.com)
+
+[emilio.lopez@urjc.es]{.red}
+
+Slides: [emilio.lcano.com/p/udc2025](http://emilio.lcano.com/p/udc2025)
+
+\
+
+¡Gracias!
+  
+:::{style="text-align:center"}
+🖥️ Live demo 🤞🏻
+:::
