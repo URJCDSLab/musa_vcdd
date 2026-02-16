@@ -1,0 +1,19 @@
+---
+title: Introducción a la visualización mediante dashboards
+subtitle: Máster Universitario en Análisis de Datos Deportivos, Universidad Rey Juan Carlos
+authors:
+    author: "Emilio López Cano"
+    corresponding: true
+---
+
+## Dashboards
+
+* Sesión 1: [Introducción a la visualización mediante dashboards](intro_shiny.html)
+
+
+  
+  
+
+  
+  
+  
