@@ -617,14 +617,12 @@ shinyApp(ui, server)
 
 # Preguntas? 
 
-`r fontawesome::fa("x-twitter", fill = "#749dae")` [@emilopezcano](https://x.com/emilopezcano)
 
 
 [http://emilio.lcano.com](https://emilio.lcano.com)
 
 [emilio.lopez@urjc.es]{.red}
 
-Slides: [emilio.lcano.com/p/udc2025](http://emilio.lcano.com/p/udc2025)
 
 \
 
