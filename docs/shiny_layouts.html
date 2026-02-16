@@ -10,7 +10,7 @@
   <meta name="generator" content="quarto-1.6.39">
 
   <meta name="author" content="Máster Universitario en Análisis de Datos Deportivos Universidad Rey Juan Carlos">
-  <title>Desarrollo de dashboards con Shiny</title>
+  <title>Diseño e interacción de usuario dashboards con Shiny</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -129,7 +129,7 @@
     <div class="slides">
 
 <section id="title-slide" data-background-image="theme_images/background_fronpage.png" data-background-position="center 70%" data-background-size="33%" class="quarto-title-block center">
-  <h1 class="title">Desarrollo de dashboards con Shiny</h1>
+  <h1 class="title">Diseño e interacción de usuario dashboards con Shiny</h1>
   <p class="subtitle">Visualización y Comunicación de Datos Deportivos</p>
 
 <div class="quarto-title-authors">
@@ -141,15 +141,98 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </div>
 
 </section>
-<section id="dashboards" class="slide level2">
-<h2>Dashboards</h2>
+<section>
+<section id="paquetes-y-metapaquetes-para-dashboards" class="title-slide slide level1 center">
+<h1>Paquetes y metapaquetes para dashboards</h1>
+
+</section>
+<section id="conjuntos-de-paquetes" class="slide level2">
+<h2>Conjuntos de paquetes</h2>
 <ul>
-<li><p>Sesión 1: <a href="intro_shiny.html">Introducción a la visualización mediante dashboards</a></p></li>
-<li><p>Sesión 2: <a href="shiny_layouts.html">Diseño e interacción de usuario dashboards con Shiny</a></p></li>
-<li><p>Sesión 3: <a href="#/">Objetos reactivos y gráficos interactivos</a></p></li>
-<li><p>Sesión 4: <a href="#/">Shiny avanzado</a></p></li>
-<li><p>Sesión 5: <a href="#/">Práctica: desarrollo de un dashboard para datos deportivos</a></p></li>
+<li><p>Proporcionan una estructura y un diseño predefinido</p></li>
+<li><p>Aceleran el desarrollo</p></li>
+<li><p>Automatizan tareas comunes</p></li>
+<li><p>Personalización limitada</p></li>
+<li><p>Ejemplos: <a href="https://golemverse.org">golemverse</a>, <a href="https://www.appsilon.com/rhinoverse">rhinoverse</a>, <a href="https://leprechaun.opifex.org/#/">leprechaun</a></p></li>
 </ul>
+</section>
+<section id="ejemplo-con-rhino" class="slide level2">
+<h2>Ejemplo con Rhino</h2>
+</section>
+<section id="paquetes-generalistas" class="slide level2">
+<h2>Paquetes generalistas</h2>
+<ul>
+<li><p>Menos dependientes de un diseño específico</p></li>
+<li><p><a href="https://rstudio.github.io/shinydashboard/">shinydashboard</a>. Obsoleto, pero aún muy utilizado.</p></li>
+<li><p><a href="https://github.com/ThinkR-open/b4dash">b4dash</a>. Basado en Bootstrap 4, más moderno y flexible.</p></li>
+<li><p><a href="https://rstudio.github.io/bslib/">bslib</a>. Permite crear temas personalizados para Shiny, incluyendo dashboards.</p></li>
+<li><p><a href="https://shinywidgets.com/">shinywidgets</a>. Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards.</p></li>
+</ul>
+</section>
+<section id="app-dentro-de-un-paquete-propio" class="slide level2">
+<h2>App dentro de un paquete propio</h2>
+<ul>
+<li><p>Recomendado para proyectos complejos o a largo plazo</p></li>
+<li><p>Facilita la organización del código, la reutilización de componentes y la colaboración</p></li>
+<li><p>Permite la integración con otras funciones y datos del paquete</p></li>
+<li><p>Recurso: <a href="https://mjfrigaard.github.io/shiny-app-pkgs/">https://mjfrigaard.github.io/shiny-app-pkgs/</a></p></li>
+<li><p>IMPORTANTE: manejo de paquetes con <code>NAMESPACE</code>, no <code>library()</code>.</p></li>
+</ul>
+</section></section>
+<section>
+<section id="diseño-layouts" class="title-slide slide level1 center">
+<h1>Diseño (layouts)</h1>
+
+</section>
+<section id="estructura-general-de-un-dashboard" class="slide level2">
+<h2>Estructura general de un dashboard</h2>
+<ul>
+<li><p>Primero se define el tipo de página</p></li>
+<li><p>Dependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)</p></li>
+<li><p>Se puede añadir pie de página</p></li>
+<li><p>Panel principal: pensar en filas y columnas (<em>bootstrap grid system</em>, 12 columnas)</p></li>
+<li><p>Organización de panel principal y <em>sidebar</em> con pestañas.</p></li>
+<li><p>Incluir elementos en <em>cards</em> o <em>boxes</em>.</p></li>
+</ul>
+</section>
+<section id="diseños-de-página" class="slide level2">
+<h2>Diseños de página</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">Vanilla shiny</a></li><li><a href="#tabset-1-2">{bslib}</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<ul>
+<li><code>fluidPage()</code>: diseño fluido, se adapta al tamaño de la ventana</li>
+<li><code>fixedPage()</code>: diseño fijo, no se adapta al tamaño de la ventana</li>
+<li><code>navbarPage()</code>: diseño con barra de navegación superior</li>
+<li><code>sidebarPage()</code>: diseño con barra lateral izquierda</li>
+<li><code>sidebarLayout()</code>: diseño con barra lateral izquierda y panel principal</li>
+</ul>
+</div>
+<div id="tabset-1-2">
+<ul>
+<li><code>page_navbar()</code>: diseño con barra de navegación superior</li>
+<li><code>page_sidebar()</code>: diseño con barra lateral izquierda</li>
+<li><code>page_fluid()</code>: diseño fluido, se adapta al tamaño de la ventana<br>
+</li>
+<li><code>page_fixed()</code>: diseño fijo, no se adapta al tamaño de la ventana</li>
+</ul>
+</div>
+</div>
+</div>
+</section></section>
+<section id="preguntas" class="title-slide slide level1 center">
+<h1>Preguntas?</h1>
+<p><svg aria-hidden="true" role="img" viewbox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:#749dae;overflow:visible;position:relative;"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"></path></svg> <a href="https://x.com/emilopezcano"><span class="citation" data-cites="emilopezcano">(<span><strong>emilopezcano?</strong></span>)</span></a></p>
+<p><a href="https://emilio.lcano.com">http://emilio.lcano.com</a></p>
+<p><span class="red" style="">emilio.lopez@urjc.es</span></p>
+<p>Slides: <a href="http://emilio.lcano.com/p/udc2025">emilio.lcano.com/p/udc2025</a></p>
+<p><br>
+</p>
+<p>¡Gracias!</p>
+<div style="text-align:center">
+<p>🖥️ Live demo 🤞🏻</p>
+</div>
 
 
 <div class="reveal-header">
@@ -361,6 +444,44 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {

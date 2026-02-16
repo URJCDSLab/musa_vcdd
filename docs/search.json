@@ -261,8 +261,57 @@
   {
     "objectID": "index.html#dashboards",
     "href": "index.html#dashboards",
-    "title": "Introducción a la visualización mediante dashboards",
+    "title": "Desarrollo de dashboards con Shiny",
     "section": "Dashboards",
-    "text": "Dashboards\n\nSesión 1: Introducción a la visualización mediante dashboards"
+    "text": "Dashboards\n\nSesión 1: Introducción a la visualización mediante dashboards\nSesión 2: Diseño e interacción de usuario dashboards con Shiny\nSesión 3: Objetos reactivos y gráficos interactivos\nSesión 4: Shiny avanzado\nSesión 5: Práctica: desarrollo de un dashboard para datos deportivos"
+  },
+  {
+    "objectID": "shiny_layouts.html#conjuntos-de-paquetes",
+    "href": "shiny_layouts.html#conjuntos-de-paquetes",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Conjuntos de paquetes",
+    "text": "Conjuntos de paquetes\n\nProporcionan una estructura y un diseño predefinido\nAceleran el desarrollo\nAutomatizan tareas comunes\nPersonalización limitada\nEjemplos: golemverse, rhinoverse, leprechaun"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-rhino",
+    "href": "shiny_layouts.html#ejemplo-con-rhino",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Ejemplo con Rhino",
+    "text": "Ejemplo con Rhino"
+  },
+  {
+    "objectID": "shiny_layouts.html#paquetes-generalistas",
+    "href": "shiny_layouts.html#paquetes-generalistas",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Paquetes generalistas",
+    "text": "Paquetes generalistas\n\nMenos dependientes de un diseño específico\nshinydashboard. Obsoleto, pero aún muy utilizado.\nb4dash. Basado en Bootstrap 4, más moderno y flexible.\nbslib. Permite crear temas personalizados para Shiny, incluyendo dashboards.\nshinywidgets. Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards."
+  },
+  {
+    "objectID": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
+    "href": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "App dentro de un paquete propio",
+    "text": "App dentro de un paquete propio\n\nRecomendado para proyectos complejos o a largo plazo\nFacilita la organización del código, la reutilización de componentes y la colaboración\nPermite la integración con otras funciones y datos del paquete\nRecurso: https://mjfrigaard.github.io/shiny-app-pkgs/\nIMPORTANTE: manejo de paquetes con NAMESPACE, no library()."
+  },
+  {
+    "objectID": "shiny_layouts.html#estructura-general-de-un-dashboard",
+    "href": "shiny_layouts.html#estructura-general-de-un-dashboard",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Estructura general de un dashboard",
+    "text": "Estructura general de un dashboard\n\nPrimero se define el tipo de página\nDependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)\nSe puede añadir pie de página\nPanel principal: pensar en filas y columnas (bootstrap grid system, 12 columnas)\nOrganización de panel principal y sidebar con pestañas.\nIncluir elementos en cards o boxes."
+  },
+  {
+    "objectID": "shiny_layouts.html#diseños-de-página",
+    "href": "shiny_layouts.html#diseños-de-página",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Diseños de página",
+    "text": "Diseños de página\n\nVanilla shiny{bslib}\n\n\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n\n\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
+  },
+  {
+    "objectID": "shiny_layouts.html#pestañas",
+    "href": "shiny_layouts.html#pestañas",
+    "title": "Diseño e interacción de usuario dashboards con Shiny",
+    "section": "Pestañas",
+    "text": "Pestañas\nVanilla shiny\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n{bslib}\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
   }
 ]

@@ -1,19 +1,19 @@
 ---
-title: Introducción a la visualización mediante dashboards
-subtitle: Máster Universitario en Análisis de Datos Deportivos, Universidad Rey Juan Carlos
-authors:
-    author: "Emilio López Cano"
-    corresponding: true
+title: Desarrollo de dashboards con Shiny
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
 ---
 
 ## Dashboards
 
 * Sesión 1: [Introducción a la visualización mediante dashboards](intro_shiny.html)
 
+* Sesión 2: [Diseño e interacción de usuario dashboards con Shiny](shiny_layouts.html)
 
+* Sesión 3: [Objetos reactivos y gráficos interactivos](#) 
   
-  
+* Sesión 4: [Shiny avanzado](#)
 
-  
-  
+* Sesión 5: [Práctica: desarrollo de un dashboard para datos deportivos](#)
   
