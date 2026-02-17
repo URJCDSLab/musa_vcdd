@@ -233,7 +233,7 @@ shinyApp(ui, server)
 
 ## Componentes - inputs
 
-* **Cajas de texto**: numéricas, texto, texto multilina, fecha, contraseña
+* **Cajas de texto**: numéricas, texto, texto multilínea, fecha, contraseña
 
 * **Acciones**: botón, botón de tarea, link, descarga, upload, submit
 

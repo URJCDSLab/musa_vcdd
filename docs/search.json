@@ -368,7 +368,7 @@
     "href": "shiny_layouts.html#componentes---inputs",
     "title": "Diseño e interacción de usuario con Shiny",
     "section": "Componentes - inputs",
-    "text": "Componentes - inputs\n\nCajas de texto: numéricas, texto, texto multilina, fecha, contraseña\nAcciones: botón, botón de tarea, link, descarga, upload, submit\nSelección: checkbox, checkbox group, select, slider, rangos\nSelectize vs select clásico: más opciones\nshinywidgets: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.\nPaneles condicionales: según selecciones en el UI se muestran o no\n\nshiny components | shinywidgets"
+    "text": "Componentes - inputs\n\nCajas de texto: numéricas, texto, texto multilínea, fecha, contraseña\nAcciones: botón, botón de tarea, link, descarga, upload, submit\nSelección: checkbox, checkbox group, select, slider, rangos\nSelectize vs select clásico: más opciones\nshinywidgets: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.\nPaneles condicionales: según selecciones en el UI se muestran o no\n\nshiny components | shinywidgets"
   },
   {
     "objectID": "shiny_layouts.html#componentes---outputs",
