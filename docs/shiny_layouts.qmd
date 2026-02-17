@@ -166,6 +166,7 @@ shinyApp(ui, server)
 
 * `list`'s: pestañas en vertical
 
+
 ## Cards
 
 * Contenedores con estilo para agrupar elementos relacionados
@@ -173,6 +174,18 @@ shinyApp(ui, server)
 * Personalizables con títulos, colores, iconos, etc.
 
 * Ancho completo o dividido en filas y columnas
+
+## Iconos
+
+* Muchos elementos permiten incluir iconos para mejorar la apariencia y la usabilidad
+
+* Se pueden usar los iconos de Font Awesome, Bootstrap Icons, etc.
+
+* Argumento `icon` en muchos componentes, con función `icon()` o `bs_icon()`
+
+* Buscar iconos: [https://fontawesome.com/](https://fontawesome.com/) | [https://icons.getbootstrap.com/](https://icons.getbootstrap.com/)
+
+
 
 ## Ejemplo con {bslib}
 
@@ -187,6 +200,7 @@ ui <- page_navbar(
   sidebar = sidebar(title = "Selección"),
   nav_panel(
     title = "Resultados",
+    icon = icon("table"),
     layout_columns(
       col_widths = c(2, 10),
       card(
@@ -203,6 +217,7 @@ ui <- page_navbar(
     title = "Goleadores",
     navset_pill(
       nav_panel(
+        icon = icon("futbol"),
         title = "Goleadores por selección",
         p("Contenido de la pestaña 1")
       ),
