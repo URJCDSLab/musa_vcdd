@@ -11,7 +11,7 @@ code-fold: false
 
 * Sesión 2: [Diseño e interacción de usuario dashboards con Shiny](shiny_layouts.html)
 
-* Sesión 3: [Objetos reactivos y gráficos interactivos](#) 
+* Sesión 3: [Objetos reactivos y gráficos interactivos](shiny_reactive.html) 
   
 * Sesión 4: [Shiny avanzado](#)
 

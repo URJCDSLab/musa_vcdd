@@ -460,5 +460,159 @@
     "title": "Diseño e interacción de usuario con Shiny",
     "section": "Iconos",
     "text": "Iconos\n\nMuchos elementos permiten incluir iconos para mejorar la apariencia y la usabilidad\nSe pueden usar los iconos de Font Awesome, Bootstrap Icons, etc.\nArgumento icon en muchos componentes, con función icon() o bs_icon()\nBuscar iconos: https://fontawesome.com/ | https://icons.getbootstrap.com/"
+  },
+  {
+    "objectID": "shiny_reactive.html#reactividad",
+    "href": "shiny_reactive.html#reactividad",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Reactividad",
+    "text": "Reactividad\n\nLo básico: los “outputs” reaccionan ante un cambio en un “input”\nNo es suficiente a medida que aumenta la complejidad\nPor ejemplo, si hay outputs que comparten datos, se puede “delegar” la generación de estos a un objeto reactivo\nObjetos reactivos: reactive(), reactiveValues(), eventReactive(), reactiveVal()\n“Lanzador” de eventos: observeEvent()"
+  },
+  {
+    "objectID": "shiny_reactive.html#reactive",
+    "href": "shiny_reactive.html#reactive",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "reactive()",
+    "text": "reactive()\n\nSe asigna a un nombre como cualquier otro objeto\nDespués se usa llamando al objeto con paréntesis:\n\n\ndatos_reactivos &lt;- reactive({\n  # código para generar los datos\n})\noutput$tabla &lt;- renderTable({\n  datos_reactivos()\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#reactivevalues",
+    "href": "shiny_reactive.html#reactivevalues",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "reactiveValues()",
+    "text": "reactiveValues()\n\nPermite crear un objeto reactivo que puede contener múltiples valores\nSe asignan valores con $ y se accede a ellos de la misma forma\n\n\nvalores &lt;- reactiveValues(a = 1, b = 2)\nvalores$a &lt;- 3\noutput$valor_a &lt;- renderText({\n  paste(\"Valor a:\", valores$a)\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#reactiveval",
+    "href": "shiny_reactive.html#reactiveval",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "reactiveVal()",
+    "text": "reactiveVal()\n\nPermite crear un objeto reactivo que contiene un solo valor\nSe asigna el valor con paréntesis y se accede de la misma forma\n\n\ncontador &lt;- reactiveVal(0)\ncontador(contador() + 1)\noutput$contador &lt;- renderText({\n  paste(\"Contador:\", contador())\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#eventreactive-y-observeevent",
+    "href": "shiny_reactive.html#eventreactive-y-observeevent",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "eventReactive() y observeEvent()",
+    "text": "eventReactive() y observeEvent()\n\nPermiten ejecutar código reactivo en respuesta a eventos específicos, como un clic en un botón\neventReactive() devuelve un valor reactivo que se actualiza cuando ocurre el evento\n\n\nresultado &lt;- eventReactive(input$boton, {\n  # código para generar el resultado\n})\noutput$resultado &lt;- renderText({\n  resultado()\n})\n\n\nobserveEvent() ejecuta código sin devolver un valor, útil para acciones como mostrar mensajes\n\n\ncontador &lt;- reactiveVal(0)\nobserveEvent(input$boton, {\n  contador(contador() + 1)\n})\noutput$contador &lt;- renderText({\n  paste(\"Contador:\", contador())\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#req",
+    "href": "shiny_reactive.html#req",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "req()",
+    "text": "req()\n\nFunción que se utiliza para requerir que ciertas condiciones se cumplan antes de ejecutar un bloque de código reactivo\nSi la condición no se cumple, el bloque de código no se ejecuta y se muestra un mensaje de error o se mantiene el estado anterior\n\n\noutput$resultado &lt;- renderText({\n  req(input$texto != \"\") # Requiere que el input de texto no esté vacío\n  paste(\"El texto ingresado es:\", input$texto)\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#validate",
+    "href": "shiny_reactive.html#validate",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "validate()",
+    "text": "validate()\n\nFunción que se utiliza para validar los inputs antes de ejecutar un bloque de código reactivo\nPermite mostrar mensajes de error personalizados si los inputs no cumplen con ciertos criterios\n\n\noutput$resultado &lt;- renderText({\n  validate(\n    need(input$numero &gt; 0, \"El número debe ser mayor que cero\")\n  )\n  paste(\"El número ingresado es:\", input$numero)\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#carga-y-descarga-de-ficheros",
+    "href": "shiny_reactive.html#carga-y-descarga-de-ficheros",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Carga y descarga de ficheros",
+    "text": "Carga y descarga de ficheros\n\nfileInput(): input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.\nEn el server, se asigna a objetos que se pueden usar\n\n\n&lt;|input|&gt;fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\")\n\noutput$archivo &lt;- renderTable({\n  req(input$archivo) # Requiere que se haya subido un archivo\n  read.csv(input$archivo$datapath) # Lee el archivo subido\n})\n\n\ndownloadHandler(): permite crear un enlace para descargar archivos generados en la aplicación\n\n\n&lt;|input|&gt;downloadButton(\"descargar\", \"Descargar datos\")\n\noutput$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(datos_reactivos(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)"
+  },
+  {
+    "objectID": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
+    "href": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Gráficos interactivos con ggiraph",
+    "text": "Gráficos interactivos con ggiraph\n\nPermite crear gráficos interactivos a partir de gráficos ggplot2\nAlternativa a plotly (ha dejado de soportar R)\nOpción sencilla: añadir “*_interactive” a las funciones de ggplot2 (e.g., geom_point_interactive(), geom_bar_interactive(), etc.)\nMúltiples opciones y personalización: tooltips, acciones al hacer clic, ejes, etc.\nLibro: https://www.ardata.fr/ggiraph-book/"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-simple",
+    "href": "shiny_reactive.html#ejemplo-simple",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo simple",
+    "text": "Ejemplo simple\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(ggiraph); library(ggplot2); library(dplyr)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    girafeOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderGirafe({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point_interactive(aes(tooltip = paste(\"X:\", get(input$varx), \"&lt;br&gt;Y:\", \n      get(input$vary), \"&lt;br&gt;Colour:\", get(input$varcol))))\n    girafe(ggobj = p)\n  })\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#from-data-to-viz",
+    "href": "shiny_reactive.html#from-data-to-viz",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "From data to viz",
+    "text": "From data to viz\n\nExplora: https://www.data-to-viz.com"
+  },
+  {
+    "objectID": "shiny_reactive.html#mapas-interactivos-con-leaflet",
+    "href": "shiny_reactive.html#mapas-interactivos-con-leaflet",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Mapas interactivos con leaflet",
+    "text": "Mapas interactivos con leaflet\n\nPermite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.\nIntegración con ggiraph para añadir interactividad a los mapas\nNecesaria columna “geometry” con objetos sf (coordenadas, polígonos, etc.)\nPara datos puntuales, puede ser coordenadas x e y solamente\nPara datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc."
+  },
+  {
+    "objectID": "shiny_reactive.html#otros-gráficos-espaciales",
+    "href": "shiny_reactive.html#otros-gráficos-espaciales",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Otros gráficos espaciales",
+    "text": "Otros gráficos espaciales\n\nSe extiende a cualquier “espacio”, por ejemplo: campos de fútbol, pistas de tenis, etc. Ver el paquete sportyR para gráficos de campos deportivos\nTambién a regiones del cuerpo humano, por ejemplo para mostrar zonas de impacto en deportes de contacto. Ver el paquete bodymap o shinybody"
+  },
+  {
+    "objectID": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
+    "href": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Gráficos que incluyen análisis estadísticos",
+    "text": "Gráficos que incluyen análisis estadísticos\n\nggstatsplot: Univariante y multivariante: https://indrajeetpatil.github.io/ggstatsplot/\nggpubr: Menos completo, pero sencillo. https://rpkgs.datanovia.com/ggpubr/"
+  },
+  {
+    "objectID": "shiny_reactive.html#otros-htmlwidgets",
+    "href": "shiny_reactive.html#otros-htmlwidgets",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Otros htmlwidgets",
+    "text": "Otros htmlwidgets\n\n133 registrados: https://gallery.htmlwidgets.org\n{visNetwork} para gráficos de redes\n{ggalluvial} para gráficos aluviales (flujos entre categorías)\n{ggradar} para gráficos de radar\n{networkD3} para gráficos sankey\n{dygraphs} para series temporales\n{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc."
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo",
+    "href": "shiny_reactive.html#ejemplo",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo",
+    "text": "Ejemplo\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- reactive({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-eventreactive",
+    "href": "shiny_reactive.html#ejemplo-eventreactive",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo eventReactive()",
+    "text": "Ejemplo eventReactive()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"Calcular número de partidos\")\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- eventReactive(input$boton, {\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-observeevent-y-reactiveval",
+    "href": "shiny_reactive.html#ejemplo-observeevent-y-reactiveval",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo observeEvent() y reactiveVal()",
+    "text": "Ejemplo observeEvent() y reactiveVal()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"Calcular número de partidos\")\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- reactiveVal(\"--\")\n    observeEvent(input$boton, {\n    n &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n    num(n)\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-con-error",
+    "href": "shiny_reactive.html#ejemplo-con-error",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo con error",
+    "text": "Ejemplo con error\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    observeEvent(input$boton, {\n    rivales &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  \n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    p &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-req",
+    "href": "shiny_reactive.html#ejemplo-req",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo req()",
+    "text": "Ejemplo req()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    observeEvent(input$boton, {\n    rivales &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  \n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    req(input$sel_rival)\n    p &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-validate",
+    "href": "shiny_reactive.html#ejemplo-validate",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo validate()",
+    "text": "Ejemplo validate()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    observeEvent(input$boton, {\n    rivales &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  \n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    validate(need(input$sel_rival, \"Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico.\"))\n    p &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-carga-y-descarga-de-ficheros",
+    "href": "shiny_reactive.html#ejemplo-carga-y-descarga-de-ficheros",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo carga y descarga de ficheros",
+    "text": "Ejemplo carga y descarga de ficheros\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\"),\n    uiOutput(\"sel_pais_ui\"),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    downloadButton(\"descargar\", \"Descargar datos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    resultados &lt;- eventReactive(input$archivo, {\n        read.csv(input$archivo$datapath)\n    })\n    observeEvent(input$boton, {\n    rivales &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  output$sel_pais_ui &lt;- renderUI({\n    req(resultados())\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados()$home_team)\n    )\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    validate(need(input$sel_rival, \"Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico.\"))\n    p &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n  output$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(resultados(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)\n\n}\n\nshinyApp(ui, server)\n\nEjercicio: El botón de descarga no funciona si no se han cargado los datos. Modifica el código para que el botón de descarga solo esté disponible cuando se hayan cargado los datos."
   }
 ]

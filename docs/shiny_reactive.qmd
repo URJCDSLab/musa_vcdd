@@ -5,21 +5,674 @@ author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad 
 code-fold: false
 ---
 
+# Objetos reactivos
 
-## contenidos
+## Reactividad
 
-* objetos reactivos: `reactive()`, `reactiveValues()`, `eventReactive()`, `observeEvent()`
-* req()
-* ficheros reactivos: `fileInput()` y descarga de ficheros con `downloadHandler()`
-* advanced plots: network, alluvial, radar, maps, sankey, etc. con `ggiraph` y `plotly`
+* Lo básico: los "outputs" reaccionan ante un cambio en un "input"
 
-## Carga de datos
+* No es suficiente a medida que aumenta la complejidad
 
-* Permite subir ficheros desde el ordenador del usuario
+* Por ejemplo, si hay outputs que comparten datos, se puede "delegar" la generación de estos a un objeto reactivo
+
+* Objetos reactivos: `reactive()`, `reactiveValues()`, `eventReactive()`, `reactiveVal()`
+
+* "Lanzador" de eventos: `observeEvent()`
+
+## `reactive()`
+
+* Se asigna a un nombre como cualquier otro objeto
+
+* Después se usa llamando al objeto con paréntesis:
+
+```{r}
+#| eval: false
+#| echo: true
+
+datos_reactivos <- reactive({
+  # código para generar los datos
+})
+output$tabla <- renderTable({
+  datos_reactivos()
+})
+
+```
+
+
+## Ejemplo
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    )
+  ),
+  nav_panel(
+    title = textOutput("partidos"),
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Goleadores")
+)
+
+server <- function(input, output, session) {
+    num <- reactive({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      nrow()
+  })
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+
+  output$num_partidos <- renderPrint({
+    paste("Número de partidos:", num())
+  })
+  output$partidos <- renderText({
+    paste0("Partidos (", num(), ")")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## `reactiveValues()` 
+
+* Permite crear un objeto reactivo que puede contener múltiples valores
+* Se asignan valores con `$` y se accede a ellos de la misma forma
+```{r}
+#| eval: false
+#| echo: true
+
+valores <- reactiveValues(a = 1, b = 2)
+valores$a <- 3
+output$valor_a <- renderText({
+  paste("Valor a:", valores$a)
+})
+```
+
+## `reactiveVal()`
+
+* Permite crear un objeto reactivo que contiene un solo valor
+
+* Se asigna el valor con paréntesis y se accede de la misma forma
+
+```{r}
+#| eval: false
+#| echo: true
+
+contador <- reactiveVal(0)
+contador(contador() + 1)
+output$contador <- renderText({
+  paste("Contador:", contador())
+})
+```
+
+
+## `eventReactive()` y `observeEvent()`
+
+* Permiten ejecutar código reactivo en respuesta a eventos específicos, como un clic en un botón
+
+* `eventReactive()` devuelve un valor reactivo que se actualiza cuando ocurre el evento
+
+```{r}
+#| eval: false
+#| echo: true
+
+resultado <- eventReactive(input$boton, {
+  # código para generar el resultado
+})
+output$resultado <- renderText({
+  resultado()
+})
+```
+
+* `observeEvent()` ejecuta código sin devolver un valor, útil para acciones como mostrar mensajes
+
+
+```{r}
+#| eval: false
+#| echo: true
+
+contador <- reactiveVal(0)
+observeEvent(input$boton, {
+  contador(contador() + 1)
+})
+output$contador <- renderText({
+  paste("Contador:", contador())
+})
+```
+
+
+## Ejemplo eventReactive()
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    actionButton("boton", "Calcular número de partidos")
+  ),
+  nav_panel(
+    title = textOutput("partidos"),
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico")
+)
+
+server <- function(input, output, session) {
+    num <- eventReactive(input$boton, {
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      nrow()
+  })
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+
+  output$num_partidos <- renderPrint({
+    paste("Número de partidos:", num())
+  })
+  output$partidos <- renderText({
+    paste0("Partidos (", num(), ")")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## Ejemplo observeEvent() y reactiveVal()
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    actionButton("boton", "Calcular número de partidos")
+  ),
+  nav_panel(
+    title = textOutput("partidos"),
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico")
+)
+
+server <- function(input, output, session) {
+    num <- reactiveVal("--")
+    observeEvent(input$boton, {
+    n <- resultados |>
+      filter(home_team == input$sel_pais) |>
+      nrow()
+    num(n)
+  })
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+
+  output$num_partidos <- renderPrint({
+    paste("Número de partidos:", num())
+  })
+  output$partidos <- renderText({
+    paste0("Partidos (", num(), ")")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+## `req()`
+* Función que se utiliza para requerir que ciertas condiciones se cumplan antes de ejecutar un bloque de código reactivo
+* Si la condición no se cumple, el bloque de código no se ejecuta y se muestra un mensaje de error o se mantiene el estado anterior
+```{r}
+#| eval: false
+#| echo: true
+
+output$resultado <- renderText({
+  req(input$texto != "") # Requiere que el input de texto no esté vacío
+  paste("El texto ingresado es:", input$texto)
+})
+```
+
+## `validate()`
+
+* Función que se utiliza para validar los inputs antes de ejecutar un bloque de código reactivo
+* Permite mostrar mensajes de error personalizados si los inputs no cumplen con ciertos criterios
+```{r}
+#| eval: false
+#| echo: true
+
+output$resultado <- renderText({
+  validate(
+    need(input$numero > 0, "El número debe ser mayor que cero")
+  )
+  paste("El número ingresado es:", input$numero)
+})
+```
+
+
+## Ejemplo con error
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    actionButton("boton", "cargar rivales"),
+    uiOutput("sel_rival_ui")
+  ),
+  nav_panel(
+    title = "Partidos",
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico",
+    girafeOutput("plot"))
+)
+
+server <- function(input, output, session) {
+    observeEvent(input$boton, {
+    rivales <- resultados |>
+      filter(home_team == input$sel_pais) |>
+      pull(away_team) |>
+      unique()
+    output$sel_rival_ui <- renderUI({
+    selectizeInput("sel_rival", "Selecciona un rival:", choices = rivales)
+  })
+  })
+  
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+  output$plot <- renderGirafe({
+    p <- resultados |>
+      filter(home_team == input$sel_pais, away_team == input$sel_rival) |>
+      ggplot(aes(x = date, y = home_score)) +
+      geom_line() +
+      geom_point_interactive(aes(tooltip = paste("Fecha:", date, "<br>Marcador:", home_score, "-", away_score)))
+    girafe(ggobj = p)
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+## Ejemplo `req()` 
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    actionButton("boton", "cargar rivales"),
+    uiOutput("sel_rival_ui")
+  ),
+  nav_panel(
+    title = "Partidos",
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico",
+    girafeOutput("plot"))
+)
+
+server <- function(input, output, session) {
+    observeEvent(input$boton, {
+    rivales <- resultados |>
+      filter(home_team == input$sel_pais) |>
+      pull(away_team) |>
+      unique()
+    output$sel_rival_ui <- renderUI({
+    selectizeInput("sel_rival", "Selecciona un rival:", choices = rivales)
+  })
+  })
+  
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+  output$plot <- renderGirafe({
+    req(input$sel_rival)
+    p <- resultados |>
+      filter(home_team == input$sel_pais, away_team == input$sel_rival) |>
+      ggplot(aes(x = date, y = home_score)) +
+      geom_line() +
+      geom_point_interactive(aes(tooltip = paste("Fecha:", date, "<br>Marcador:", home_score, "-", away_score)))
+    girafe(ggobj = p)
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+
+## Ejemplo `validate()`
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)
+resultados <- read.csv("data/results.csv")
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados$home_team)
+    ),
+    actionButton("boton", "cargar rivales"),
+    uiOutput("sel_rival_ui")
+  ),
+  nav_panel(
+    title = "Partidos",
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico",
+    girafeOutput("plot"))
+)
+
+server <- function(input, output, session) {
+    observeEvent(input$boton, {
+    rivales <- resultados |>
+      filter(home_team == input$sel_pais) |>
+      pull(away_team) |>
+      unique()
+    output$sel_rival_ui <- renderUI({
+    selectizeInput("sel_rival", "Selecciona un rival:", choices = rivales)
+  })
+  })
+  
+  output$tabla_partidos <- renderReactable({
+    resultados |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+  output$plot <- renderGirafe({
+    validate(need(input$sel_rival, "Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico."))
+    p <- resultados |>
+      filter(home_team == input$sel_pais, away_team == input$sel_rival) |>
+      ggplot(aes(x = date, y = home_score)) +
+      geom_line() +
+      geom_point_interactive(aes(tooltip = paste("Fecha:", date, "<br>Marcador:", home_score, "-", away_score)))
+    girafe(ggobj = p)
+  })
+
+}
+
+shinyApp(ui, server)
+```
+
+## Carga y descarga de ficheros
 
 * `fileInput()`: input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.
 
 * En el server, se asigna a objetos que se pueden usar
+
+```{r}
+#| eval: false
+#| echo: true
+
+<|input|>fileInput("archivo", "Subir archivo CSV", accept = ".csv")
+
+output$archivo <- renderTable({
+  req(input$archivo) # Requiere que se haya subido un archivo
+  read.csv(input$archivo$datapath) # Lee el archivo subido
+})
+
+```
+
+* `downloadHandler()`: permite crear un enlace para descargar archivos generados en la aplicación
+```{r}
+#| eval: false
+#| echo: true
+
+<|input|>downloadButton("descargar", "Descargar datos")
+
+output$descargar <- downloadHandler(
+  filename = function() {
+    paste("datos-", Sys.Date(), ".csv", sep = "")
+  },
+  content = function(file) {
+    write.csv(datos_reactivos(), file) # Escribe los datos reactivos en un archivo CSV
+  }
+)
+```
+
+
+## Ejemplo carga y descarga de ficheros
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)
+ui <- page_navbar(
+  title = "Análisis resultados FIFA",
+  sidebar = sidebar(
+    title = "Selección",
+    fileInput("archivo", "Subir archivo CSV", accept = ".csv"),
+    uiOutput("sel_pais_ui"),
+    actionButton("boton", "cargar rivales"),
+    uiOutput("sel_rival_ui")
+  ),
+  nav_panel(
+    title = "Partidos",
+    downloadButton("descargar", "Descargar datos"),
+    reactableOutput("tabla_partidos"),
+      verbatimTextOutput("num_partidos")
+  ),
+  nav_panel(title = "Gráfico",
+    girafeOutput("plot"))
+)
+
+server <- function(input, output, session) {
+    resultados <- eventReactive(input$archivo, {
+        read.csv(input$archivo$datapath)
+    })
+    observeEvent(input$boton, {
+    rivales <- resultados() |>
+      filter(home_team == input$sel_pais) |>
+      pull(away_team) |>
+      unique()
+    output$sel_rival_ui <- renderUI({
+    selectizeInput("sel_rival", "Selecciona un rival:", choices = rivales)
+  })
+  })
+  output$sel_pais_ui <- renderUI({
+    req(resultados())
+    selectizeInput(
+      "sel_pais",
+      "Selecciona un país:",
+      choices = unique(resultados()$home_team)
+    )
+  })
+  output$tabla_partidos <- renderReactable({
+    resultados() |>
+      filter(home_team == input$sel_pais) |>
+      reactable()
+  })
+  output$plot <- renderGirafe({
+    validate(need(input$sel_rival, "Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico."))
+    p <- resultados() |>
+      filter(home_team == input$sel_pais, away_team == input$sel_rival) |>
+      ggplot(aes(x = date, y = home_score)) +
+      geom_line() +
+      geom_point_interactive(aes(tooltip = paste("Fecha:", date, "<br>Marcador:", home_score, "-", away_score)))
+    girafe(ggobj = p)
+  })
+
+  output$descargar <- downloadHandler(
+  filename = function() {
+    paste("datos-", Sys.Date(), ".csv", sep = "")
+  },
+  content = function(file) {
+    write.csv(resultados(), file) # Escribe los datos reactivos en un archivo CSV
+  }
+)
+
+}
+
+shinyApp(ui, server)
+```
+
+Ejercicio: El botón de descarga no funciona si no se han cargado los datos. Modifica el código para que el botón de descarga solo esté disponible cuando se hayan cargado los datos.
+
+# Gráficos interactivos
+
+
+## Gráficos interactivos con `ggiraph`
+
+* Permite crear gráficos interactivos a partir de gráficos `ggplot2`
+
+* Alternativa a `plotly` (ha dejado de soportar R)
+
+* Opción sencilla: añadir "*_interactive" a las funciones de `ggplot2` (e.g., `geom_point_interactive()`, `geom_bar_interactive()`, etc.)
+
+* Múltiples opciones y personalización: tooltips, acciones al hacer clic, ejes, etc.
+
+* Libro: https://www.ardata.fr/ggiraph-book/
+
+## Ejemplo simple
+
+```{r}
+#| label: shinypenguins
+#| eval: false
+#| echo: true
+library(shiny)
+library(palmerpenguins); library(ggiraph); library(ggplot2); library(dplyr)
+ui <- fluidPage(title = "Simple demo app",
+                sidebarLayout(
+                  sidebarPanel(  
+                    varSelectInput("varx", "Explanatory variable", penguins |> select(where(is.numeric))),
+                    varSelectInput("vary", "Response variable", penguins |> select(where(is.numeric))),
+                    varSelectInput("varcol", "Colour variable", penguins |> select(where(is.factor)))),
+                  mainPanel( 
+                    girafeOutput("plot"),
+                    verbatimTextOutput("model")))
+)
+server <- function(input, output, session){
+  output$plot <- renderGirafe({
+    p <- penguins |> ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +
+      geom_point_interactive(aes(tooltip = paste("X:", get(input$varx), "<br>Y:", 
+      get(input$vary), "<br>Colour:", get(input$varcol))))
+    girafe(ggobj = p)
+  })
+  output$model <- renderPrint({
+    m <- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)
+    summary(m)})
+}
+shinyApp(ui = ui, server = server)
+```
+
+
+## Mapas interactivos con `leaflet`
+
+* Permite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.
+
+* Integración con `ggiraph` para añadir interactividad a los mapas
+
+* Necesaria columna "geometry" con objetos `sf` (coordenadas, polígonos, etc.)
+
+* Para datos puntuales, puede ser coordenadas x e y solamente
+
+* Para datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc.
+
+
+## Otros gráficos espaciales
+
+* Se extiende a cualquier "espacio", por ejemplo: campos de fútbol, pistas de tenis, etc. Ver el paquete [sportyR](https://sportyr.sportsdataverse.org) para gráficos de campos deportivos
+
+* También a regiones del cuerpo humano, por ejemplo para mostrar zonas de impacto en deportes de contacto. Ver el paquete [bodymap](https://github.com/benediktclaus/bodymap) o [shinybody](https://github.com/robert-norberg/shinybody)
+
+
+## Gráficos que incluyen análisis estadísticos
+
+* `ggstatsplot`: Univariante y multivariante: <https://indrajeetpatil.github.io/ggstatsplot/>
+
+* `ggpubr`: Menos completo, pero sencillo. <https://rpkgs.datanovia.com/ggpubr/>
+
+## Otros htmlwidgets
+
+* 133 registrados: <https://gallery.htmlwidgets.org>
+
+* {visNetwork} para gráficos de redes
+
+* {ggalluvial} para gráficos aluviales (flujos entre categorías)  
+
+* {ggradar} para gráficos de radar
+
+* {networkD3} para gráficos sankey
+
+* {dygraphs} para series temporales
+
+* {DiagrammeR} para diagramas de flujo, diagramas de Venn, etc.
+
+
+
+## _From data to viz_
+
+* Explora: <https://www.data-to-viz.com>
+
+![](https://www.data-to-viz.com/img/logo/tree-s.png)
 
 
 # Preguntas? 
