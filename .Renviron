@@ -1,0 +1,4 @@
+PATH=/opt/homebrew/bin:${PATH}
+PKG_CONFIG_PATH=/opt/homebrew/lib/pkgconfig:${PKG_CONFIG_PATH}
+LDFLAGS=-L/opt/homebrew/lib ${LDFLAGS}
+CPPFLAGS=-I/opt/homebrew/include ${CPPFLAGS}
