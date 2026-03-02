@@ -589,7 +589,7 @@ Ejercicio: El botón de descarga no funciona si no se han cargado los datos. Mod
 
 * Múltiples opciones y personalización: tooltips, acciones al hacer clic, ejes, etc.
 
-* Libro: https://www.ardata.fr/ggiraph-book/
+* Libro: <https://www.ardata.fr/ggiraph-book/>
 
 ## Ejemplo simple
 
