@@ -614,5 +614,54 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplo carga y descarga de ficheros",
     "text": "Ejemplo carga y descarga de ficheros\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\"),\n    uiOutput(\"sel_pais_ui\"),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    downloadButton(\"descargar\", \"Descargar datos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    resultados &lt;- eventReactive(input$archivo, {\n        read.csv(input$archivo$datapath)\n    })\n    observeEvent(input$boton, {\n    rivales &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  output$sel_pais_ui &lt;- renderUI({\n    req(resultados())\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados()$home_team)\n    )\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    validate(need(input$sel_rival, \"Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico.\"))\n    p &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n  output$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(resultados(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)\n\n}\n\nshinyApp(ui, server)\n\nEjercicio: El botón de descarga no funciona si no se han cargado los datos. Modifica el código para que el botón de descarga solo esté disponible cuando se hayan cargado los datos."
+  },
+  {
+    "objectID": "shiny_advanced.html#módulos-shiny",
+    "href": "shiny_advanced.html#módulos-shiny",
+    "title": "Shiny avanzado",
+    "section": "Módulos shiny",
+    "text": "Módulos shiny\n\nPermiten organizar el código en componentes reutilizables\nCada módulo tiene su propia UI y server, y se puede llamar varias veces en la aplicación principal\nSe crean componentes xxx_server() y xxx_ui() para cada módulo, y se llaman desde el server y UI principal respectivamente\nEl espacio de nombres se maneja automáticamente para evitar conflictos entre módulos y con la app principal"
+  },
+  {
+    "objectID": "shiny_advanced.html#ejemplo-módulo-simple",
+    "href": "shiny_advanced.html#ejemplo-módulo-simple",
+    "title": "Shiny avanzado",
+    "section": "Ejemplo módulo simple",
+    "text": "Ejemplo módulo simple\n\nlibrary(shiny)  \nlibrary(bslib)\nlibrary(reactable)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nseleccion_ui &lt;- function(id) {\n  ns &lt;- NS(id) # Crea un espacio de nombres para el módulo\n  tagList(\n    selectizeInput(ns(\"pais\"), \"Selecciona un país:\", choices = unique(resultados$home_team)),\n    verbatimTextOutput(ns(\"salida\"))\n  )\n}\nseleccion_server &lt;- function(id) {\n  moduleServer(id, function(input, output, session) {\n    output$salida &lt;- renderPrint({\n      paste(\"Selección:\", input$pais)\n    })\n    return(list(pais = reactive(input$pais))) # Devuelve el país seleccionado como un valor reactivo\n  })\n}\n# App principal\nui &lt;- bslib::page_fluid(\n    bslib::navset_card_underline(\n        nav_panel(\"Panel 1\", seleccion_ui(\"mod1\"),\n        plotOutput(\"plot1\")), # Llama al módulo en la UI\n        nav_panel(\"Panel 2\", seleccion_ui(\"mod2\"),\n        reactableOutput(\"tabla2\"))  # Llama al\n    )\n)\nserver &lt;- function(input, output, session) {\n  pais1 &lt;- seleccion_server(\"mod1\") # Llama al módulo en el server\n  pais2 &lt;- seleccion_server(\"mod2\") # Llama al módulo otra vez para la segunda instancia\n  output$plot1 &lt;- renderPlot({\n    # Código para generar el gráfico usando pais1$pais()\n    resultados |&gt; filter(home_team == pais1$pais()) |&gt; group_by(year(as.Date(date))) |&gt; summarise(home_score = sum(home_score)) |&gt; ggplot(aes(x = year(as.Date(date)), y = home_score)) + geom_line()\n  })\n  output$tabla2 &lt;- renderReactable({\n    # Código para generar la tabla usando pais2$pais()\n    resultados |&gt; filter(home_team == pais2$pais()) |&gt; reactable()\n  })\n}\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_advanced.html#aplicación-shiny-como-paquete",
+    "href": "shiny_advanced.html#aplicación-shiny-como-paquete",
+    "title": "Shiny avanzado",
+    "section": "Aplicación shiny como paquete",
+    "text": "Aplicación shiny como paquete\n\nPara proyectos más grandes, es recomendable organizar la aplicación como un paquete R.\nSe puede usar {golem} para crear la estructura del paquete y gestionar las dependencias.\nO bien crear un paquete manualmente con usethis::create_package(), y organizar el código en carpetas como R/ para funciones, inst/app/ para la aplicación Shiny, etc.\nEsto facilita la reutilización del código, la gestión de versiones, y el despliegue de la aplicación.\nSe recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores."
+  },
+  {
+    "objectID": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
+    "href": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
+    "title": "Shiny avanzado",
+    "section": "Ejemplo estructura de paquete para Shiny",
+    "text": "Ejemplo estructura de paquete para Shiny\nmyshinyapp/\n├── R/\n│   ├── mod_seleccion.R  # Código del módulo de selección\n│   └── utils.R         # Funciones auxiliares\n├── inst/\n│   └── app/\n│       ├── ui.R        # Código de la UI principal\n│       └── server.R    # Código del servidor principal\n├── DESCRIPTION         # Archivo de descripción del paquete\n├── NAMESPACE           # Archivo de exportación de funciones\n└── README.md           # Documentación del paquete"
+  },
+  {
+    "objectID": "shiny_advanced.html#multilenguaje",
+    "href": "shiny_advanced.html#multilenguaje",
+    "title": "Shiny avanzado",
+    "section": "Multilenguaje",
+    "text": "Multilenguaje\n\nEl paquete shiny.i18n permite crear aplicaciones multilenguaje de forma sencilla\nSe define un objeto Translator con los textos en diferentes idiomas, y se utiliza en la UI para mostrar el texto correspondiente al idioma seleccionado\nEl usuario puede cambiar el idioma en tiempo real, y la aplicación se actualizará automáticamente\nLas traducciones se pueden gestionar fácilmente en un archivo CSV o en el código, y se pueden añadir nuevos idiomas sin modificar la lógica de la aplicación\nVer ejemplo en: https://appsilon.github.io/shiny.i18n/articles/basics.html"
+  },
+  {
+    "objectID": "shiny_advanced.html#despliegue",
+    "href": "shiny_advanced.html#despliegue",
+    "title": "Shiny avanzado",
+    "section": "Despliegue",
+    "text": "Despliegue\n\nPara compartir la aplicación con otros usuarios, se puede desplegar en un servidor Shiny (shinyapps.io, Shiny Server, etc.)\nTambién se puede empaquetar como una aplicación de escritorio con golem o shinyDesktop\nEs importante optimizar la aplicación para un buen rendimiento, especialmente si se espera un gran número de usuarios o si se manejan grandes volúmenes de datos\nSe pueden usar herramientas como profvis para identificar cuellos de botella en el rendimiento y optimizar el código\nUna opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda"
+  },
+  {
+    "objectID": "shiny_advanced.html#pruebas",
+    "href": "shiny_advanced.html#pruebas",
+    "title": "Shiny avanzado",
+    "section": "Pruebas",
+    "text": "Pruebas\n\nEs recomendable escribir pruebas para la aplicación Shiny, especialmente para la lógica del servidor y los módulos\nEl paquete testthat se puede usar para escribir pruebas unitarias, y shinytest para pruebas de integración y de interfaz de usuario\nLas pruebas ayudan a garantizar que la aplicación funcione correctamente después de realizar cambios o actualizaciones, y facilitan la detección de errores y la mejora continua de la aplicación\nPaquetes específicos para shiny: shinytest2 para pruebas de interfaz de usuario, shinytest para pruebas de integración, y testthat para pruebas unitarias"
   }
 ]

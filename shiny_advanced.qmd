@@ -1,0 +1,152 @@
+---
+title: Shiny avanzado
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
+---
+
+# Objetos reactivos
+
+## Módulos shiny
+
+* Permiten organizar el código en componentes reutilizables
+
+* Cada módulo tiene su propia UI y server, y se puede llamar varias veces en la aplicación principal
+
+* Se crean componentes `xxx_server()` y `xxx_ui()` para cada módulo, y se llaman desde el server y UI principal respectivamente
+
+* El espacio de nombres se maneja automáticamente para evitar conflictos entre módulos y con la app principal
+
+
+## Ejemplo módulo simple
+```{r}
+#| eval: false
+#| echo: true
+library(shiny)  
+library(bslib)
+library(reactable)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+resultados <- read.csv("data/results.csv")
+seleccion_ui <- function(id) {
+  ns <- NS(id) # Crea un espacio de nombres para el módulo
+  tagList(
+    selectizeInput(ns("pais"), "Selecciona un país:", choices = unique(resultados$home_team)),
+    verbatimTextOutput(ns("salida"))
+  )
+}
+seleccion_server <- function(id) {
+  moduleServer(id, function(input, output, session) {
+    output$salida <- renderPrint({
+      paste("Selección:", input$pais)
+    })
+    return(list(pais = reactive(input$pais))) # Devuelve el país seleccionado como un valor reactivo
+  })
+}
+# App principal
+ui <- bslib::page_fluid(
+    bslib::navset_card_underline(
+        nav_panel("Panel 1", seleccion_ui("mod1"),
+        plotOutput("plot1")), # Llama al módulo en la UI
+        nav_panel("Panel 2", seleccion_ui("mod2"),
+        reactableOutput("tabla2"))  # Llama al
+    )
+)
+server <- function(input, output, session) {
+  pais1 <- seleccion_server("mod1") # Llama al módulo en el server
+  pais2 <- seleccion_server("mod2") # Llama al módulo otra vez para la segunda instancia
+  output$plot1 <- renderPlot({
+    # Código para generar el gráfico usando pais1$pais()
+    resultados |> filter(home_team == pais1$pais()) |> group_by(year(as.Date(date))) |> summarise(home_score = sum(home_score)) |> ggplot(aes(x = year(as.Date(date)), y = home_score)) + geom_line()
+  })
+  output$tabla2 <- renderReactable({
+    # Código para generar la tabla usando pais2$pais()
+    resultados |> filter(home_team == pais2$pais()) |> reactable()
+  })
+}
+shinyApp(ui, server)
+```
+
+
+## Aplicación shiny como paquete
+
+* Para proyectos más grandes, es recomendable organizar la aplicación como un paquete R.
+
+* Se puede usar {golem} para crear la estructura del paquete y gestionar las dependencias.
+
+* O bien crear un paquete manualmente con `usethis::create_package()`, y organizar el código en carpetas como `R/` para funciones, `inst/app/` para la aplicación Shiny, etc.
+
+* Esto facilita la reutilización del código, la gestión de versiones, y el despliegue de la aplicación.
+
+* Se recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores.
+
+## Ejemplo estructura de paquete para Shiny
+
+```
+myshinyapp/
+├── R/
+│   ├── mod_seleccion.R  # Código del módulo de selección
+│   └── utils.R         # Funciones auxiliares
+├── inst/
+│   └── app/
+│       ├── ui.R        # Código de la UI principal
+│       └── server.R    # Código del servidor principal
+├── DESCRIPTION         # Archivo de descripción del paquete
+├── NAMESPACE           # Archivo de exportación de funciones
+└── README.md           # Documentación del paquete
+``` 
+
+
+
+
+## Multilenguaje
+
+* El paquete `shiny.i18n` permite crear aplicaciones multilenguaje de forma sencilla
+
+* Se define un objeto `Translator` con los textos en diferentes idiomas, y se utiliza en la UI para mostrar el texto correspondiente al idioma seleccionado
+
+* El usuario puede cambiar el idioma en tiempo real, y la aplicación se actualizará automáticamente
+
+* Las traducciones se pueden gestionar fácilmente en un archivo CSV o en el código, y se pueden añadir nuevos idiomas sin modificar la lógica de la aplicación
+
+* Ver ejemplo en: <https://appsilon.github.io/shiny.i18n/articles/basics.html>
+
+
+## Despliegue
+
+* Para compartir la aplicación con otros usuarios, se puede desplegar en un servidor Shiny (shinyapps.io, Shiny Server, etc.)
+
+* También se puede empaquetar como una aplicación de escritorio con `golem` o `shinyDesktop`
+
+* Es importante optimizar la aplicación para un buen rendimiento, especialmente si se espera un gran número de usuarios o si se manejan grandes volúmenes de datos
+
+* Se pueden usar herramientas como `profvis` para identificar cuellos de botella en el rendimiento y optimizar el código
+
+* Una opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda
+
+
+## Pruebas
+
+* Es recomendable escribir pruebas para la aplicación Shiny, especialmente para la lógica del servidor y los módulos
+
+* El paquete `testthat` se puede usar para escribir pruebas unitarias, y `shinytest` para pruebas de integración y de interfaz de usuario
+
+* Las pruebas ayudan a garantizar que la aplicación funcione correctamente después de realizar cambios o actualizaciones, y facilitan la detección de errores y la mejora continua de la aplicación
+
+* Paquetes específicos para shiny: `shinytest2` para pruebas de interfaz de usuario, `shinytest` para pruebas de integración, y `testthat` para pruebas unitarias
+
+
+# Preguntas? 
+
+
+
+[http://emilio.lcano.com](https://emilio.lcano.com)
+
+[emilio.lopez@urjc.es]{.red}
+
+
+\
+
+¡Gracias!
+  
