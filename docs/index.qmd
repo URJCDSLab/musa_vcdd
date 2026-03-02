@@ -13,7 +13,7 @@ code-fold: false
 
 * Sesión 3: [Objetos reactivos y gráficos interactivos](shiny_reactive.html) 
   
-* Sesión 4: [Shiny avanzado](#)
+* Sesión 4: [Shiny avanzado](shiny_advanced.qmd)
 
 * Sesión 5: [Práctica: desarrollo de un dashboard para datos deportivos](#)
   
