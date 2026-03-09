@@ -624,11 +624,9 @@ shinyApp(ui = ui, server = server)
 ```
 
 
-## Mapas interactivos con `leaflet`
+## Mapas interactivos con {leaflet}
 
 * Permite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.
-
-* Integración con `ggiraph` para añadir interactividad a los mapas
 
 * Necesaria columna "geometry" con objetos `sf` (coordenadas, polígonos, etc.)
 
@@ -636,6 +634,93 @@ shinyApp(ui = ui, server = server)
 
 * Para datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc.
 
+## Mapas interactivos con {ggiraph}
+
+* Alternativa interactiva a los mapas de {ggplot2} con `geom_sf_interactive()`
+
+* Sin necesidad de usar {leaflet}, pero con menos opciones de personalización y sin capas dinámicas
+
+## Ejemplo simple con {leaflet}
+
+```{r}
+#| eval: false
+#| echo: true
+library(shiny); library(leaflet); library(sf); library(dplyr)
+countries_data <- giscoR::gisco_get_countries() |> 
+  select(NAME_ENGL, geometry)
+resultados <- read.csv("data/results.csv") |> 
+  group_by(home_team) |> 
+  summarise(total_partidos = n()) |>
+  inner_join(countries_data, by = c("home_team" = "NAME_ENGL")) |> 
+  st_as_sf()
+ui <- fluidPage(
+  titlePanel("Mapa interactivo con Leaflet"),
+  sidebarLayout(
+    sidebarPanel(
+      selectizeInput("pais", "Selecciona un país:", choices = unique(resultados$home_team))
+    ),
+    mainPanel(
+      leafletOutput("mapa")
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$mapa <- renderLeaflet({
+    bins <- c(quantile(resultados$total_partidos, probs = seq(0, 1, 0.25)), Inf)
+    pal <- colorBin("YlOrRd", domain = resultados$total_partidos, bins = bins)
+    # Cargar datos geoespaciales (ejemplo con sf)
+    resultados |> 
+    leaflet() |> 
+      addTiles() |> 
+      addPolygons(fillColor = ~pal(total_partidos), 
+        fillOpacity = 0.5, 
+        color = "black", 
+        weight = 1, 
+        popup = ~paste0("Total partidos: ", total_partidos), 
+        label = ~home_team) |> 
+      addPolygons(data = resultados |> filter(home_team == input$pais), 
+        color = "green", weight = 4) |> 
+      addLegend(pal = pal, values = resultados$total_partidos, title = "Total partidos")
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+## Ejemplo simple con {ggiraph}
+```{r}
+#| eval: false
+#| echo: true
+library(shiny); library(ggiraph); library(ggplot2); library(sf); library(dplyr)
+countries_data <- giscoR::gisco_get_countries() |> 
+  select(NAME_ENGL, geometry)
+resultados <- read.csv("data/results.csv") |> 
+  group_by(home_team) |> 
+  summarise(total_partidos = n()) |>
+  inner_join(countries_data, by = c("home_team" = "NAME_ENGL")) |> 
+  st_as_sf()
+ui <- fluidPage(
+  titlePanel("Mapa interactivo con ggiraph"),
+  sidebarLayout(
+    sidebarPanel(
+      selectizeInput("pais", "Selecciona un país:", choices = unique(resultados$home_team))
+    ),
+    mainPanel(
+      girafeOutput("mapa")
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$mapa <- renderGirafe({
+    p <- resultados |> 
+      ggplot() +
+      geom_sf_interactive(aes(fill = total_partidos, tooltip = paste0("Total  partidos: ", total_partidos, "<br>País: ", home_team))) +
+      scale_fill_viridis_c() +
+      theme_void()
+    girafe(ggobj = p)
+  })
+}
+shinyApp(ui = ui, server = server)
+```
 
 ## Otros gráficos espaciales
 
@@ -650,21 +735,100 @@ shinyApp(ui = ui, server = server)
 
 * `ggpubr`: Menos completo, pero sencillo. <https://rpkgs.datanovia.com/ggpubr/>
 
+## Ejemplos con `ggstatsplot` - comparaciones grupos
+
+```{r}
+library(palmerpenguins); library(ggstatsplot); library(ggplot2); library(dplyr)
+penguins |> 
+  group_by(species) |>
+  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+penguins |> 
+  ggplot(aes(x = species, y = bill_length_mm)) +
+  geom_boxplot()
+summary(aov(bill_length_mm ~ species, data = penguins))
+penguins |> 
+  ggstatsplot::ggbetweenstats(
+    x = species,
+    y = bill_length_mm,
+    outlier.tagging = TRUE
+  )
+penguins |> 
+  ggstatsplot::ggbetweenstats(
+    x = species,
+    y = bill_length_mm,
+    outlier.tagging = TRUE,
+    bf.message = FALSE
+  )
+penguins |> 
+  ggstatsplot::ggbetweenstats(
+    x = species,
+    y = bill_length_mm,
+    outlier.tagging = TRUE,
+    bf.message = FALSE,
+    type = "nonparametric"
+  )
+
+
+```
+
+## Ejemplos con `ggstatsplot` - univariante y regresión
+```{r}
+penguins |> 
+  gghistostats(
+    x = bill_length_mm
+  )
+
+modelo <- lm(body_mass_g ~ bill_length_mm, data = penguins)
+
+ggcoefstats(
+    modelo
+  )
+```
+
+## Ejemplos atributos
+
+```{r}
+penguins |> 
+  ggpiestats(
+    x = species
+  
+  )
+penguins |> 
+  ggpiestats(
+    x = species,
+    bf.message = FALSE,
+    subtitle = FALSE
+  )
+penguins |> 
+  ggpiestats(
+    x = species,
+    bf.message = FALSE,
+    results.subtitle = FALSE
+  )
+
+penguins |> 
+  ggbarstats(
+    x = species,
+    y = sex,
+    bf.message = FALSE)
+```
+
+
 ## Otros htmlwidgets
 
 * 133 registrados: <https://gallery.htmlwidgets.org>
 
-* {visNetwork} para gráficos de redes
+* [{visNetwork}](https://datastorm-open.github.io/visNetwork/) para gráficos de redes
 
-* {ggalluvial} para gráficos aluviales (flujos entre categorías)  
+* [{ggalluvial}](https://corybrunson.github.io/ggalluvial/) para gráficos aluviales (flujos entre categorías)  
 
-* {ggradar} para gráficos de radar
+* [{ggradar}](https://github.com/ricardo-bion/ggradar) para gráficos de radar
 
-* {networkD3} para gráficos sankey
+* [{networkD3}](https://christophergandrud.github.io/networkD3/) para gráficos sankey, entre otros
 
-* {dygraphs} para series temporales
+* [{dygraphs}](https://rstudio.github.io/dygraphs/) para series temporales
 
-* {DiagrammeR} para diagramas de flujo, diagramas de Venn, etc.
+* [{DiagrammeR}](https://rich-iannone.github.io/DiagrammeR/) para diagramas de flujo, diagramas de Venn, etc.
 
 
 
@@ -674,6 +838,59 @@ shinyApp(ui = ui, server = server)
 
 ![](https://www.data-to-viz.com/img/logo/tree-s.png)
 
+## Paletas de colores
+
+* `RColorBrewer`: Paletas predefinidas para diferentes tipos de datos (categóricos, secuenciales, divergentes)
+
+* `viridis`: Paletas perceptualmente uniformes, adecuadas para personas con daltonismo
+
+* `ggsci`: Paletas inspiradas en revistas científicas, marcas, etc.
+
+* `ggthemes`: Paletas inspiradas en temas de gráficos clásicos (e.g., ColorBrewer, Tableau, etc.)
+
+* `scico`: Paletas científicas con opciones para diferentes tipos de datos y necesidades de visualización
+
+* `wesanderson`: Paletas inspiradas en las películas de Wes Anderson
+
+## Recursos
+
+* [R charts - colors in R](https://r-charts.com/colors/)
+
+* [RColorBrewer](https://cran.r-project.org/web/packages/RColorBrewer/index.html), [more](https://r-graph-gallery.com/38-rcolorbrewers-palettes.html)
+
+* [ggplot2 book - color scales](https://ggplot2-book.org/scales-colour.html)
+
+* [Colour palette finder](https://r-graph-gallery.com/color-palette-finder)
+
+
+
+
+# Ejemplo cambio de paleta con `ggplot2`
+
+```{r}
+library(ggplot2); library(ggsci)
+ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
+  geom_boxplot() +
+  scale_fill_aaas() +
+  theme_minimal()
+```
+
+
+## Ejemplo cambio de paleta con `ggstatsplot`
+```{r}
+#| eval: false
+library(ggstatsplot); library(ggsci)
+ggstatsplot::ggbetweenstats(
+  data = mtcars,
+  x = factor(cyl),
+  y = mpg,
+  fill = factor(cyl),
+  bf.message = FALSE,
+  type = "nonparametric"
+) +
+  scale_fill_aaas() +
+  theme_minimal()
+```
 
 # Preguntas? 
 

@@ -781,14 +781,99 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </div>
 </section>
 <section id="mapas-interactivos-con-leaflet" class="slide level2">
-<h2>Mapas interactivos con <code>leaflet</code></h2>
+<h2>Mapas interactivos con {leaflet}</h2>
 <ul>
 <li><p>Permite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.</p></li>
-<li><p>Integración con <code>ggiraph</code> para añadir interactividad a los mapas</p></li>
 <li><p>Necesaria columna “geometry” con objetos <code>sf</code> (coordenadas, polígonos, etc.)</p></li>
 <li><p>Para datos puntuales, puede ser coordenadas x e y solamente</p></li>
 <li><p>Para datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc.</p></li>
 </ul>
+</section>
+<section id="mapas-interactivos-con-ggiraph" class="slide level2">
+<h2>Mapas interactivos con {ggiraph}</h2>
+<ul>
+<li><p>Alternativa interactiva a los mapas de {ggplot2} con <code>geom_sf_interactive()</code></p></li>
+<li><p>Sin necesidad de usar {leaflet}, pero con menos opciones de personalización y sin capas dinámicas</p></li>
+</ul>
+</section>
+<section id="ejemplo-simple-con-leaflet" class="slide level2">
+<h2>Ejemplo simple con {leaflet}</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="fu">library</span>(shiny); <span class="fu">library</span>(leaflet); <span class="fu">library</span>(sf); <span class="fu">library</span>(dplyr)</span>
+<span id="cb18-2"><a></a>countries_data <span class="ot">&lt;-</span> giscoR<span class="sc">::</span><span class="fu">gisco_get_countries</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a></a>  <span class="fu">select</span>(NAME_ENGL, geometry)</span>
+<span id="cb18-4"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb18-5"><a></a>  <span class="fu">group_by</span>(home_team) <span class="sc">|&gt;</span> </span>
+<span id="cb18-6"><a></a>  <span class="fu">summarise</span>(<span class="at">total_partidos =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a></a>  <span class="fu">inner_join</span>(countries_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"home_team"</span> <span class="ot">=</span> <span class="st">"NAME_ENGL"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-8"><a></a>  <span class="fu">st_as_sf</span>()</span>
+<span id="cb18-9"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb18-10"><a></a>  <span class="fu">titlePanel</span>(<span class="st">"Mapa interactivo con Leaflet"</span>),</span>
+<span id="cb18-11"><a></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb18-12"><a></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb18-13"><a></a>      <span class="fu">selectizeInput</span>(<span class="st">"pais"</span>, <span class="st">"Selecciona un país:"</span>, <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team))</span>
+<span id="cb18-14"><a></a>    ),</span>
+<span id="cb18-15"><a></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb18-16"><a></a>      <span class="fu">leafletOutput</span>(<span class="st">"mapa"</span>)</span>
+<span id="cb18-17"><a></a>    )</span>
+<span id="cb18-18"><a></a>  )</span>
+<span id="cb18-19"><a></a>)</span>
+<span id="cb18-20"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb18-21"><a></a>  output<span class="sc">$</span>mapa <span class="ot">&lt;-</span> <span class="fu">renderLeaflet</span>({</span>
+<span id="cb18-22"><a></a>    bins <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">quantile</span>(resultados<span class="sc">$</span>total_partidos, <span class="at">probs =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fl">0.25</span>)), <span class="cn">Inf</span>)</span>
+<span id="cb18-23"><a></a>    pal <span class="ot">&lt;-</span> <span class="fu">colorBin</span>(<span class="st">"YlOrRd"</span>, <span class="at">domain =</span> resultados<span class="sc">$</span>total_partidos, <span class="at">bins =</span> bins)</span>
+<span id="cb18-24"><a></a>    <span class="co"># Cargar datos geoespaciales (ejemplo con sf)</span></span>
+<span id="cb18-25"><a></a>    resultados <span class="sc">|&gt;</span> </span>
+<span id="cb18-26"><a></a>    <span class="fu">leaflet</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-27"><a></a>      <span class="fu">addTiles</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb18-28"><a></a>      <span class="fu">addPolygons</span>(<span class="at">fillColor =</span> <span class="sc">~</span><span class="fu">pal</span>(total_partidos), </span>
+<span id="cb18-29"><a></a>        <span class="at">fillOpacity =</span> <span class="fl">0.5</span>, </span>
+<span id="cb18-30"><a></a>        <span class="at">color =</span> <span class="st">"black"</span>, </span>
+<span id="cb18-31"><a></a>        <span class="at">weight =</span> <span class="dv">1</span>, </span>
+<span id="cb18-32"><a></a>        <span class="at">popup =</span> <span class="sc">~</span><span class="fu">paste0</span>(<span class="st">"Total partidos: "</span>, total_partidos), </span>
+<span id="cb18-33"><a></a>        <span class="at">label =</span> <span class="sc">~</span>home_team) <span class="sc">|&gt;</span> </span>
+<span id="cb18-34"><a></a>      <span class="fu">addPolygons</span>(<span class="at">data =</span> resultados <span class="sc">|&gt;</span> <span class="fu">filter</span>(home_team <span class="sc">==</span> input<span class="sc">$</span>pais), </span>
+<span id="cb18-35"><a></a>        <span class="at">color =</span> <span class="st">"green"</span>, <span class="at">weight =</span> <span class="dv">4</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb18-36"><a></a>      <span class="fu">addLegend</span>(<span class="at">pal =</span> pal, <span class="at">values =</span> resultados<span class="sc">$</span>total_partidos, <span class="at">title =</span> <span class="st">"Total partidos"</span>)</span>
+<span id="cb18-37"><a></a>  })</span>
+<span id="cb18-38"><a></a>}</span>
+<span id="cb18-39"><a></a><span class="fu">shinyApp</span>(<span class="at">ui =</span> ui, <span class="at">server =</span> server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="ejemplo-simple-con-ggiraph" class="slide level2">
+<h2>Ejemplo simple con {ggiraph}</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="fu">library</span>(shiny); <span class="fu">library</span>(ggiraph); <span class="fu">library</span>(ggplot2); <span class="fu">library</span>(sf); <span class="fu">library</span>(dplyr)</span>
+<span id="cb19-2"><a></a>countries_data <span class="ot">&lt;-</span> giscoR<span class="sc">::</span><span class="fu">gisco_get_countries</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb19-3"><a></a>  <span class="fu">select</span>(NAME_ENGL, geometry)</span>
+<span id="cb19-4"><a></a>resultados <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/results.csv"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb19-5"><a></a>  <span class="fu">group_by</span>(home_team) <span class="sc">|&gt;</span> </span>
+<span id="cb19-6"><a></a>  <span class="fu">summarise</span>(<span class="at">total_partidos =</span> <span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb19-7"><a></a>  <span class="fu">inner_join</span>(countries_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"home_team"</span> <span class="ot">=</span> <span class="st">"NAME_ENGL"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb19-8"><a></a>  <span class="fu">st_as_sf</span>()</span>
+<span id="cb19-9"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb19-10"><a></a>  <span class="fu">titlePanel</span>(<span class="st">"Mapa interactivo con ggiraph"</span>),</span>
+<span id="cb19-11"><a></a>  <span class="fu">sidebarLayout</span>(</span>
+<span id="cb19-12"><a></a>    <span class="fu">sidebarPanel</span>(</span>
+<span id="cb19-13"><a></a>      <span class="fu">selectizeInput</span>(<span class="st">"pais"</span>, <span class="st">"Selecciona un país:"</span>, <span class="at">choices =</span> <span class="fu">unique</span>(resultados<span class="sc">$</span>home_team))</span>
+<span id="cb19-14"><a></a>    ),</span>
+<span id="cb19-15"><a></a>    <span class="fu">mainPanel</span>(</span>
+<span id="cb19-16"><a></a>      <span class="fu">girafeOutput</span>(<span class="st">"mapa"</span>)</span>
+<span id="cb19-17"><a></a>    )</span>
+<span id="cb19-18"><a></a>  )</span>
+<span id="cb19-19"><a></a>)</span>
+<span id="cb19-20"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb19-21"><a></a>  output<span class="sc">$</span>mapa <span class="ot">&lt;-</span> <span class="fu">renderGirafe</span>({</span>
+<span id="cb19-22"><a></a>    p <span class="ot">&lt;-</span> resultados <span class="sc">|&gt;</span> </span>
+<span id="cb19-23"><a></a>      <span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb19-24"><a></a>      <span class="fu">geom_sf_interactive</span>(<span class="fu">aes</span>(<span class="at">fill =</span> total_partidos, <span class="at">tooltip =</span> <span class="fu">paste0</span>(<span class="st">"Total  partidos: "</span>, total_partidos, <span class="st">"&lt;br&gt;País: "</span>, home_team))) <span class="sc">+</span></span>
+<span id="cb19-25"><a></a>      <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb19-26"><a></a>      <span class="fu">theme_void</span>()</span>
+<span id="cb19-27"><a></a>    <span class="fu">girafe</span>(<span class="at">ggobj =</span> p)</span>
+<span id="cb19-28"><a></a>  })</span>
+<span id="cb19-29"><a></a>}</span>
+<span id="cb19-30"><a></a><span class="fu">shinyApp</span>(<span class="at">ui =</span> ui, <span class="at">server =</span> server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="otros-gráficos-espaciales" class="slide level2">
 <h2>Otros gráficos espaciales</h2>
@@ -804,16 +889,117 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 <li><p><code>ggpubr</code>: Menos completo, pero sencillo. <a href="https://rpkgs.datanovia.com/ggpubr/" class="uri">https://rpkgs.datanovia.com/ggpubr/</a></p></li>
 </ul>
 </section>
+<section id="ejemplos-con-ggstatsplot---comparaciones-grupos" class="slide level2">
+<h2>Ejemplos con <code>ggstatsplot</code> - comparaciones grupos</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  species   mean_bill_length
+  &lt;fct&gt;                &lt;dbl&gt;
+1 Adelie                38.8
+2 Chinstrap             48.8
+3 Gentoo                47.5</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-19-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             Df Sum Sq Mean Sq F value Pr(&gt;F)    
+species       2   7194    3597   410.6 &lt;2e-16 ***
+Residuals   339   2970       9                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+2 observations deleted due to missingness</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-19-2.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-19-3.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-19-4.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplos-con-ggstatsplot---univariante-y-regresión" class="slide level2">
+<h2>Ejemplos con <code>ggstatsplot</code> - univariante y regresión</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-20-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-20-2.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="ejemplos-atributos" class="slide level2">
+<h2>Ejemplos atributos</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-21-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-21-2.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-21-3.png" width="960"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-21-4.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="otros-htmlwidgets" class="slide level2">
 <h2>Otros htmlwidgets</h2>
 <ul>
 <li><p>133 registrados: <a href="https://gallery.htmlwidgets.org" class="uri">https://gallery.htmlwidgets.org</a></p></li>
-<li><p>{visNetwork} para gráficos de redes</p></li>
-<li><p>{ggalluvial} para gráficos aluviales (flujos entre categorías)</p></li>
-<li><p>{ggradar} para gráficos de radar</p></li>
-<li><p>{networkD3} para gráficos sankey</p></li>
-<li><p>{dygraphs} para series temporales</p></li>
-<li><p>{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc.</p></li>
+<li><p><a href="https://datastorm-open.github.io/visNetwork/">{visNetwork}</a> para gráficos de redes</p></li>
+<li><p><a href="https://corybrunson.github.io/ggalluvial/">{ggalluvial}</a> para gráficos aluviales (flujos entre categorías)</p></li>
+<li><p><a href="https://github.com/ricardo-bion/ggradar">{ggradar}</a> para gráficos de radar</p></li>
+<li><p><a href="https://christophergandrud.github.io/networkD3/">{networkD3}</a> para gráficos sankey, entre otros</p></li>
+<li><p><a href="https://rstudio.github.io/dygraphs/">{dygraphs}</a> para series temporales</p></li>
+<li><p><a href="https://rich-iannone.github.io/DiagrammeR/">{DiagrammeR}</a> para diagramas de flujo, diagramas de Venn, etc.</p></li>
 </ul>
 </section>
 <section id="from-data-to-viz" class="slide level2">
@@ -822,7 +1008,35 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 <li>Explora: <a href="https://www.data-to-viz.com" class="uri">https://www.data-to-viz.com</a></li>
 </ul>
 
-<img data-src="https://www.data-to-viz.com/img/logo/tree-s.png" class="r-stretch"></section></section>
+<img data-src="https://www.data-to-viz.com/img/logo/tree-s.png" class="r-stretch"></section>
+<section id="paletas-de-colores" class="slide level2">
+<h2>Paletas de colores</h2>
+<ul>
+<li><p><code>RColorBrewer</code>: Paletas predefinidas para diferentes tipos de datos (categóricos, secuenciales, divergentes)</p></li>
+<li><p><code>viridis</code>: Paletas perceptualmente uniformes, adecuadas para personas con daltonismo</p></li>
+<li><p><code>ggsci</code>: Paletas inspiradas en revistas científicas, marcas, etc.</p></li>
+<li><p><code>ggthemes</code>: Paletas inspiradas en temas de gráficos clásicos (e.g., ColorBrewer, Tableau, etc.)</p></li>
+<li><p><code>scico</code>: Paletas científicas con opciones para diferentes tipos de datos y necesidades de visualización</p></li>
+<li><p><code>wesanderson</code>: Paletas inspiradas en las películas de Wes Anderson</p></li>
+</ul>
+</section>
+<section id="recursos" class="slide level2">
+<h2>Recursos</h2>
+<ul>
+<li><p><a href="https://r-charts.com/colors/">R charts - colors in R</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/RColorBrewer/index.html">RColorBrewer</a>, <a href="https://r-graph-gallery.com/38-rcolorbrewers-palettes.html">more</a></p></li>
+<li><p><a href="https://ggplot2-book.org/scales-colour.html">ggplot2 book - color scales</a></p></li>
+<li><p><a href="https://r-graph-gallery.com/color-palette-finder">Colour palette finder</a></p></li>
+</ul>
+</section></section>
+<section>
+<section id="ejemplo-cambio-de-paleta-con-ggplot2" class="title-slide slide level1 center">
+<h1>Ejemplo cambio de paleta con <code>ggplot2</code></h1>
+
+<img data-src="shiny_reactive_files/figure-revealjs/unnamed-chunk-22-1.png" width="960" class="r-stretch"></section>
+<section id="ejemplo-cambio-de-paleta-con-ggstatsplot" class="slide level2">
+<h2>Ejemplo cambio de paleta con <code>ggstatsplot</code></h2>
+</section></section>
 <section id="preguntas" class="title-slide slide level1 center">
 <h1>Preguntas?</h1>
 <p><a href="https://emilio.lcano.com">http://emilio.lcano.com</a></p>

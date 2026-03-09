@@ -542,8 +542,8 @@
     "objectID": "shiny_reactive.html#mapas-interactivos-con-leaflet",
     "href": "shiny_reactive.html#mapas-interactivos-con-leaflet",
     "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Mapas interactivos con leaflet",
-    "text": "Mapas interactivos con leaflet\n\nPermite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.\nIntegración con ggiraph para añadir interactividad a los mapas\nNecesaria columna “geometry” con objetos sf (coordenadas, polígonos, etc.)\nPara datos puntuales, puede ser coordenadas x e y solamente\nPara datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc."
+    "section": "Mapas interactivos con {leaflet}",
+    "text": "Mapas interactivos con {leaflet}\n\nPermite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.\nNecesaria columna “geometry” con objetos sf (coordenadas, polígonos, etc.)\nPara datos puntuales, puede ser coordenadas x e y solamente\nPara datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc."
   },
   {
     "objectID": "shiny_reactive.html#otros-gráficos-espaciales",
@@ -564,7 +564,7 @@
     "href": "shiny_reactive.html#otros-htmlwidgets",
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Otros htmlwidgets",
-    "text": "Otros htmlwidgets\n\n133 registrados: https://gallery.htmlwidgets.org\n{visNetwork} para gráficos de redes\n{ggalluvial} para gráficos aluviales (flujos entre categorías)\n{ggradar} para gráficos de radar\n{networkD3} para gráficos sankey\n{dygraphs} para series temporales\n{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc."
+    "text": "Otros htmlwidgets\n\n133 registrados: https://gallery.htmlwidgets.org\n{visNetwork} para gráficos de redes\n{ggalluvial} para gráficos aluviales (flujos entre categorías)\n{ggradar} para gráficos de radar\n{networkD3} para gráficos sankey, entre otros\n{dygraphs} para series temporales\n{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc."
   },
   {
     "objectID": "shiny_reactive.html#ejemplo",
@@ -663,5 +663,68 @@
     "title": "Shiny avanzado",
     "section": "Pruebas",
     "text": "Pruebas\n\nEs recomendable escribir pruebas para la aplicación Shiny, especialmente para la lógica del servidor y los módulos\nEl paquete testthat se puede usar para escribir pruebas unitarias, y shinytest para pruebas de integración y de interfaz de usuario\nLas pruebas ayudan a garantizar que la aplicación funcione correctamente después de realizar cambios o actualizaciones, y facilitan la detección de errores y la mejora continua de la aplicación\nPaquetes específicos para shiny: shinytest2 para pruebas de interfaz de usuario, shinytest para pruebas de integración, y testthat para pruebas unitarias"
+  },
+  {
+    "objectID": "shiny_reactive.html#mapas-interactivos-con-ggiraph",
+    "href": "shiny_reactive.html#mapas-interactivos-con-ggiraph",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Mapas interactivos con {ggiraph}",
+    "text": "Mapas interactivos con {ggiraph}\n\nAlternativa interactiva a los mapas de {ggplot2} con geom_sf_interactive()\nSin necesidad de usar {leaflet}, pero con menos opciones de personalización y sin capas dinámicas"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-simple-con-leaflet",
+    "href": "shiny_reactive.html#ejemplo-simple-con-leaflet",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo simple con {leaflet}",
+    "text": "Ejemplo simple con {leaflet}\n\nlibrary(shiny); library(leaflet); library(sf); library(dplyr)\ncountries_data &lt;- giscoR::gisco_get_countries() |&gt; \n  select(NAME_ENGL, geometry)\nresultados &lt;- read.csv(\"data/results.csv\") |&gt; \n  group_by(home_team) |&gt; \n  summarise(total_partidos = n()) |&gt;\n  inner_join(countries_data, by = c(\"home_team\" = \"NAME_ENGL\")) |&gt; \n  st_as_sf()\nui &lt;- fluidPage(\n  titlePanel(\"Mapa interactivo con Leaflet\"),\n  sidebarLayout(\n    sidebarPanel(\n      selectizeInput(\"pais\", \"Selecciona un país:\", choices = unique(resultados$home_team))\n    ),\n    mainPanel(\n      leafletOutput(\"mapa\")\n    )\n  )\n)\nserver &lt;- function(input, output, session) {\n  output$mapa &lt;- renderLeaflet({\n    bins &lt;- c(quantile(resultados$total_partidos, probs = seq(0, 1, 0.25)), Inf)\n    pal &lt;- colorBin(\"YlOrRd\", domain = resultados$total_partidos, bins = bins)\n    # Cargar datos geoespaciales (ejemplo con sf)\n    resultados |&gt; \n    leaflet() |&gt; \n      addTiles() |&gt; \n      addPolygons(fillColor = ~pal(total_partidos), \n        fillOpacity = 0.5, \n        color = \"black\", \n        weight = 1, \n        popup = ~paste0(\"Total partidos: \", total_partidos), \n        label = ~home_team) |&gt; \n      addPolygons(data = resultados |&gt; filter(home_team == input$pais), \n        color = \"green\", weight = 4) |&gt; \n      addLegend(pal = pal, values = resultados$total_partidos, title = \"Total partidos\")\n  })\n}\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-simple-con-ggiraph",
+    "href": "shiny_reactive.html#ejemplo-simple-con-ggiraph",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo simple con {ggiraph}",
+    "text": "Ejemplo simple con {ggiraph}\n\nlibrary(shiny); library(ggiraph); library(ggplot2); library(sf); library(dplyr)\ncountries_data &lt;- giscoR::gisco_get_countries() |&gt; \n  select(NAME_ENGL, geometry)\nresultados &lt;- read.csv(\"data/results.csv\") |&gt; \n  group_by(home_team) |&gt; \n  summarise(total_partidos = n()) |&gt;\n  inner_join(countries_data, by = c(\"home_team\" = \"NAME_ENGL\")) |&gt; \n  st_as_sf()\nui &lt;- fluidPage(\n  titlePanel(\"Mapa interactivo con ggiraph\"),\n  sidebarLayout(\n    sidebarPanel(\n      selectizeInput(\"pais\", \"Selecciona un país:\", choices = unique(resultados$home_team))\n    ),\n    mainPanel(\n      girafeOutput(\"mapa\")\n    )\n  )\n)\nserver &lt;- function(input, output, session) {\n  output$mapa &lt;- renderGirafe({\n    p &lt;- resultados |&gt; \n      ggplot() +\n      geom_sf_interactive(aes(fill = total_partidos, tooltip = paste0(\"Total  partidos: \", total_partidos, \"&lt;br&gt;País: \", home_team))) +\n      scale_fill_viridis_c() +\n      theme_void()\n    girafe(ggobj = p)\n  })\n}\nshinyApp(ui = ui, server = server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\n\n# A tibble: 3 × 2\n  species   mean_bill_length\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                38.8\n2 Chinstrap             48.8\n3 Gentoo                47.5\n\n\n\n\n\n\n\n\n\n             Df Sum Sq Mean Sq F value Pr(&gt;F)    \nspecies       2   7194    3597   410.6 &lt;2e-16 ***\nResiduals   339   2970       9                   \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n2 observations deleted due to missingness"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante-y-regresión",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante-y-regresión",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - univariante y regresión",
+    "text": "Ejemplos con ggstatsplot - univariante y regresión"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-atributos",
+    "href": "shiny_reactive.html#ejemplos-atributos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos atributos",
+    "text": "Ejemplos atributos"
+  },
+  {
+    "objectID": "shiny_reactive.html#paletas-de-colores",
+    "href": "shiny_reactive.html#paletas-de-colores",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Paletas de colores",
+    "text": "Paletas de colores\n\nRColorBrewer: Paletas predefinidas para diferentes tipos de datos (categóricos, secuenciales, divergentes)\nviridis: Paletas perceptualmente uniformes, adecuadas para personas con daltonismo\nggsci: Paletas inspiradas en revistas científicas, marcas, etc.\nggthemes: Paletas inspiradas en temas de gráficos clásicos (e.g., ColorBrewer, Tableau, etc.)\nscico: Paletas científicas con opciones para diferentes tipos de datos y necesidades de visualización\nwesanderson: Paletas inspiradas en las películas de Wes Anderson"
+  },
+  {
+    "objectID": "shiny_reactive.html#recursos",
+    "href": "shiny_reactive.html#recursos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Recursos",
+    "text": "Recursos\n\nR charts - colors in R\nRColorBrewer, more\nggplot2 book - color scales\nColour palette finder"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
+    "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo cambio de paleta con ggstatsplot",
+    "text": "Ejemplo cambio de paleta con ggstatsplot"
   }
 ]
