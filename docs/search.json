@@ -1377,5 +1377,12 @@
     "title": "Shiny avanzado",
     "section": "Proceso depliegue en posit connect cloud desde Positron",
     "text": "Proceso depliegue en posit connect cloud desde Positron\n\nCrear una cuenta en Posit Connect Cloud: https://connect.posit.cloud/\nCrea un archivo app.R con el código de tu aplicación Shiny. Añade los archivos de datos necesarios en la misma carpeta o en una subcarpeta.\nVe al complemento Posit Publisher (en barra de título del documento) y haz clic en “Publish”. Se abrirá una ventana para configurar la publicación.\nEn la sección “Publish to”, selecciona “Posit Connect Cloud” e inicia sesión con tu cuenta.\nAñade los archivos necesarios en “Project files”, gestiona secretos si es necesario, y otras configuraciones.\nHaz clic en Deploy Your Project para iniciar el despliegue. Posit Publisher se encargará de subir tu aplicación a Posit Connect Cloud y configurarla para su ejecución.\nEn el panel de control de Posit Connect Cloud puedes gestionar tu aplicación, ver estadísticas de uso, y compartir el enlace con otros usuarios."
+  },
+  {
+    "objectID": "shiny_advanced.html#pasos-para-crear-un-paquete-shiny",
+    "href": "shiny_advanced.html#pasos-para-crear-un-paquete-shiny",
+    "title": "Shiny avanzado",
+    "section": "Pasos para crear un paquete Shiny",
+    "text": "Pasos para crear un paquete Shiny\nFuente: Capítulo 20 de Mastería de R Shiny\nOtros recursos: R Packages\n\nCrear la carpeta R donde se guardarán las funciones y módulos del paquete.\nCrear el archivo DESCRIPTION con la información del paquete y las dependencias necesarias."
   }
 ]

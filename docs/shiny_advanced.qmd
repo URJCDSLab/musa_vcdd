@@ -98,6 +98,17 @@ myshinyapp/
 ``` 
 
 
+## Pasos para crear un paquete Shiny
+
+Fuente: [Capítulo 20 de Mastería de R Shiny](https://mastering-shiny.org/scaling-packaging.html)
+
+Otros recursos: [R Packages](https://r-pkgs.org/whole-game.html)
+
+1. Crear la carpeta R donde se guardarán las funciones y módulos del paquete.
+
+2. Crear el archivo DESCRIPTION con la información del paquete y las dependencias necesarias.
+
+
 
 
 ## Multilenguaje
