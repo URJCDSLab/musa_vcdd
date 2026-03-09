@@ -1,4 +1,4 @@
-*_files
+# *_files
 .quarto
 .vscode
 .DS_Store
