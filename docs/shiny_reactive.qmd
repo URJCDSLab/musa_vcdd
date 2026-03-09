@@ -738,20 +738,40 @@ shinyApp(ui = ui, server = server)
 ## Ejemplos con `ggstatsplot` - comparaciones grupos
 
 ```{r}
+#| echo: true
 library(palmerpenguins); library(ggstatsplot); library(ggplot2); library(dplyr)
 penguins |> 
   group_by(species) |>
   summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))
+```
+
+
+## Ejemplos con `ggstatsplot` - comparaciones grupos
+
+```{r}
+#| echo: true
 penguins |> 
   ggplot(aes(x = species, y = bill_length_mm)) +
   geom_boxplot()
 summary(aov(bill_length_mm ~ species, data = penguins))
+```
+
+## Ejemplos con `ggstatsplot` - comparaciones grupos
+
+```{r}
+#| echo: true
 penguins |> 
   ggstatsplot::ggbetweenstats(
     x = species,
     y = bill_length_mm,
     outlier.tagging = TRUE
   )
+```
+
+## Ejemplos con `ggstatsplot` - comparaciones grupos
+
+```{r}
+#| echo: true
 penguins |> 
   ggstatsplot::ggbetweenstats(
     x = species,
@@ -759,6 +779,12 @@ penguins |>
     outlier.tagging = TRUE,
     bf.message = FALSE
   )
+```
+
+## Ejemplos con `ggstatsplot` - comparaciones grupos
+
+```{r}
+#| echo: true
 penguins |> 
   ggstatsplot::ggbetweenstats(
     x = species,
@@ -771,13 +797,18 @@ penguins |>
 
 ```
 
-## Ejemplos con `ggstatsplot` - univariante y regresión
+## Ejemplos con `ggstatsplot` - univariante
 ```{r}
+#| echo: true
 penguins |> 
   gghistostats(
     x = bill_length_mm
   )
+```
 
+## Ejemplos con `ggstatsplot` - regresión
+```{r}
+#| echo: true
 modelo <- lm(body_mass_g ~ bill_length_mm, data = penguins)
 
 ggcoefstats(
@@ -788,24 +819,44 @@ ggcoefstats(
 ## Ejemplos atributos
 
 ```{r}
+#| echo: true
 penguins |> 
   ggpiestats(
     x = species
   
   )
+
+```
+
+## Ejemplos atributos
+
+```{r}
+#| echo: true
 penguins |> 
   ggpiestats(
     x = species,
     bf.message = FALSE,
     subtitle = FALSE
   )
+
+```
+
+## Ejemplos atributos
+
+```{r}
+#| echo: true
 penguins |> 
   ggpiestats(
     x = species,
     bf.message = FALSE,
     results.subtitle = FALSE
   )
+```
 
+## Ejemplos atributos
+
+```{r}
+#| echo: true
 penguins |> 
   ggbarstats(
     x = species,
@@ -865,9 +916,10 @@ penguins |>
 
 
 
-# Ejemplo cambio de paleta con `ggplot2`
+## Ejemplo cambio de paleta con `ggplot2`
 
 ```{r}
+#| echo: true
 library(ggplot2); library(ggsci)
 ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
   geom_boxplot() +
@@ -875,21 +927,44 @@ ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
   theme_minimal()
 ```
 
+## Ejemplo cambio de paleta con `ggplot2`
+
+```{r}
+#| echo: true
+library(ggplot2); library(ggthemes); library(palmerpenguins)
+ggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +
+  geom_point() +
+  ggthemes::scale_color_tableau() +
+  theme_minimal()
+```
 
 ## Ejemplo cambio de paleta con `ggstatsplot`
+
 ```{r}
-#| eval: false
-library(ggstatsplot); library(ggsci)
-ggstatsplot::ggbetweenstats(
-  data = mtcars,
-  x = factor(cyl),
-  y = mpg,
-  fill = factor(cyl),
-  bf.message = FALSE,
-  type = "nonparametric"
-) +
-  scale_fill_aaas() +
+#| echo: true
+library(ggstatsplot); library(viridis)
+penguins |> 
+  ggstatsplot::ggbetweenstats(
+    x = species,
+    y = bill_length_mm,
+    outlier.tagging = TRUE,
+    bf.message = FALSE,
+    type = "nonparametric"
+  ) +
+  scale_fill_viridis_d() +
+  scale_color_viridis_d() +
   theme_minimal()
+```
+
+## Ejemplo paleta personalizada
+
+```{r}
+#| echo: true
+library(ggplot2); library(ggthemes); library(palmerpenguins)
+ggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +
+  geom_point() +
+  scale_color_manual(values = c("Adelie" = "red", "Chinstrap" = "green", "Gentoo" = "blue")) +
+  theme_bw()
 ```
 
 # Preguntas? 

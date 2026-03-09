@@ -690,7 +690,7 @@
     "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos",
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplos con ggstatsplot - comparaciones grupos",
-    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\n\n# A tibble: 3 × 2\n  species   mean_bill_length\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                38.8\n2 Chinstrap             48.8\n3 Gentoo                47.5\n\n\n\n\n\n\n\n\n\n             Df Sum Sq Mean Sq F value Pr(&gt;F)    \nspecies       2   7194    3597   410.6 &lt;2e-16 ***\nResiduals   339   2970       9                   \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n2 observations deleted due to missingness"
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\nlibrary(palmerpenguins); library(ggstatsplot); library(ggplot2); library(dplyr)\npenguins |&gt; \n  group_by(species) |&gt;\n  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))\n\n# A tibble: 3 × 2\n  species   mean_bill_length\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                38.8\n2 Chinstrap             48.8\n3 Gentoo                47.5"
   },
   {
     "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante-y-regresión",
@@ -704,7 +704,7 @@
     "href": "shiny_reactive.html#ejemplos-atributos",
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplos atributos",
-    "text": "Ejemplos atributos"
+    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggpiestats(\n    x = species\n  \n  )"
   },
   {
     "objectID": "shiny_reactive.html#paletas-de-colores",
@@ -725,6 +725,97 @@
     "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplo cambio de paleta con ggstatsplot",
-    "text": "Ejemplo cambio de paleta con ggstatsplot"
+    "text": "Ejemplo cambio de paleta con ggstatsplot\n\nlibrary(ggstatsplot); library(viridis)\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  ) +\n  scale_fill_viridis_d() +\n  scale_color_viridis_d() +\n  theme_minimal()"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-1",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-1",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggplot(aes(x = species, y = bill_length_mm)) +\n  geom_boxplot()\n\nsummary(aov(bill_length_mm ~ species, data = penguins))\n\n             Df Sum Sq Mean Sq F value Pr(&gt;F)    \nspecies       2   7194    3597   410.6 &lt;2e-16 ***\nResiduals   339   2970       9                   \n---\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n2 observations deleted due to missingness"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-2",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-2",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-3",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-3",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-4",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-4",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-5",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-5",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
+    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - univariante",
+    "text": "Ejemplos con ggstatsplot - univariante\n\npenguins |&gt; \n  gghistostats(\n    x = bill_length_mm\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---regresión",
+    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---regresión",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos con ggstatsplot - regresión",
+    "text": "Ejemplos con ggstatsplot - regresión\n\nmodelo &lt;- lm(body_mass_g ~ bill_length_mm, data = penguins)\n\nggcoefstats(\n    modelo\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-atributos-1",
+    "href": "shiny_reactive.html#ejemplos-atributos-1",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos atributos",
+    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggpiestats(\n    x = species,\n    bf.message = FALSE,\n    subtitle = FALSE\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-atributos-2",
+    "href": "shiny_reactive.html#ejemplos-atributos-2",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos atributos",
+    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggpiestats(\n    x = species,\n    bf.message = FALSE,\n    results.subtitle = FALSE\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-atributos-3",
+    "href": "shiny_reactive.html#ejemplos-atributos-3",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos atributos",
+    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggbarstats(\n    x = species,\n    y = sex,\n    bf.message = FALSE)"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2",
+    "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo cambio de paleta con ggplot2",
+    "text": "Ejemplo cambio de paleta con ggplot2\n\nlibrary(ggplot2); library(ggsci)\nggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +\n  geom_boxplot() +\n  scale_fill_aaas() +\n  theme_minimal()"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2-1",
+    "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2-1",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo cambio de paleta con ggplot2",
+    "text": "Ejemplo cambio de paleta con ggplot2\n\nlibrary(ggplot2); library(ggthemes); library(palmerpenguins)\nggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +\n  geom_point() +\n  ggthemes::scale_color_tableau() +\n  theme_minimal()"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-paleta-personalizada",
+    "href": "shiny_reactive.html#ejemplo-paleta-personalizada",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo paleta personalizada",
+    "text": "Ejemplo paleta personalizada\n\nlibrary(ggplot2); library(ggthemes); library(palmerpenguins)\nggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +\n  geom_point() +\n  scale_color_manual(values = c(\"Adelie\" = \"red\", \"Chinstrap\" = \"green\", \"Gentoo\" = \"blue\")) +\n  theme_bw()"
   }
 ]
