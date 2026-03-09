@@ -1,0 +1,58 @@
+---
+title: "Práctica: desarrollo de un dashboard para datos deportivos"
+subtitle: "Visualización y Comunicación de Datos Deportivos"
+author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad Rey Juan Carlos"
+code-fold: false
+format: html
+---
+
+# Introducción
+
+En esta práctica, desarrollaremos un dashboard interactivo utilizando Shiny para visualizar y analizar datos deportivos. El objetivo es crear una aplicación que permita a los usuarios explorar diferentes aspectos de los datos, como estadísticas de jugadores, resultados de partidos, tendencias a lo largo del tiempo, o cualesquiera otros insights relevantes que se puedan extraer de los datos deportivos disponibles.
+
+# Objetivos
+
+- Aprender a utilizar Shiny para crear aplicaciones web interactivas.
+- Desarrollar habilidades para la visualización de datos deportivos.
+- Implementar funcionalidades reactivas para mejorar la experiencia del usuario.
+- Integrar diferentes tipos de gráficos y tablas para presentar la información de manera clara y atractiva
+
+# Estructura del Dashboard
+
+Se debe elegir una de las estructuras vistas en clase para organizar el dashboard. Ya sea con páginas, pestañas, o _sidebars_.
+
+# Trabajo individual o en grupos
+
+El trabajo se puede realizar de forma individual o en grupos. En caso de realizarlo en grupos, cada uno debe haber realizado una parte del dashboard (página, gráficos, etc.)
+
+# Datos
+
+Se pueden utilizar datos deportivos de cualquier tipo, idealmente los que se han utilizado en otras asignaturas, para centrarnos en la visualización y comunicación y no en la limpieza y preparación de los datos. 
+
+# Entrega
+
+La entrega se realizará a través de un repositorio en GitHub. Se debe incluir el código completo del dashboard, así como una breve descripción de las funcionalidades implementadas y los insights obtenidos a partir de los datos deportivos analizados.
+
+Opcionalmente, se puede añadir un enlace a una versión desplegada del dashboard utilizando servicios como ShinyApps.io o similar.
+
+El repositorio debe contener un archivo `README.md` a modo de memoria, que incluya brevemente los siguientes puntos:
+
+1. Descripción del proyecto y objetivos.
+2. Estructura del dashboard y funcionalidades implementadas.
+3. Descripción de los datos utilizados y su origen.
+4. Distribución del trabajo (en caso de realizarlo en grupos).
+5. Enlace a versión desplegada del dashboard (si se ha realizado el despliegue).
+6. Explicación de los fundamentos de la visualización de datos aplicados en el dashboard.
+7. Conclusiones y posibles mejoras futuras.
+
+# Evaluación
+
+La evaluación se basará en los siguientes criterios:
+
+- Funcionalidad (30%): El dashboard debe ser completamente funcional y permitir la interacción con los datos de manera fluida.
+- Visualización (30%): La calidad de las visualizaciones y la capacidad para comunicar insights de manera efectiva serán aspectos clave en la evaluación.
+- Documentación (20%): La claridad y exhaustividad de la documentación en el `README.md` será un factor importante para la evaluación.
+- Originalidad (10%): Se valorará la creatividad en el diseño del dashboard y la forma en que se presentan los datos.
+- Despliegue (10%): Se valorará positivamente el despliegue del dashboard en una plataforma accesible.
+
+

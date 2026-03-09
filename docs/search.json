@@ -357,6 +357,83 @@
     "text": "Dashboards\n\nSesión 1: Introducción a la visualización mediante dashboards\nSesión 2: Diseño e interacción de usuario dashboards con Shiny\nSesión 3: Objetos reactivos y gráficos interactivos\nSesión 4: Shiny avanzado\nSesión 5: Práctica: desarrollo de un dashboard para datos deportivos"
   },
   {
+    "objectID": "intro_shiny.html#unión-no-intersección",
+    "href": "intro_shiny.html#unión-no-intersección",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Unión, no intersección",
+    "text": "Unión, no intersección\n\n\nThere is quite a bit of consensus about what Data Science is as a sort of mixture between Statistics, Computer Science and domain knowledge. A number of representations as Venn Diagrams have been developed. I prefer to see Data Science as the union of the three sets rather than the intersection, which is almost impossible to have in one person."
+  },
+  {
+    "objectID": "intro_shiny.html#r-for-data-science",
+    "href": "intro_shiny.html#r-for-data-science",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "R for Data Science",
+    "text": "R for Data Science\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\nSource: R for Data Science (Wickham, Çetinkaya-Rundel and Grolemund, 2023)"
+  },
+  {
+    "objectID": "intro_shiny.html#crisp-dm",
+    "href": "intro_shiny.html#crisp-dm",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "CRISP-DM",
+    "text": "CRISP-DM\n\n\n\nDespliegue puede incluir muchas cosas distintas\nEl uso de los modelos\nLa Visualización de resultados\nMLOps: como DevOps en informática\nExplicabilidad de modelos\n\n\n\n\n\n\n\n\n\nSource: Kenneth Jensen, CC BY-SA 3.0, via Wikimedia Commons"
+  },
+  {
+    "objectID": "intro_shiny.html#informes-estáticos",
+    "href": "intro_shiny.html#informes-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Informes estáticos",
+    "text": "Informes estáticos\n\n\n\nCuadro de mando integral: ejemplo clásico en la empresa\nInformes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista\nPor diseño, pensados para ser impresos en papel, formato pdf\n\n\n\n\n\n\n\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#dashboards-estáticos",
+    "href": "intro_shiny.html#dashboards-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards estáticos",
+    "text": "Dashboards estáticos\nMás compactos, diseñado para pantalla\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#dashboards-interactivos",
+    "href": "intro_shiny.html#dashboards-interactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards interactivos",
+    "text": "Dashboards interactivos\nInforme estático con elementos interactivos (widgets)\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny.html#limitaciones-y-alternativas",
+    "href": "intro_shiny.html#limitaciones-y-alternativas",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Limitaciones y alternativas",
+    "text": "Limitaciones y alternativas\n\nLimitados a lo que el estadístico quiere mostrar\nNo solo lo van a usar personas expertas en estadística\nToma de decisiones a distintos niveles\n\n\n\nAplicaciones Reactivas guían a las partes interesadas en la obtención e interpretación de resultados\nLos interfaces bien diseñados para modelos avanzados favorecen la explicabilidad"
+  },
+  {
+    "objectID": "intro_shiny.html#reactive-programming",
+    "href": "intro_shiny.html#reactive-programming",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Reactive programming",
+    "text": "Reactive programming\n\nThe key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.\n\n\nHadley Wickham, Mastering Shiny\n\n\n\n\n\nLos outputs, i.e., gráficos, tablas, etc., se generan con R cuando los inputs, i.e., selecciones del usuario, cambian."
+  },
+  {
+    "objectID": "intro_shiny.html#aplicaciones-shiny",
+    "href": "intro_shiny.html#aplicaciones-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicaciones Shiny",
+    "text": "Aplicaciones Shiny\n\nCódigo “estándar” de R\nNo hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente\nDos “componentes”\nui (interfaz de usuario, página web). Contiene inputs y outputs\nserver. Contiene objetos reactivos y funciones generadoras (rendering)\n\n\n\n\nDescargar Shiny cheetsheet\nVisitar la Shiny gallery"
+  },
+  {
+    "objectID": "intro_shiny.html#una-aplicación-shiny-simple",
+    "href": "intro_shiny.html#una-aplicación-shiny-simple",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Una aplicación shiny simple",
+    "text": "Una aplicación shiny simple\n\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny.html#algunos-ejemplos",
+    "href": "intro_shiny.html#algunos-ejemplos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Algunos ejemplos",
+    "text": "Algunos ejemplos\n\nDSLAB apps\nShiny Gallery"
+  },
+  {
     "objectID": "intro_shiny_0.html#unión-no-intersección",
     "href": "intro_shiny_0.html#unión-no-intersección",
     "title": "Introducción a la visualización mediante dashboards",
@@ -609,81 +686,11 @@
     "text": "Implentación real\n\nLectura de datos del proceso en tiempo real\nMonitorizar proceso en fase II\nAñadir análisis exploratorio\nAñadir modelos\nMejorar interfaz\nComplejidad de la app"
   },
   {
-    "objectID": "intro_shiny.html#unión-no-intersección",
-    "href": "intro_shiny.html#unión-no-intersección",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Unión, no intersección",
-    "text": "Unión, no intersección\n\n\nThere is quite a bit of consensus about what Data Science is as a sort of mixture between Statistics, Computer Science and domain knowledge. A number of representations as Venn Diagrams have been developed. I prefer to see Data Science as the union of the three sets rather than the intersection, which is almost impossible to have in one person."
-  },
-  {
-    "objectID": "intro_shiny.html#r-for-data-science",
-    "href": "intro_shiny.html#r-for-data-science",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "R for Data Science",
-    "text": "R for Data Science\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\nSource: R for Data Science (Wickham, Çetinkaya-Rundel and Grolemund, 2023)"
-  },
-  {
-    "objectID": "intro_shiny.html#crisp-dm",
-    "href": "intro_shiny.html#crisp-dm",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "CRISP-DM",
-    "text": "CRISP-DM\n\n\n\nDespliegue puede incluir muchas cosas distintas\nEl uso de los modelos\nLa Visualización de resultados\nMLOps: como DevOps en informática\nExplicabilidad de modelos\n\n\n\n\n\n\n\n\n\nSource: Kenneth Jensen, CC BY-SA 3.0, via Wikimedia Commons"
-  },
-  {
-    "objectID": "intro_shiny.html#informes-estáticos",
-    "href": "intro_shiny.html#informes-estáticos",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Informes estáticos",
-    "text": "Informes estáticos\n\n\n\nCuadro de mando integral: ejemplo clásico en la empresa\nInformes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista\nPor diseño, pensados para ser impresos en papel, formato pdf\n\n\n\n\n\n\n\n\n\nDownload .Rmd source | Ver online"
-  },
-  {
-    "objectID": "intro_shiny.html#dashboards-estáticos",
-    "href": "intro_shiny.html#dashboards-estáticos",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Dashboards estáticos",
-    "text": "Dashboards estáticos\nMás compactos, diseñado para pantalla\n\n\nDownload .Rmd source | Ver online"
-  },
-  {
-    "objectID": "intro_shiny.html#dashboards-interactivos",
-    "href": "intro_shiny.html#dashboards-interactivos",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Dashboards interactivos",
-    "text": "Dashboards interactivos\nInforme estático con elementos interactivos (widgets)\n\n\nDownload .Rmd source | Ver online"
-  },
-  {
-    "objectID": "intro_shiny.html#limitaciones-y-alternativas",
-    "href": "intro_shiny.html#limitaciones-y-alternativas",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Limitaciones y alternativas",
-    "text": "Limitaciones y alternativas\n\nLimitados a lo que el estadístico quiere mostrar\nNo solo lo van a usar personas expertas en estadística\nToma de decisiones a distintos niveles\n\n\n\nAplicaciones Reactivas guían a las partes interesadas en la obtención e interpretación de resultados\nLos interfaces bien diseñados para modelos avanzados favorecen la explicabilidad"
-  },
-  {
-    "objectID": "intro_shiny.html#reactive-programming",
-    "href": "intro_shiny.html#reactive-programming",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Reactive programming",
-    "text": "Reactive programming\n\nThe key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.\n\n\nHadley Wickham, Mastering Shiny\n\n\n\n\n\nLos outputs, i.e., gráficos, tablas, etc., se generan con R cuando los inputs, i.e., selecciones del usuario, cambian."
-  },
-  {
-    "objectID": "intro_shiny.html#aplicaciones-shiny",
-    "href": "intro_shiny.html#aplicaciones-shiny",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Aplicaciones Shiny",
-    "text": "Aplicaciones Shiny\n\nCódigo “estándar” de R\nNo hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente\nDos “componentes”\nui (interfaz de usuario, página web). Contiene inputs y outputs\nserver. Contiene objetos reactivos y funciones generadoras (rendering)\n\n\n\n\nDescargar Shiny cheetsheet\nVisitar la Shiny gallery"
-  },
-  {
-    "objectID": "intro_shiny.html#una-aplicación-shiny-simple",
-    "href": "intro_shiny.html#una-aplicación-shiny-simple",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Una aplicación shiny simple",
-    "text": "Una aplicación shiny simple\n\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n🖥️ Live demo 🤞🏻"
-  },
-  {
-    "objectID": "intro_shiny.html#algunos-ejemplos",
-    "href": "intro_shiny.html#algunos-ejemplos",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Algunos ejemplos",
-    "text": "Algunos ejemplos\n\nDSLAB apps\nShiny Gallery"
+    "objectID": "practica.html",
+    "href": "practica.html",
+    "title": "Práctica: desarrollo de un dashboard para datos deportivos",
+    "section": "",
+    "text": "Introducción\nEn esta práctica, desarrollaremos un dashboard interactivo utilizando Shiny para visualizar y analizar datos deportivos. El objetivo es crear una aplicación que permita a los usuarios explorar diferentes aspectos de los datos, como estadísticas de jugadores, resultados de partidos, tendencias a lo largo del tiempo, o cualesquiera otros insights relevantes que se puedan extraer de los datos deportivos disponibles.\n\n\nObjetivos\n\nAprender a utilizar Shiny para crear aplicaciones web interactivas.\nDesarrollar habilidades para la visualización de datos deportivos.\nImplementar funcionalidades reactivas para mejorar la experiencia del usuario.\nIntegrar diferentes tipos de gráficos y tablas para presentar la información de manera clara y atractiva\n\n\n\nEstructura del Dashboard\nSe debe elegir una de las estructuras vistas en clase para organizar el dashboard. Ya sea con páginas, pestañas, o sidebars.\n\n\nTrabajo individual o en grupos\nEl trabajo se puede realizar de forma individual o en grupos. En caso de realizarlo en grupos, cada uno debe haber realizado una parte del dashboard (página, gráficos, etc.)\n\n\nDatos\nSe pueden utilizar datos deportivos de cualquier tipo, idealmente los que se han utilizado en otras asignaturas, para centrarnos en la visualización y comunicación y no en la limpieza y preparación de los datos.\n\n\nEntrega\nLa entrega se realizará a través de un repositorio en GitHub. Se debe incluir el código completo del dashboard, así como una breve descripción de las funcionalidades implementadas y los insights obtenidos a partir de los datos deportivos analizados.\nOpcionalmente, se puede añadir un enlace a una versión desplegada del dashboard utilizando servicios como ShinyApps.io o similar.\nEl repositorio debe contener un archivo README.md a modo de memoria, que incluya brevemente los siguientes puntos:\n\nDescripción del proyecto y objetivos.\nEstructura del dashboard y funcionalidades implementadas.\nDescripción de los datos utilizados y su origen.\nDistribución del trabajo (en caso de realizarlo en grupos).\nEnlace a versión desplegada del dashboard (si se ha realizado el despliegue).\nExplicación de los fundamentos de la visualización de datos aplicados en el dashboard.\nConclusiones y posibles mejoras futuras.\n\n\n\nEvaluación\nLa evaluación se basará en los siguientes criterios:\n\nFuncionalidad (30%): El dashboard debe ser completamente funcional y permitir la interacción con los datos de manera fluida.\nVisualización (30%): La calidad de las visualizaciones y la capacidad para comunicar insights de manera efectiva serán aspectos clave en la evaluación.\nDocumentación (20%): La claridad y exhaustividad de la documentación en el README.md será un factor importante para la evaluación.\nOriginalidad (10%): Se valorará la creatividad en el diseño del dashboard y la forma en que se presentan los datos.\nDespliegue (10%): Se valorará positivamente el despliegue del dashboard en una plataforma accesible."
   },
   {
     "objectID": "slides/intro_shiny.html#unión-no-intersección",

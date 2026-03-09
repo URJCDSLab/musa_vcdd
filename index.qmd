@@ -15,5 +15,5 @@ code-fold: false
   
 * Sesión 4: [Shiny avanzado](shiny_advanced.qmd)
 
-* Sesión 5: [Práctica: desarrollo de un dashboard para datos deportivos](#)
+* Sesión 5: [Práctica: desarrollo de un dashboard para datos deportivos](practica.html)
   
