@@ -1,5 +1,614 @@
 [
   {
+    "objectID": "shiny_advanced.html#módulos-shiny",
+    "href": "shiny_advanced.html#módulos-shiny",
+    "title": "Shiny avanzado",
+    "section": "Módulos shiny",
+    "text": "Módulos shiny\n\nPermiten organizar el código en componentes reutilizables\nCada módulo tiene su propia UI y server, y se puede llamar varias veces en la aplicación principal\nSe crean componentes xxx_server() y xxx_ui() para cada módulo, y se llaman desde el server y UI principal respectivamente\nEl espacio de nombres se maneja automáticamente para evitar conflictos entre módulos y con la app principal"
+  },
+  {
+    "objectID": "shiny_advanced.html#ejemplo-módulo-simple",
+    "href": "shiny_advanced.html#ejemplo-módulo-simple",
+    "title": "Shiny avanzado",
+    "section": "Ejemplo módulo simple",
+    "text": "Ejemplo módulo simple\n\nlibrary(shiny)  \nlibrary(bslib)\nlibrary(reactable)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nseleccion_ui &lt;- function(id) {\n  ns &lt;- NS(id) # Crea un espacio de nombres para el módulo\n  tagList(\n    selectizeInput(ns(\"pais\"), \"Selecciona un país:\", choices = unique(resultados$home_team)),\n    verbatimTextOutput(ns(\"salida\"))\n  )\n}\nseleccion_server &lt;- function(id) {\n  moduleServer(id, function(input, output, session) {\n    output$salida &lt;- renderPrint({\n      paste(\"Selección:\", input$pais)\n    })\n    return(list(pais = reactive(input$pais))) # Devuelve el país seleccionado como un valor reactivo\n  })\n}\n# App principal\nui &lt;- bslib::page_fluid(\n    bslib::navset_card_underline(\n        nav_panel(\"Panel 1\", seleccion_ui(\"mod1\"),\n        plotOutput(\"plot1\")), # Llama al módulo en la UI\n        nav_panel(\"Panel 2\", seleccion_ui(\"mod2\"),\n        reactableOutput(\"tabla2\"))  # Llama al\n    )\n)\nserver &lt;- function(input, output, session) {\n  pais1 &lt;- seleccion_server(\"mod1\") # Llama al módulo en el server\n  pais2 &lt;- seleccion_server(\"mod2\") # Llama al módulo otra vez para la segunda instancia\n  output$plot1 &lt;- renderPlot({\n    # Código para generar el gráfico usando pais1$pais()\n    resultados |&gt; filter(home_team == pais1$pais()) |&gt; group_by(year(as.Date(date))) |&gt; summarise(home_score = sum(home_score)) |&gt; ggplot(aes(x = year(as.Date(date)), y = home_score)) + geom_line()\n  })\n  output$tabla2 &lt;- renderReactable({\n    # Código para generar la tabla usando pais2$pais()\n    resultados |&gt; filter(home_team == pais2$pais()) |&gt; reactable()\n  })\n}\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_advanced.html#aplicación-shiny-como-paquete",
+    "href": "shiny_advanced.html#aplicación-shiny-como-paquete",
+    "title": "Shiny avanzado",
+    "section": "Aplicación shiny como paquete",
+    "text": "Aplicación shiny como paquete\n\nPara proyectos más grandes, es recomendable organizar la aplicación como un paquete R.\nSe puede usar {golem} para crear la estructura del paquete y gestionar las dependencias.\nO bien crear un paquete manualmente con usethis::create_package(), y organizar el código en carpetas como R/ para funciones, inst/app/ para la aplicación Shiny, etc.\nEsto facilita la reutilización del código, la gestión de versiones, y el despliegue de la aplicación.\nSe recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores."
+  },
+  {
+    "objectID": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
+    "href": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
+    "title": "Shiny avanzado",
+    "section": "Ejemplo estructura de paquete para Shiny",
+    "text": "Ejemplo estructura de paquete para Shiny\nmyshinyapp/\n├── R/\n│   ├── mod_seleccion.R  # Código del módulo de selección\n│   └── utils.R         # Funciones auxiliares\n├── inst/\n│   └── app/\n│       ├── ui.R        # Código de la UI principal\n│       └── server.R    # Código del servidor principal\n├── DESCRIPTION         # Archivo de descripción del paquete\n├── NAMESPACE           # Archivo de exportación de funciones\n└── README.md           # Documentación del paquete"
+  },
+  {
+    "objectID": "shiny_advanced.html#multilenguaje",
+    "href": "shiny_advanced.html#multilenguaje",
+    "title": "Shiny avanzado",
+    "section": "Multilenguaje",
+    "text": "Multilenguaje\n\nEl paquete shiny.i18n permite crear aplicaciones multilenguaje de forma sencilla\nSe define un objeto Translator con los textos en diferentes idiomas, y se utiliza en la UI para mostrar el texto correspondiente al idioma seleccionado\nEl usuario puede cambiar el idioma en tiempo real, y la aplicación se actualizará automáticamente\nLas traducciones se pueden gestionar fácilmente en un archivo CSV o en el código, y se pueden añadir nuevos idiomas sin modificar la lógica de la aplicación\nVer ejemplo en: https://appsilon.github.io/shiny.i18n/articles/basics.html"
+  },
+  {
+    "objectID": "shiny_advanced.html#despliegue",
+    "href": "shiny_advanced.html#despliegue",
+    "title": "Shiny avanzado",
+    "section": "Despliegue",
+    "text": "Despliegue\n\nPara compartir la aplicación con otros usuarios, se puede desplegar en un servidor Shiny (shinyapps.io, Shiny Server, etc.)\nTambién se puede empaquetar como una aplicación de escritorio con golem o shinyDesktop\nEs importante optimizar la aplicación para un buen rendimiento, especialmente si se espera un gran número de usuarios o si se manejan grandes volúmenes de datos\nSe pueden usar herramientas como profvis para identificar cuellos de botella en el rendimiento y optimizar el código\nUna opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda"
+  },
+  {
+    "objectID": "shiny_advanced.html#pruebas",
+    "href": "shiny_advanced.html#pruebas",
+    "title": "Shiny avanzado",
+    "section": "Pruebas",
+    "text": "Pruebas\n\nEs recomendable escribir pruebas para la aplicación Shiny, especialmente para la lógica del servidor y los módulos\nEl paquete testthat se puede usar para escribir pruebas unitarias, y shinytest para pruebas de integración y de interfaz de usuario\nLas pruebas ayudan a garantizar que la aplicación funcione correctamente después de realizar cambios o actualizaciones, y facilitan la detección de errores y la mejora continua de la aplicación\nPaquetes específicos para shiny: shinytest2 para pruebas de interfaz de usuario, shinytest para pruebas de integración, y testthat para pruebas unitarias"
+  },
+  {
+    "objectID": "shiny_layouts.html#conjuntos-de-paquetes",
+    "href": "shiny_layouts.html#conjuntos-de-paquetes",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Conjuntos de paquetes",
+    "text": "Conjuntos de paquetes\n\nProporcionan una estructura y un diseño predefinido\nAceleran el desarrollo\nAutomatizan tareas comunes\nPersonalización limitada\nEjemplos: golemverse, rhinoverse, leprechaun"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-rhino",
+    "href": "shiny_layouts.html#ejemplo-con-rhino",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo con Rhino",
+    "text": "Ejemplo con Rhino\n\n# install.packages(\"rhino\")\nrhino::init(\"RhinoApplication\")\nsetwd(\"./RhinoApplication\")\nshiny::runApp()"
+  },
+  {
+    "objectID": "shiny_layouts.html#paquetes-generalistas",
+    "href": "shiny_layouts.html#paquetes-generalistas",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Paquetes generalistas",
+    "text": "Paquetes generalistas\n\nMenos dependientes de un diseño específico\nshinydashboard. Obsoleto, pero aún muy utilizado.\nb4dash. Basado en Bootstrap 4, más moderno y flexible.\nbslib. Permite crear temas personalizados para Shiny, incluyendo dashboards.\nshinywidgets. Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards."
+  },
+  {
+    "objectID": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
+    "href": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "App dentro de un paquete propio",
+    "text": "App dentro de un paquete propio\n\nRecomendado para proyectos complejos o a largo plazo\nFacilita la organización del código, la reutilización de componentes y la colaboración\nPermite la integración con otras funciones y datos del paquete\nDetalles: https://mjfrigaard.github.io/shiny-app-pkgs/\nIMPORTANTE: manejo de paquetes con NAMESPACE, no library()."
+  },
+  {
+    "objectID": "shiny_layouts.html#estructura-general-de-un-dashboard",
+    "href": "shiny_layouts.html#estructura-general-de-un-dashboard",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Estructura general de un dashboard",
+    "text": "Estructura general de un dashboard\n\nPrimero se define el tipo de página\nDependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)\nSe puede añadir pie de página\nPanel principal: pensar en filas y columnas (bootstrap grid system, 12 columnas)\nOrganización de panel principal y sidebar con pestañas.\nIncluir elementos en cards o boxes."
+  },
+  {
+    "objectID": "shiny_layouts.html#diseños-de-página",
+    "href": "shiny_layouts.html#diseños-de-página",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Diseños de página",
+    "text": "Diseños de página\n\nVanilla shiny{bslib}\n\n\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n\n\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-bslib",
+    "href": "shiny_layouts.html#ejemplo-con-bslib",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo con bslib",
+    "text": "Ejemplo con bslib\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#sidebars",
+    "href": "shiny_layouts.html#sidebars",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Sidebars",
+    "text": "Sidebars\n\nEl sidebar es un contenedor en sí mismo, se puede incluir cualquier elemento.\nPrincipales opciones: ancho, posición, abierto, , título.\nBarras adicionales con layout_sidebar()\n\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  p(\"Contenido principal\"),\n  layout_sidebar(\n    sidebar = sidebar(title = \"Selección\"),\n    layout_sidebar(\n      sidebar = sidebar(title = \"Filtros\"),\n      position = \"right\",\n      open = FALSE\n    )\n  ),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#pestañas-tabs",
+    "href": "shiny_layouts.html#pestañas-tabs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Pestañas (tabs)",
+    "text": "Pestañas (tabs)\n\nPermiten organizar el contenido en secciones dentro de la misma página\nEstructura: navset_*() para el contenedor de pestañas, nav_panel() para cada pestaña\npills: estilo de pestañas con bordes redondeados\ncards: estilo de pestañas con fondo y bordes, similar a las tarjetas\ntab’s: estilo de pestañas clásico, sin bordes ni fondo\nlist’s: pestañas en vertical"
+  },
+  {
+    "objectID": "shiny_layouts.html#cards",
+    "href": "shiny_layouts.html#cards",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Cards",
+    "text": "Cards\n\nContenedores con estilo para agrupar elementos relacionados\nPersonalizables con títulos, colores, iconos, etc.\nAncho completo o dividido en filas y columnas"
+  },
+  {
+    "objectID": "shiny_layouts.html#iconos",
+    "href": "shiny_layouts.html#iconos",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Iconos",
+    "text": "Iconos\n\nMuchos elementos permiten incluir iconos para mejorar la apariencia y la usabilidad\nSe pueden usar los iconos de Font Awesome, Bootstrap Icons, etc.\nArgumento icon en muchos componentes, con función icon() o bs_icon()\nBuscar iconos: https://fontawesome.com/ | https://icons.getbootstrap.com/"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-con-bslib-1",
+    "href": "shiny_layouts.html#ejemplo-con-bslib-1",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo con {bslib}",
+    "text": "Ejemplo con {bslib}\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(\n    title = \"Resultados\",\n    icon = icon(\"table\"),\n    layout_columns(\n      col_widths = c(2, 10),\n      card(\n        card_header(\"Resultados por selección\"),\n        card_body(p(\"Contenido de la tarjeta\"))\n      ),\n      card(\n        card_header(\"Resultados por torneo\"),\n        card_body(p(\"Contenido de la tarjeta\")) \n      )\n    )\n  ),\n  nav_panel(\n    title = \"Goleadores\",\n    navset_pill(\n      nav_panel(\n        icon = icon(\"futbol\"),\n        title = \"Goleadores por selección\",\n        p(\"Contenido de la pestaña 1\")\n      ),\n      nav_panel(title = \"Goleadores por torneo\", p(\"Contenido de la pestaña 2\"))\n    )\n  )\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#componentes---inputs",
+    "href": "shiny_layouts.html#componentes---inputs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Componentes - inputs",
+    "text": "Componentes - inputs\n\nCajas de texto: numéricas, texto, texto multilínea, fecha, contraseña\nAcciones: botón, botón de tarea, link, descarga, upload, submit\nSelección: checkbox, checkbox group, select, slider, rangos\nSelectize vs select clásico: más opciones\nshinywidgets: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.\nPaneles condicionales: según selecciones en el UI se muestran o no\n\nshiny components | shinywidgets"
+  },
+  {
+    "objectID": "shiny_layouts.html#componentes---outputs",
+    "href": "shiny_layouts.html#componentes---outputs",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Componentes - outputs",
+    "text": "Componentes - outputs\n\nTextos: texto, texto HTML, verbatim text\nTablas: tabla renderizada, tabla interactiva (DT, reactable, gt)\nGráficos: gráficos estáticos (ggplot2, base),\nGráficos interactivos: plotly, echarts4r, highcharter, ggiraph, etc.\nMapas: leaflet, mapview, tmap, etc.\nImágenes\nDiagramas: diagrammeR, mermaid, etc.\nValueBox: cajas de valor para mostrar métricas clave de forma destacada\nUI: controles que se generan en el server (porque dependen de inputs o datos)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-paneles-condicionales",
+    "href": "shiny_layouts.html#ejemplo-paneles-condicionales",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo: paneles condicionales",
+    "text": "Ejemplo: paneles condicionales\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    checkboxInput(\"chk_partidos\", \"Mostrar número partidos\", value = FALSE),\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    conditionalPanel(\n      condition = \"input.chk_partidos == true\",\n      verbatimTextOutput(\"num_partidos\")\n    )\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    num &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n    paste(\"Número de partidos:\", num)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-ui-dinámica",
+    "href": "shiny_layouts.html#ejemplo-ui-dinámica",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo: UI dinámica",
+    "text": "Ejemplo: UI dinámica\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
+    "href": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Interacción con el usuario: mensajes",
+    "text": "Interacción con el usuario: mensajes\n\nshowNotification(): muestra un mensaje temporal en la parte superior de la app, con opciones de tipo (info, success, warning, error), duración, etc.\nshowModal(): muestra un cuadro de diálogo modal con contenido personalizado, como texto, imágenes, inputs, etc.\nshowAlert(): muestra un mensaje de alerta con opciones de tipo, título, texto, etc.\nCon shinywidgets: via sweetalert"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
+    "href": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo botones y mensajes (shiny vanilla)",
+    "text": "Ejemplo botones y mensajes (shiny vanilla)\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje\"),\n  actionLink(\"lnk_mensaje\", \"Mostrar mensaje con link\")\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    showNotification(\n      paste(\"Has seleccionado:\", input$sel_pais),\n      type = \"message\"\n    )\n  })\n  observeEvent(input$lnk_mensaje, {\n    showModal(\n      modalDialog(\n        title = \"Mensaje\",\n        paste(\"Has seleccionado:\", input$sel_pais),\n        footer = tagList(\n          modalButton(\"Cerrar\"),\n          actionButton(\"btn_mas_info\", \"Más info\")\n        )\n      )\n    )\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
+    "href": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo shinyWidgets - sweetalert",
+    "text": "Ejemplo shinyWidgets - sweetalert\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nlibrary(shinyWidgets)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje sweet\"),\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    show_alert(\n      title = \"Éxito !!\",\n      text = \"Todo en orden\",\n      type = \"success\"\n    )\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#validación",
+    "href": "shiny_layouts.html#validación",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Validación",
+    "text": "Validación\n\nvalidate() y need(): permiten validar condiciones en el server y mostrar mensajes de error personalizados en lugar de errores genéricos.\nreq(): requiere que un input o valor esté presente y no sea NULL o vacío, de lo contrario detiene la ejecución. Lo veremos en la siguiente sesión sobre reactividad.\n{shinyvalidate}: ofrece un mayor control sobre la validación, con reglas predefinidas, mensajes personalizados, validación en tiempo real, etc."
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-validación",
+    "href": "shiny_layouts.html#ejemplo-validación",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo validación",
+    "text": "Ejemplo validación\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    numericInput(\"year\", \"Selecciona un año:\", value = 2022, min = 1956, max = 2025)\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    \n  ),\n  nav_panel(title = \"Goles\",\n  plotOutput(\"graf_goles\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$graf_goles &lt;- renderPlot({\n    validate(\n      need(input$year &gt; 2000, \"Solo se muestran datos a partir del año 2000\")\n    )\ndatos &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, year(date) == input$year) |&gt;\n      group_by(tournament) |&gt;\n      summarise(diferencia = sum(home_score - away_score))\n\n    barplot(datos$diferencia, names.arg = datos$tournament, col = \"steelblue\", main = \"Diferencia de goles por torneo\", ylab = \"Diferencia de goles\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#temas-y-personalización",
+    "href": "shiny_layouts.html#temas-y-personalización",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Temas y personalización",
+    "text": "Temas y personalización\n\nElegir un tema completo con bs_theme()\nSe pueden previsualizar todos con bs_themer() y ver cómo queda nuestro dashboard\nSe pueden cambiar componentes específicos en bs_theme(), o bien personalizar bs_add_variables()"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-previsualización-de-temas",
+    "href": "shiny_layouts.html#ejemplo-previsualización-de-temas",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo previsualización de temas",
+    "text": "Ejemplo previsualización de temas\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_layouts.html#ejemplo-establecer-tema",
+    "href": "shiny_layouts.html#ejemplo-establecer-tema",
+    "title": "Diseño e interacción de usuario con Shiny",
+    "section": "Ejemplo establecer tema",
+    "text": "Ejemplo establecer tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#guia-docente",
+    "href": "slides/plantilla_presentacion_curso.html#guia-docente",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Guia docente",
+    "text": "Guia docente\n\nTipo: Obligatoria\nPeríodo de impartición: Primer curso, primer semestre\nNº de créditos: 6 ECTS\n\nHoras totales: 150h (60h presenciales / 90h trabajo autónomo)\n\nDepartamento: Departamento de Informática y Estadística\nCampus: Móstoles\nMáster: Análisis de Datos Deportivos\nAula: Aulario I, Seminario 110"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#prof.-emilio-lópez-cano",
+    "href": "slides/plantilla_presentacion_curso.html#prof.-emilio-lópez-cano",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Emilio López Cano",
+    "text": "Prof. Emilio López Cano\n\nE-mail: emilio.lopez@urjc.es\nTutorías: Concertar por el correo del aula virtual\nDespacho: 043, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#prof.-rubén-rodríguez-fernández",
+    "href": "slides/plantilla_presentacion_curso.html#prof.-rubén-rodríguez-fernández",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Rubén Rodríguez Fernández",
+    "text": "Prof. Rubén Rodríguez Fernández\n\nE-mail: ruben.rodriguez@urjc.es\nTutorías: Concertar por el correo del aula virtual\nDespacho: 131, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#prof.-víctor-aceña-gil",
+    "href": "slides/plantilla_presentacion_curso.html#prof.-víctor-aceña-gil",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Víctor Aceña Gil",
+    "text": "Prof. Víctor Aceña Gil\n\nE-mail: victor.acena@urjc.es\nDespacho: 131, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#el-análisis-de-datos-deportivos-está-en-todas-partes",
+    "href": "slides/plantilla_presentacion_curso.html#el-análisis-de-datos-deportivos-está-en-todas-partes",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "El análisis de datos deportivos está en todas partes",
+    "text": "El análisis de datos deportivos está en todas partes\n\nPlataformas de tracking deportivo (Strava, Garmin Connect)\nAnálisis de rendimiento en equipos profesionales\nSistemas de scouting y reclutamiento\nMonitorización biomecánica en tiempo real\nAnalytics en retransmisiones deportivas\nAplicaciones móviles de entrenamiento personalizado"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#python-y-r-dominan-el-análisis-de-datos",
+    "href": "slides/plantilla_presentacion_curso.html#python-y-r-dominan-el-análisis-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Python y R dominan el análisis de datos",
+    "text": "Python y R dominan el análisis de datos\n\n\nPython\n\nNumPy, Pandas, Matplotlib\nScikit-learn, TensorFlow\nJupyter Notebooks\nAPIs y web scraping\n\n\nR\n\nTidyverse (dplyr, ggplot2)\nAnálisis estadístico avanzado\nR Markdown\nVisualizaciones especializadas"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#objetivos",
+    "href": "slides/plantilla_presentacion_curso.html#objetivos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Objetivos",
+    "text": "Objetivos\n\nDominar Python y R para análisis de datos deportivos\nAprender a manipular y limpiar grandes conjuntos de datos\nCrear visualizaciones efectivas de métricas deportivas\nDesarrollar scripts automatizados para análisis en tiempo real\nImplementar buenas prácticas de programación y control de versiones\nAplicar técnicas de análisis a casos reales del deporte"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-1-elementos-básicos-de-programación",
+    "href": "slides/plantilla_presentacion_curso.html#tema-1-elementos-básicos-de-programación",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 1: Elementos básicos de programación",
+    "text": "Tema 1: Elementos básicos de programación\n\nDefinición de variables\nIntroducción a las estructuras de control\nAgrupar funcionalidades en funciones\nDepuración\n\n\nPythonR\n\n\n# Variables y funciones básicas\ndef calcular_imc(peso, altura):\n    \"\"\"Calcula el IMC de un atleta\"\"\"\n    imc = peso / (altura ** 2)\n    return round(imc, 2)\n\natleta_peso = 75  # kg\natleta_altura = 1.80  # metros\nprint(f\"IMC: {calcular_imc(atleta_peso, atleta_altura)}\")\n\n\n# Variables y funciones básicas\ncalcular_imc &lt;- function(peso, altura) {\n  # Calcula el IMC de un atleta\n  imc &lt;- peso / (altura^2)\n  return(round(imc, 2))\n}\n\natleta_peso &lt;- 75    # kg\natleta_altura &lt;- 1.80  # metros\ncat(\"IMC:\", calcular_imc(atleta_peso, atleta_altura))"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-2-estructuras-de-datos",
+    "href": "slides/plantilla_presentacion_curso.html#tema-2-estructuras-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 2: Estructuras de datos",
+    "text": "Tema 2: Estructuras de datos\n\nIntroducción a las estructuras de datos\nVectores, matrices y arrays.\n\n\nPythonR\n\n\nimport numpy as np\nimport pandas as pd\n\n# Crear matriz de rendimiento semanal\nrendimiento = np.array([\n    [85, 92, 78, 88],  # Jugador 1\n    [90, 85, 95, 87]   # Jugador 2\n])\n\n# Convertir a DataFrame para mejor visualización\ndf = pd.DataFrame(rendimiento, \n                  index=['Jugador1', 'Jugador2'],\n                  columns=['Sem1', 'Sem2', 'Sem3', 'Sem4'])\nprint(df)\n\n\n# Crear matriz de rendimiento semanal\nrendimiento &lt;- matrix(\n  c(85, 92, 78, 88, 90, 85, 95, 87), \n  nrow = 2, ncol = 4,\n  dimnames = list(c(\"Jugador1\", \"Jugador2\"), \n                  c(\"Sem1\", \"Sem2\", \"Sem3\", \"Sem4\"))\n)\nprint(rendimiento)"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-3-control-de-versiones",
+    "href": "slides/plantilla_presentacion_curso.html#tema-3-control-de-versiones",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 3: Control de versiones",
+    "text": "Tema 3: Control de versiones\n\nHerramientas de control de versiones\nIntroducción a git\nColaboración a través con git a través de Github"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-4-importación-y-exportación-de-ficheros",
+    "href": "slides/plantilla_presentacion_curso.html#tema-4-importación-y-exportación-de-ficheros",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 4: Importación y exportación de ficheros",
+    "text": "Tema 4: Importación y exportación de ficheros\n\nLectura y escritura de datos en diferentes formatos.\nExcel, JSON, CSV.\n\n\nPythonR\n\n\nimport pandas as pd\n\n# Leer datos de diferentes formatos\ndf_csv = pd.read_csv('resultados.csv')\ndf_excel = pd.read_excel('estadisticas.xlsx', sheet_name='Temporada2024')\n\n# Exportar resultados\ndf_csv.to_json('resultados.json', orient='records')\ndf_csv.to_parquet('resultados.parquet')  # Formato eficiente\n\n\nlibrary(readxl)\nlibrary(jsonlite)\n\n# Leer datos de diferentes formatos\ndf_csv &lt;- read.csv('resultados.csv')\ndf_excel &lt;- read_excel('estadisticas.xlsx', sheet = 'Temporada2024')\n\n# Exportar resultados\nwrite_json(df_csv, 'resultados.json')\nwrite.csv(df_csv, 'resultados_procesados.csv', row.names = FALSE)"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-5-manipulación-de-datos",
+    "href": "slides/plantilla_presentacion_curso.html#tema-5-manipulación-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 5: Manipulación de datos",
+    "text": "Tema 5: Manipulación de datos\n\nManipulación de datos multidimensionales\nEn R, librerías como Dplyr, tidyr\nEn Python, pandas y numpy\n\n\nPythonR\n\n\nimport pandas as pd\n\n# Pipeline de transformación con pandas\nresultado = (jugadores\n    .query('minutos_jugados &gt; 900')\n    .assign(goles_por_partido = lambda x: x.goles / x.partidos)\n    .sort_values('goles_por_partido', ascending=False)\n    .loc[:, ['nombre', 'goles_por_partido', 'posicion']]\n)\n\n\nlibrary(dplyr)\n\n# Pipeline de transformación\nresultado &lt;- jugadores %&gt;%\n  filter(minutos_jugados &gt; 900) %&gt;%\n  mutate(goles_por_partido = goles / partidos) %&gt;%\n  arrange(desc(goles_por_partido)) %&gt;%\n  select(nombre, goles_por_partido, posicion)"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-6-visualización-de-datos-deportivos",
+    "href": "slides/plantilla_presentacion_curso.html#tema-6-visualización-de-datos-deportivos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 6: Visualización de datos deportivos",
+    "text": "Tema 6: Visualización de datos deportivos\n\nCreación de visualizaciones de datos\nEnfoque en el ámbito deportivo\nCreación de documentación reproducible con Quarto\n\n\nPythonR\n\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\n# Gráfico de radar para habilidades\ndef grafico_radar(habilidades, jugador):\n    angles = np.linspace(0, 2*np.pi, len(habilidades), endpoint=False)\n    angles = np.concatenate((angles, [angles[0]]))\n    \n    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(projection='polar'))\n    ax.plot(angles, habilidades + [habilidades[0]], 'b-', linewidth=2)\n    ax.fill(angles, habilidades + [habilidades[0]], alpha=0.3)\n    plt.title(f'Perfil de habilidades - {jugador}')\n    return fig\n\n\nlibrary(ggplot2)\n\n# Gráfico de radar para habilidades\nggplot(habilidades, aes(x = habilidad, y = puntuacion, \n                        group = jugador, color = jugador)) +\n  geom_polygon(alpha = 0.3, fill = NA) +\n  geom_point(size = 3) +\n  coord_polar() + \n  theme_minimal() +\n  labs(title = \"Perfil de Habilidades por Jugador\")"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-7-tratamiento-de-errores",
+    "href": "slides/plantilla_presentacion_curso.html#tema-7-tratamiento-de-errores",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 7: Tratamiento de errores",
+    "text": "Tema 7: Tratamiento de errores\n\nGestión de errores\nTrazas de ejecución (logging)\n\n\nPythonR\n\n\nimport logging\nimport pandas as pd\n\n# Configurar logging\nlogging.basicConfig(level=logging.INFO)\n\ndef procesar_datos_gps(archivo):\n    try:\n        datos = pd.read_csv(archivo)\n        logging.info(f\"Procesados {len(datos)} puntos GPS\")\n        return datos\n    except FileNotFoundError:\n        logging.error(f\"Archivo {archivo} no encontrado\")\n        return None\n    except Exception as e:\n        logging.error(f\"Error inesperado: {e}\")\n        return None\n\n\nlibrary(tryCatch)\nlibrary(futile.logger)\n\n# Configurar logging\nflog.threshold(INFO)\n\nprocesar_datos_gps &lt;- function(archivo) {\n  tryCatch({\n    datos &lt;- read.csv(archivo)\n    flog.info(\"Procesados %s puntos GPS\", nrow(datos))\n    return(datos)\n  }, error = function(e) {\n    flog.error(\"Error al procesar %s: %s\", archivo, e$message)\n    return(NULL)\n  })\n}"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#tema-8-procesos-etl-e-integración",
+    "href": "slides/plantilla_presentacion_curso.html#tema-8-procesos-etl-e-integración",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 8: Procesos ETL e integración",
+    "text": "Tema 8: Procesos ETL e integración\n\nWeb Scrapping de datos\nUtilización de APIs\nCreación de pipelines\n\n\nPythonR\n\n\nimport requests\nimport pandas as pd\n\n# Consumir API de resultados deportivos\ndef obtener_partidos_api():\n    try:\n        response = requests.get('https://api.deportes.com/partidos/hoy')\n        if response.status_code == 200:\n            partidos = response.json()\n            df = pd.DataFrame(partidos)\n            return df[['equipo_local', 'equipo_visitante', 'resultado']]\n    except requests.RequestException as e:\n        print(f\"Error en API: {e}\")\n        return None\n\n\nlibrary(httr)\nlibrary(jsonlite)\n\n# Consumir API de resultados deportivos\nobtener_partidos_api &lt;- function() {\n  tryCatch({\n    response &lt;- GET(\"https://api.deportes.com/partidos/hoy\")\n    if (status_code(response) == 200) {\n      partidos &lt;- fromJSON(content(response, \"text\"))\n      return(partidos[c(\"equipo_local\", \"equipo_visitante\", \"resultado\")])\n    }\n  }, error = function(e) {\n    message(\"Error en API: \", e$message)\n    return(NULL)\n  })\n}"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#metodología-docente",
+    "href": "slides/plantilla_presentacion_curso.html#metodología-docente",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Metodología Docente",
+    "text": "Metodología Docente\n\nAprendizaje basado en proyectos con datos deportivos reales\nClases teóricas combinadas con sesiones prácticas intensivas\nLaboratorios experimentales con ordenador\nTrabajo autónomo guiado con ejercicios progresivos\nPresentaciones orales de proyectos\nTutorías académicas personalizadas"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#lenguajes-de-programación",
+    "href": "slides/plantilla_presentacion_curso.html#lenguajes-de-programación",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Lenguajes de Programación",
+    "text": "Lenguajes de Programación\n\n\nLibrerías Python\n\nPython 3.x (Anaconda distribution)\nNumPy, Pandas, SciPy\nMatplotlib, Seaborn\nJupyter Notebooks\n\n\nLibrerías R\n\nR (última versión estable)\nTidyverse (dplyr, ggplot2, tidyr)\nR Markdown\n\n\nOtras herramientas\n\nGit/GitHub\nPositron"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#sistema-de-evaluación-continua",
+    "href": "slides/plantilla_presentacion_curso.html#sistema-de-evaluación-continua",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Sistema de evaluación continua",
+    "text": "Sistema de evaluación continua\n\nSE1 - Pruebas escritas (20%)\n\nNota mínima: 4\n\nSE2 - Resolución de problemas (20%)\n\nEjercicios prácticos, nota mínima: 4\n\nSE3 - Documentos/Informes (20%)\n\nMemorias de prácticas, nota mínima: 5\n\nSE5 - Evaluación de prácticas (40%)\n\nProyectos de laboratorio, nota mínima: 5\n\n\nNota final: Media ponderada si todas las pruebas superan la nota mínima"
+  },
+  {
+    "objectID": "slides/plantilla_presentacion_curso.html#recursos-y-bibliografía-1",
+    "href": "slides/plantilla_presentacion_curso.html#recursos-y-bibliografía-1",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Recursos y Bibliografía",
+    "text": "Recursos y Bibliografía\n\n\nBibliografía Básica\n\nMatthes, E. (2023). Python Crash Course\nMcKinney, W. (2022). Python for Data Analysis\nWickham, H. et al. (2023). R for Data Science [online]\nCano, E.L. (2024). Introducción al software estadístico R [online]\n\n\nRecursos Online\n\nMaterial en el aula virtual\nDocumentación oficial de Python/R\nJupyter Notebooks con ejemplos deportivos\nDatasets deportivos para practicar\nRepositorios GitHub del curso"
+  },
+  {
+    "objectID": "index.html#dashboards",
+    "href": "index.html#dashboards",
+    "title": "Desarrollo de dashboards con Shiny",
+    "section": "Dashboards",
+    "text": "Dashboards\n\nSesión 1: Introducción a la visualización mediante dashboards\nSesión 2: Diseño e interacción de usuario dashboards con Shiny\nSesión 3: Objetos reactivos y gráficos interactivos\nSesión 4: Shiny avanzado\nSesión 5: Práctica: desarrollo de un dashboard para datos deportivos"
+  },
+  {
+    "objectID": "intro_shiny_0.html#unión-no-intersección",
+    "href": "intro_shiny_0.html#unión-no-intersección",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Unión, no intersección",
+    "text": "Unión, no intersección\n\n\nThere is quite a bit of consensus about what Data Science is as a sort of mixture between Statistics, Computer Science and domain knowledge. A number of representations as Venn Diagrams have been developed. I prefer to see Data Science as the union of the three sets rather than the intersection, which is almost impossible to have in one person."
+  },
+  {
+    "objectID": "intro_shiny_0.html#r-for-data-science",
+    "href": "intro_shiny_0.html#r-for-data-science",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "R for Data Science",
+    "text": "R for Data Science\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\nSource: R for Data Science (Wickham, Çetinkaya-Rundel and Grolemund, 2023)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#crisp-dm",
+    "href": "intro_shiny_0.html#crisp-dm",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "CRISP-DM",
+    "text": "CRISP-DM\n\n\n\nDespliegue puede incluir muchas cosas distintas\nEl uso de los modelos\nLa Visualización de resultados\nMLOps: como DevOps en informática\nExplicabilidad de modelos\n\n\n\n\n\n\n\n\n\nSource: Kenneth Jensen, CC BY-SA 3.0, via Wikimedia Commons"
+  },
+  {
+    "objectID": "intro_shiny_0.html#informes-estáticos",
+    "href": "intro_shiny_0.html#informes-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Informes estáticos",
+    "text": "Informes estáticos\n\n\n\nCuadro de mando integral: ejemplo clásico en la empresa\nInformes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista\nPor diseño, pensados para ser impresos en papel, formato pdf\n\n\n\n\n\n\n\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny_0.html#dashboards-estáticos",
+    "href": "intro_shiny_0.html#dashboards-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards estáticos",
+    "text": "Dashboards estáticos\nMás compactos, diseñado para pantalla\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny_0.html#dashboards-interactivos",
+    "href": "intro_shiny_0.html#dashboards-interactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards interactivos",
+    "text": "Dashboards interactivos\nInforme estático con elementos interactivos (widgets)\n\n\nDownload .Rmd source | Ver online"
+  },
+  {
+    "objectID": "intro_shiny_0.html#limitaciones-y-alternativas",
+    "href": "intro_shiny_0.html#limitaciones-y-alternativas",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Limitaciones y alternativas",
+    "text": "Limitaciones y alternativas\n\nLimitados a lo que el estadístico quiere mostrar\nNo solo lo van a usar personas expertas en estadística\nToma de decisiones a distintos niveles\n\n\n\nAplicaciones Reactivas guían a las partes interesadas en la obtención e interpretación de resultados\nLos interfaces bien diseñados para modelos avanzados favorecen la explicabilidad"
+  },
+  {
+    "objectID": "intro_shiny_0.html#reactive-programming",
+    "href": "intro_shiny_0.html#reactive-programming",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Reactive programming",
+    "text": "Reactive programming\n\nThe key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.\n\n\nHadley Wickham, Mastering Shiny\n\n\n\n\n\nLos outputs, i.e., gráficos, tablas, etc., se generan con R cuando los inputs, i.e., selecciones del usuario, cambian."
+  },
+  {
+    "objectID": "intro_shiny_0.html#aplicaciones-shiny",
+    "href": "intro_shiny_0.html#aplicaciones-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicaciones Shiny",
+    "text": "Aplicaciones Shiny\n\nCódigo “estándar” de R\nNo hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente\nDos “componentes”\nui (interfaz de usuario, página web). Contiene inputs y outputs\nserver. Contiene objetos reactivos y funciones generadoras (rendering)\n\n\n\n\nDescargar Shiny cheetsheet\nVisitar la Shiny gallery"
+  },
+  {
+    "objectID": "intro_shiny_0.html#una-aplicación-shiny-simple",
+    "href": "intro_shiny_0.html#una-aplicación-shiny-simple",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Una aplicación shiny simple",
+    "text": "Una aplicación shiny simple\n\n\n\nCódigo\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny_0.html#añadiendo-características-interesantes",
+    "href": "intro_shiny_0.html#añadiendo-características-interesantes",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo características interesantes",
+    "text": "Añadiendo características interesantes\n\n\nDashboards\n\nshinydashboard\nbs4dash\nbslib\n\nConfiguración\n\nAplicaciones Multilenguaje with shiny.i18n\nAplicación como paquete\n\n\nBuenas prácticas de Ing.Soft.\n\nVersiones de paquetes con renv\nPruebas unitarias con testthat y shinytest\nControl de versiones e integración continua, e.g., con GitHub\nDespliegue como contenedor Docker"
+  },
+  {
+    "objectID": "intro_shiny_0.html#shiny-modules",
+    "href": "intro_shiny_0.html#shiny-modules",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Shiny modules",
+    "text": "Shiny modules\n\nComponentes reutilizables\nCon su propio espacio de nombres (namespace)\nFacilitan pruebas y depuración\nComplejo de entender al principio\n\n👉Modularizing Shiny app code"
+  },
+  {
+    "objectID": "intro_shiny_0.html#afciot---tiva-indicators",
+    "href": "intro_shiny_0.html#afciot---tiva-indicators",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\nJoint project with UNECA, WTO, and OECD\nInternational Trade, Environmental and Employment Indicators\nInternational and multidisciplinar team\nIndustry and product classification, gap estimation, policy simulation and visualisation\nKey result: A shiny app for reporting, visualisation and policy simulation\nSeveral important challenges for the multinational scope"
+  },
+  {
+    "objectID": "intro_shiny_0.html#afciot---tiva-indicators-1",
+    "href": "intro_shiny_0.html#afciot---tiva-indicators-1",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny_0.html#evastur",
+    "href": "intro_shiny_0.html#evastur",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR",
+    "text": "EVASTUR\n\nProyecto con la empresa Dephimática\nEspecializada en estadística pública\nCapacity building en Ciencia de Datos\nSistema de indicadores de turismo sostenible: exploración, visualización, análisis"
+  },
+  {
+    "objectID": "intro_shiny_0.html#evastur---dashboard",
+    "href": "intro_shiny_0.html#evastur---dashboard",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR - Dashboard",
+    "text": "EVASTUR - Dashboard\n\n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny_0.html#epe-brasil",
+    "href": "intro_shiny_0.html#epe-brasil",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EPE Brasil",
+    "text": "EPE Brasil\n\nWeaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)\nProyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)\nETL, Modelo de datos, visualización\nIndicadores de pobreza energética (UCM)\nPresentado en reunión del G20"
+  },
+  {
+    "objectID": "intro_shiny_0.html#obepe",
+    "href": "intro_shiny_0.html#obepe",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "OBEPE",
+    "text": "OBEPE\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny_0.html#analítica-deportiva",
+    "href": "intro_shiny_0.html#analítica-deportiva",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Analítica deportiva",
+    "text": "Analítica deportiva"
+  },
+  {
+    "objectID": "intro_shiny_0.html#proyectos-de-investigación-dicyme",
+    "href": "intro_shiny_0.html#proyectos-de-investigación-dicyme",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Proyectos de investigación: DICYME",
+    "text": "Proyectos de investigación: DICYME\n\nDynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)\nProyecto de colaboración público-privada con DeNexus TECH SL.\nDashboard (no publicado aún)\nConexión con MongoDB\nApp relacionada: CRAS"
+  },
+  {
+    "objectID": "intro_shiny_0.html#aplicación-shiny-cras",
+    "href": "intro_shiny_0.html#aplicación-shiny-cras",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicación shiny CRAS",
+    "text": "Aplicación shiny CRAS\n\nAnálisis de riesgos\nPrimer paso: se simulan los eventos en n años\nSegundo paso: se simula el gasto de cada evento"
+  },
+  {
+    "objectID": "intro_shiny_0.html#resultados",
+    "href": "intro_shiny_0.html#resultados",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Resultados",
+    "text": "Resultados"
+  },
+  {
+    "objectID": "intro_shiny_0.html#smart-cities",
+    "href": "intro_shiny_0.html#smart-cities",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Smart Cities",
+    "text": "Smart Cities\n\nCasos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid\nAplicaciones coherentes paso a paso para los casos de uso (cargar datos - visualización - modelización - obtención de resultados)\nAlgunos casos con Shiny, otros con Python o Power BI\nEjemplo: http://www.citizenlabhub.es/cu/55"
+  },
+  {
+    "objectID": "intro_shiny_0.html#síagro---animal-production-spc",
+    "href": "intro_shiny_0.html#síagro---animal-production-spc",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Síagro - Animal production SPC",
+    "text": "Síagro - Animal production SPC\n\n\n\nCRO clinical and nutritional trials\nShiny app for their customers as a value added service\nImportant [productivity improvements]\nSimulation and parameterised reports\n\n\n\n\n\nhttps://www.siagro.es | 🖥️ Live demo 🤞🏻"
+  },
+  {
+    "objectID": "intro_shiny_0.html#placido-app-para-muestreo-de-aceptación",
+    "href": "intro_shiny_0.html#placido-app-para-muestreo-de-aceptación",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "placido: app para muestreo de aceptación",
+    "text": "placido: app para muestreo de aceptación\n\nResultado de un TFG\nDisponible en: https://dleo.shinyapps.io/placidoproject/\nControl de versiones con git y GitHub: https://github.com/DavidALeo/PlacidoProject/\nDocumentación con {pkgdown}: https://davidaleo.github.io/PlacidoProject/\n\nSlides: emilio.lcano.com/p/seio2023"
+  },
+  {
+    "objectID": "intro_shiny_0.html#simulación-de-proceso",
+    "href": "intro_shiny_0.html#simulación-de-proceso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Simulación de proceso",
+    "text": "Simulación de proceso\n\nSimula la producción de lotes\nSe extraen muestras\nSPC + muestreo de aceptación\nApp disponible en: https://lcano.shinyapps.io/demo-shiny-quality/"
+  },
+  {
+    "objectID": "intro_shiny_0.html#caso-de-uso",
+    "href": "intro_shiny_0.html#caso-de-uso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Caso de uso",
+    "text": "Caso de uso\n\nGráficos de control de la media, el rango y la desviación típica\nAnálisis de capacidad\nPaquete qcc\nDatos de ejemplo del paquete\n\n\nSe extiende fácilmente para otros datos y paquetes"
+  },
+  {
+    "objectID": "intro_shiny_0.html#configuración-inicial",
+    "href": "intro_shiny_0.html#configuración-inicial",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Configuración inicial",
+    "text": "Configuración inicial\n\nCrear un proyecto en RStudio\nInstalar paquetes shiny, bslib, qcc\nCrear script vacío\nInsertar estructura ui + server (por ejemplo con el snippet)\nIr añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#estructura-básica-app-shiny",
+    "href": "intro_shiny_0.html#estructura-básica-app-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Estructura básica app shiny",
+    "text": "Estructura básica app shiny\n\n\nCódigo\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  \n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#disposición-del-dashboard-layout",
+    "href": "intro_shiny_0.html#disposición-del-dashboard-layout",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Disposición del dashboard (layout)",
+    "text": "Disposición del dashboard (layout)\n\nbslib tiene muchas opciones\n\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Gráfico de Control\"),\n  nav_panel(title = \"Análisis de la capacidad del proceso\")\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#añadiendo-inputs-y-outputs-al-ui",
+    "href": "intro_shiny_0.html#añadiendo-inputs-y-outputs-al-ui",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo inputs y outputs al ui",
+    "text": "Añadiendo inputs y outputs al ui\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos (fake)\", \n                data(package = \"qcc\")$results[,3])\n  ),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#añadiendo-objetos-reactivos",
+    "href": "intro_shiny_0.html#añadiendo-objetos-reactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo objetos reactivos",
+    "text": "Añadiendo objetos reactivos\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$tipo, input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#renderizando-outputs",
+    "href": "intro_shiny_0.html#renderizando-outputs",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Renderizando outputs",
+    "text": "Renderizando outputs\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#dale-color---ver-cómo-queda-un-tema",
+    "href": "intro_shiny_0.html#dale-color---ver-cómo-queda-un-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - ver cómo queda un tema",
+    "text": "Dale color - ver cómo queda un tema\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#dale-color---configura-el-tema",
+    "href": "intro_shiny_0.html#dale-color---configura-el-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - configura el tema",
+    "text": "Dale color - configura el tema\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "intro_shiny_0.html#implentación-real",
+    "href": "intro_shiny_0.html#implentación-real",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Implentación real",
+    "text": "Implentación real\n\nLectura de datos del proceso en tiempo real\nMonitorizar proceso en fase II\nAñadir análisis exploratorio\nAñadir modelos\nMejorar interfaz\nComplejidad de la app"
+  },
+  {
     "objectID": "intro_shiny.html#unión-no-intersección",
     "href": "intro_shiny.html#unión-no-intersección",
     "title": "Introducción a la visualización mediante dashboards",
@@ -70,188 +679,6 @@
     "text": "Una aplicación shiny simple\n\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "intro_shiny.html#añadiendo-características-interesantes",
-    "href": "intro_shiny.html#añadiendo-características-interesantes",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Añadiendo características interesantes",
-    "text": "Añadiendo características interesantes\n\n\nDashboards\n\nshinydashboard\nbs4dash\nbslib\n\nConfiguración\n\nAplicaciones Multilenguaje with shiny.i18n\nAplicación como paquete\n\n\nBuenas prácticas de Ing.Soft.\n\nVersiones de paquetes con renv\nPruebas unitarias con testthat y shinytest\nControl de versiones e integración continua, e.g., con GitHub\nDespliegue como contenedor Docker"
-  },
-  {
-    "objectID": "intro_shiny.html#shiny-modules",
-    "href": "intro_shiny.html#shiny-modules",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Shiny modules",
-    "text": "Shiny modules\n\nComponentes reutilizables\nCon su propio espacio de nombres (namespace)\nFacilitan pruebas y depuración\nComplejo de entender al principio\n\n👉Modularizing Shiny app code"
-  },
-  {
-    "objectID": "intro_shiny.html#afciot---tiva-indicators",
-    "href": "intro_shiny.html#afciot---tiva-indicators",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "AfCIOT - TiVA indicators",
-    "text": "AfCIOT - TiVA indicators\n\nJoint project with UNECA, WTO, and OECD\nInternational Trade, Environmental and Employment Indicators\nInternational and multidisciplinar team\nIndustry and product classification, gap estimation, policy simulation and visualisation\nKey result: A shiny app for reporting, visualisation and policy simulation\nSeveral important challenges for the multinational scope"
-  },
-  {
-    "objectID": "intro_shiny.html#afciot---tiva-indicators-1",
-    "href": "intro_shiny.html#afciot---tiva-indicators-1",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "AfCIOT - TiVA indicators",
-    "text": "AfCIOT - TiVA indicators\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
-  },
-  {
-    "objectID": "intro_shiny.html#evastur",
-    "href": "intro_shiny.html#evastur",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "EVASTUR",
-    "text": "EVASTUR\n\nProyecto con la empresa Dephimática\nEspecializada en estadística pública\nCapacity building en Ciencia de Datos\nSistema de indicadores de turismo sostenible: exploración, visualización, análisis"
-  },
-  {
-    "objectID": "intro_shiny.html#evastur---dashboard",
-    "href": "intro_shiny.html#evastur---dashboard",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "EVASTUR - Dashboard",
-    "text": "EVASTUR - Dashboard\n\n\n🖥️ Live demo 🤞🏻"
-  },
-  {
-    "objectID": "intro_shiny.html#epe-brasil",
-    "href": "intro_shiny.html#epe-brasil",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "EPE Brasil",
-    "text": "EPE Brasil\n\nWeaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)\nProyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)\nETL, Modelo de datos, visualización\nIndicadores de pobreza energética (UCM)\nPresentado en reunión del G20"
-  },
-  {
-    "objectID": "intro_shiny.html#obepe",
-    "href": "intro_shiny.html#obepe",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "OBEPE",
-    "text": "OBEPE\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
-  },
-  {
-    "objectID": "intro_shiny.html#analítica-deportiva",
-    "href": "intro_shiny.html#analítica-deportiva",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Analítica deportiva",
-    "text": "Analítica deportiva"
-  },
-  {
-    "objectID": "intro_shiny.html#proyectos-de-investigación-dicyme",
-    "href": "intro_shiny.html#proyectos-de-investigación-dicyme",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Proyectos de investigación: DICYME",
-    "text": "Proyectos de investigación: DICYME\n\nDynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)\nProyecto de colaboración público-privada con DeNexus TECH SL.\nDashboard (no publicado aún)\nConexión con MongoDB\nApp relacionada: CRAS"
-  },
-  {
-    "objectID": "intro_shiny.html#aplicación-shiny-cras",
-    "href": "intro_shiny.html#aplicación-shiny-cras",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Aplicación shiny CRAS",
-    "text": "Aplicación shiny CRAS\n\nAnálisis de riesgos\nPrimer paso: se simulan los eventos en n años\nSegundo paso: se simula el gasto de cada evento"
-  },
-  {
-    "objectID": "intro_shiny.html#resultados",
-    "href": "intro_shiny.html#resultados",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Resultados",
-    "text": "Resultados"
-  },
-  {
-    "objectID": "intro_shiny.html#smart-cities",
-    "href": "intro_shiny.html#smart-cities",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Smart Cities",
-    "text": "Smart Cities\n\nCasos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid\nAplicaciones coherentes paso a paso para los casos de uso (cargar datos - visualización - modelización - obtención de resultados)\nAlgunos casos con Shiny, otros con Python o Power BI\nEjemplo: http://www.citizenlabhub.es/cu/55"
-  },
-  {
-    "objectID": "intro_shiny.html#síagro---animal-production-spc",
-    "href": "intro_shiny.html#síagro---animal-production-spc",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Síagro - Animal production SPC",
-    "text": "Síagro - Animal production SPC\n\n\n\nCRO clinical and nutritional trials\nShiny app for their customers as a value added service\nImportant [productivity improvements]\nSimulation and parameterised reports\n\n\n\n\n\nhttps://www.siagro.es | 🖥️ Live demo 🤞🏻"
-  },
-  {
-    "objectID": "intro_shiny.html#placido-app-para-muestreo-de-aceptación",
-    "href": "intro_shiny.html#placido-app-para-muestreo-de-aceptación",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "placido: app para muestreo de aceptación",
-    "text": "placido: app para muestreo de aceptación\n\nResultado de un TFG\nDisponible en: https://dleo.shinyapps.io/placidoproject/\nControl de versiones con git y GitHub: https://github.com/DavidALeo/PlacidoProject/\nDocumentación con {pkgdown}: https://davidaleo.github.io/PlacidoProject/\n\nSlides: emilio.lcano.com/p/seio2023"
-  },
-  {
-    "objectID": "intro_shiny.html#simulación-de-proceso",
-    "href": "intro_shiny.html#simulación-de-proceso",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Simulación de proceso",
-    "text": "Simulación de proceso\n\nSimula la producción de lotes\nSe extraen muestras\nSPC + muestreo de aceptación\nApp disponible en: https://lcano.shinyapps.io/demo-shiny-quality/"
-  },
-  {
-    "objectID": "intro_shiny.html#caso-de-uso",
-    "href": "intro_shiny.html#caso-de-uso",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Caso de uso",
-    "text": "Caso de uso\n\nGráficos de control de la media, el rango y la desviación típica\nAnálisis de capacidad\nPaquete qcc\nDatos de ejemplo del paquete\n\n\nSe extiende fácilmente para otros datos y paquetes"
-  },
-  {
-    "objectID": "intro_shiny.html#configuración-inicial",
-    "href": "intro_shiny.html#configuración-inicial",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Configuración inicial",
-    "text": "Configuración inicial\n\nCrear un proyecto en RStudio\nInstalar paquetes shiny, bslib, qcc\nCrear script vacío\nInsertar estructura ui + server (por ejemplo con el snippet)\nIr añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)"
-  },
-  {
-    "objectID": "intro_shiny.html#estructura-básica-app-shiny",
-    "href": "intro_shiny.html#estructura-básica-app-shiny",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Estructura básica app shiny",
-    "text": "Estructura básica app shiny\n\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  \n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#disposición-del-dashboard-layout",
-    "href": "intro_shiny.html#disposición-del-dashboard-layout",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Disposición del dashboard (layout)",
-    "text": "Disposición del dashboard (layout)\n\nbslib tiene muchas opciones\n\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Gráfico de Control\"),\n  nav_panel(title = \"Análisis de la capacidad del proceso\")\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
-    "href": "intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Añadiendo inputs y outputs al ui",
-    "text": "Añadiendo inputs y outputs al ui\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos (fake)\", \n                data(package = \"qcc\")$results[,3])\n  ),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#añadiendo-objetos-reactivos",
-    "href": "intro_shiny.html#añadiendo-objetos-reactivos",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Añadiendo objetos reactivos",
-    "text": "Añadiendo objetos reactivos\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$tipo, input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#renderizando-outputs",
-    "href": "intro_shiny.html#renderizando-outputs",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Renderizando outputs",
-    "text": "Renderizando outputs\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
-    "href": "intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Dale color - ver cómo queda un tema",
-    "text": "Dale color - ver cómo queda un tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#dale-color---configura-el-tema",
-    "href": "intro_shiny.html#dale-color---configura-el-tema",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Dale color - configura el tema",
-    "text": "Dale color - configura el tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
-  },
-  {
-    "objectID": "intro_shiny.html#implentación-real",
-    "href": "intro_shiny.html#implentación-real",
-    "title": "Introducción a la visualización mediante dashboards",
-    "section": "Implentación real",
-    "text": "Implentación real\n\nLectura de datos del proceso en tiempo real\nMonitorizar proceso en fase II\nAñadir análisis exploratorio\nAñadir modelos\nMejorar interfaz\nComplejidad de la app"
-  },
-  {
     "objectID": "intro_shiny.html#algunos-ejemplos",
     "href": "intro_shiny.html#algunos-ejemplos",
     "title": "Introducción a la visualización mediante dashboards",
@@ -259,207 +686,389 @@
     "text": "Algunos ejemplos\n\nDSLAB apps\nShiny Gallery"
   },
   {
-    "objectID": "index.html#dashboards",
-    "href": "index.html#dashboards",
-    "title": "Desarrollo de dashboards con Shiny",
-    "section": "Dashboards",
-    "text": "Dashboards\n\nSesión 1: Introducción a la visualización mediante dashboards\nSesión 2: Diseño e interacción de usuario dashboards con Shiny\nSesión 3: Objetos reactivos y gráficos interactivos\nSesión 4: Shiny avanzado\nSesión 5: Práctica: desarrollo de un dashboard para datos deportivos"
+    "objectID": "slides/intro_shiny.html#unión-no-intersección",
+    "href": "slides/intro_shiny.html#unión-no-intersección",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Unión, no intersección",
+    "text": "Unión, no intersección\n\n\nThere is quite a bit of consensus about what Data Science is as a sort of mixture between Statistics, Computer Science and domain knowledge. A number of representations as Venn Diagrams have been developed. I prefer to see Data Science as the union of the three sets rather than the intersection, which is almost impossible to have in one person."
   },
   {
-    "objectID": "shiny_layouts.html#conjuntos-de-paquetes",
-    "href": "shiny_layouts.html#conjuntos-de-paquetes",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Conjuntos de paquetes",
-    "text": "Conjuntos de paquetes\n\nProporcionan una estructura y un diseño predefinido\nAceleran el desarrollo\nAutomatizan tareas comunes\nPersonalización limitada\nEjemplos: golemverse, rhinoverse, leprechaun"
+    "objectID": "slides/intro_shiny.html#r-for-data-science",
+    "href": "slides/intro_shiny.html#r-for-data-science",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "R for Data Science",
+    "text": "R for Data Science\n\n\n\n\n\n\n \n\n\n\n\n\n\n\n\n\n\n\n\n\nSource: R for Data Science (Wickham, Çetinkaya-Rundel and Grolemund, 2023)"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-con-rhino",
-    "href": "shiny_layouts.html#ejemplo-con-rhino",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo con Rhino",
-    "text": "Ejemplo con Rhino\n\n# install.packages(\"rhino\")\nrhino::init(\"RhinoApplication\")\nsetwd(\"./RhinoApplication\")\nshiny::runApp()"
+    "objectID": "slides/intro_shiny.html#crisp-dm",
+    "href": "slides/intro_shiny.html#crisp-dm",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "CRISP-DM",
+    "text": "CRISP-DM\n\n\n\nDespliegue puede incluir muchas cosas distintas\nEl uso de los modelos\nLa Visualización de resultados\nMLOps: como DevOps en informática\nExplicabilidad de modelos\n\n\n\n\n\n\n\n\n\nSource: Kenneth Jensen, CC BY-SA 3.0, via Wikimedia Commons"
   },
   {
-    "objectID": "shiny_layouts.html#paquetes-generalistas",
-    "href": "shiny_layouts.html#paquetes-generalistas",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Paquetes generalistas",
-    "text": "Paquetes generalistas\n\nMenos dependientes de un diseño específico\nshinydashboard. Obsoleto, pero aún muy utilizado.\nb4dash. Basado en Bootstrap 4, más moderno y flexible.\nbslib. Permite crear temas personalizados para Shiny, incluyendo dashboards.\nshinywidgets. Colección de widgets y componentes para Shiny, incluyendo algunos para dashboards."
+    "objectID": "slides/intro_shiny.html#informes-estáticos",
+    "href": "slides/intro_shiny.html#informes-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Informes estáticos",
+    "text": "Informes estáticos\n\n\n\nCuadro de mando integral: ejemplo clásico en la empresa\nInformes estadísticos: Normalmente resultados clave con gráficos, tablas e interpretación. Seleccionados por analista\nPor diseño, pensados para ser impresos en papel, formato pdf\n\n\n\n\n\n\n\n\n\nDownload .Rmd source | Ver online"
   },
   {
-    "objectID": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
-    "href": "shiny_layouts.html#app-dentro-de-un-paquete-propio",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "App dentro de un paquete propio",
-    "text": "App dentro de un paquete propio\n\nRecomendado para proyectos complejos o a largo plazo\nFacilita la organización del código, la reutilización de componentes y la colaboración\nPermite la integración con otras funciones y datos del paquete\nDetalles: https://mjfrigaard.github.io/shiny-app-pkgs/\nIMPORTANTE: manejo de paquetes con NAMESPACE, no library()."
+    "objectID": "slides/intro_shiny.html#dashboards-estáticos",
+    "href": "slides/intro_shiny.html#dashboards-estáticos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards estáticos",
+    "text": "Dashboards estáticos\nMás compactos, diseñado para pantalla\n\n\nDownload .Rmd source | Ver online"
   },
   {
-    "objectID": "shiny_layouts.html#estructura-general-de-un-dashboard",
-    "href": "shiny_layouts.html#estructura-general-de-un-dashboard",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Estructura general de un dashboard",
-    "text": "Estructura general de un dashboard\n\nPrimero se define el tipo de página\nDependiendo del tipo de página, puede incluir o no una barra lateral (incluso una a cada lado)\nSe puede añadir pie de página\nPanel principal: pensar en filas y columnas (bootstrap grid system, 12 columnas)\nOrganización de panel principal y sidebar con pestañas.\nIncluir elementos en cards o boxes."
+    "objectID": "slides/intro_shiny.html#dashboards-interactivos",
+    "href": "slides/intro_shiny.html#dashboards-interactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dashboards interactivos",
+    "text": "Dashboards interactivos\nInforme estático con elementos interactivos (widgets)\n\n\nDownload .Rmd source | Ver online"
   },
   {
-    "objectID": "shiny_layouts.html#diseños-de-página",
-    "href": "shiny_layouts.html#diseños-de-página",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Diseños de página",
-    "text": "Diseños de página\n\nVanilla shiny{bslib}\n\n\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n\n\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
+    "objectID": "slides/intro_shiny.html#limitaciones-y-alternativas",
+    "href": "slides/intro_shiny.html#limitaciones-y-alternativas",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Limitaciones y alternativas",
+    "text": "Limitaciones y alternativas\n\nLimitados a lo que el estadístico quiere mostrar\nNo solo lo van a usar personas expertas en estadística\nToma de decisiones a distintos niveles\n\n\n\nAplicaciones Reactivas guían a las partes interesadas en la obtención e interpretación de resultados\nLos interfaces bien diseñados para modelos avanzados favorecen la explicabilidad"
   },
   {
-    "objectID": "shiny_layouts.html#pestañas",
-    "href": "shiny_layouts.html#pestañas",
-    "title": "Diseño e interacción de usuario dashboards con Shiny",
-    "section": "Pestañas",
-    "text": "Pestañas\nVanilla shiny\n\nfluidPage(): diseño fluido, se adapta al tamaño de la ventana\nfixedPage(): diseño fijo, no se adapta al tamaño de la ventana\nnavbarPage(): diseño con barra de navegación superior\nsidebarPage(): diseño con barra lateral izquierda\nsidebarLayout(): diseño con barra lateral izquierda y panel principal\n\n{bslib}\n\npage_navbar(): diseño con barra de navegación superior\npage_sidebar(): diseño con barra lateral izquierda\npage_fluid(): diseño fluido, se adapta al tamaño de la ventana\n\npage_fixed(): diseño fijo, no se adapta al tamaño de la ventana"
+    "objectID": "slides/intro_shiny.html#reactive-programming",
+    "href": "slides/intro_shiny.html#reactive-programming",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Reactive programming",
+    "text": "Reactive programming\n\nThe key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.\n\n\nHadley Wickham, Mastering Shiny\n\n\n\n\n\nLos outputs, i.e., gráficos, tablas, etc., se generan con R cuando los inputs, i.e., selecciones del usuario, cambian."
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-con-bslib",
-    "href": "shiny_layouts.html#ejemplo-con-bslib",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo con bslib",
-    "text": "Ejemplo con bslib\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#aplicaciones-shiny",
+    "href": "slides/intro_shiny.html#aplicaciones-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicaciones Shiny",
+    "text": "Aplicaciones Shiny\n\nCódigo “estándar” de R\nNo hace falta nada más, todo el código HTML, CSS y JS se genera automáticamente\nDos “componentes”\nui (interfaz de usuario, página web). Contiene inputs y outputs\nserver. Contiene objetos reactivos y funciones generadoras (rendering)\n\n\n\n\nDescargar Shiny cheetsheet\nVisitar la Shiny gallery"
   },
   {
-    "objectID": "shiny_layouts.html#temas-y-personalización",
-    "href": "shiny_layouts.html#temas-y-personalización",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Temas y personalización",
-    "text": "Temas y personalización\n\nElegir un tema completo con bs_theme()\nSe pueden previsualizar todos con bs_themer() y ver cómo queda nuestro dashboard\nSe pueden cambiar componentes específicos en bs_theme(), o bien personalizar bs_add_variables()"
+    "objectID": "slides/intro_shiny.html#una-aplicación-shiny-simple",
+    "href": "slides/intro_shiny.html#una-aplicación-shiny-simple",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Una aplicación shiny simple",
+    "text": "Una aplicación shiny simple\n\n\n\nCódigo\nlibrary(shiny)\nlibrary(palmerpenguins); library(plotly); library(ggplot2)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    plotlyOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderPlotly({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point()\n    ggplotly(p)})\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)\n\n\n\n🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "shiny_layouts.html#sidebars",
-    "href": "shiny_layouts.html#sidebars",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Sidebars",
-    "text": "Sidebars\n\nEl sidebar es un contenedor en sí mismo, se puede incluir cualquier elemento.\nPrincipales opciones: ancho, posición, abierto, , título.\nBarras adicionales con layout_sidebar()\n\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  p(\"Contenido principal\"),\n  layout_sidebar(\n    sidebar = sidebar(title = \"Selección\"),\n    layout_sidebar(\n      sidebar = sidebar(title = \"Filtros\"),\n      position = \"right\",\n      open = FALSE\n    )\n  ),\n  nav_panel(title = \"Resultados\"),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#añadiendo-características-interesantes",
+    "href": "slides/intro_shiny.html#añadiendo-características-interesantes",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo características interesantes",
+    "text": "Añadiendo características interesantes\n\n\nDashboards\n\nshinydashboard\nbs4dash\nbslib\n\nConfiguración\n\nAplicaciones Multilenguaje with shiny.i18n\nAplicación como paquete\n\n\nBuenas prácticas de Ing.Soft.\n\nVersiones de paquetes con renv\nPruebas unitarias con testthat y shinytest\nControl de versiones e integración continua, e.g., con GitHub\nDespliegue como contenedor Docker"
   },
   {
-    "objectID": "shiny_layouts.html#pestañas-tabs",
-    "href": "shiny_layouts.html#pestañas-tabs",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Pestañas (tabs)",
-    "text": "Pestañas (tabs)\n\nPermiten organizar el contenido en secciones dentro de la misma página\nEstructura: navset_*() para el contenedor de pestañas, nav_panel() para cada pestaña\npills: estilo de pestañas con bordes redondeados\ncards: estilo de pestañas con fondo y bordes, similar a las tarjetas\ntab’s: estilo de pestañas clásico, sin bordes ni fondo\nlist’s: pestañas en vertical"
+    "objectID": "slides/intro_shiny.html#shiny-modules",
+    "href": "slides/intro_shiny.html#shiny-modules",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Shiny modules",
+    "text": "Shiny modules\n\nComponentes reutilizables\nCon su propio espacio de nombres (namespace)\nFacilitan pruebas y depuración\nComplejo de entender al principio\n\n👉Modularizing Shiny app code"
   },
   {
-    "objectID": "shiny_layouts.html#cards",
-    "href": "shiny_layouts.html#cards",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Cards",
-    "text": "Cards\n\nContenedores con estilo para agrupar elementos relacionados\nPersonalizables con títulos, colores, iconos, etc.\nAncho completo o dividido en filas y columnas"
+    "objectID": "slides/intro_shiny.html#afciot---tiva-indicators",
+    "href": "slides/intro_shiny.html#afciot---tiva-indicators",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\nJoint project with UNECA, WTO, and OECD\nInternational Trade, Environmental and Employment Indicators\nInternational and multidisciplinar team\nIndustry and product classification, gap estimation, policy simulation and visualisation\nKey result: A shiny app for reporting, visualisation and policy simulation\nSeveral important challenges for the multinational scope"
   },
   {
-    "objectID": "shiny_layouts.html#componentes",
-    "href": "shiny_layouts.html#componentes",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Componentes",
-    "text": "Componentes"
+    "objectID": "slides/intro_shiny.html#afciot---tiva-indicators-1",
+    "href": "slides/intro_shiny.html#afciot---tiva-indicators-1",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "AfCIOT - TiVA indicators",
+    "text": "AfCIOT - TiVA indicators\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-con-bslib-1",
-    "href": "shiny_layouts.html#ejemplo-con-bslib-1",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo con {bslib}",
-    "text": "Ejemplo con {bslib}\n\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(\n    title = \"Resultados\",\n    icon = icon(\"table\"),\n    layout_columns(\n      col_widths = c(2, 10),\n      card(\n        card_header(\"Resultados por selección\"),\n        card_body(p(\"Contenido de la tarjeta\"))\n      ),\n      card(\n        card_header(\"Resultados por torneo\"),\n        card_body(p(\"Contenido de la tarjeta\")) \n      )\n    )\n  ),\n  nav_panel(\n    title = \"Goleadores\",\n    navset_pill(\n      nav_panel(\n        icon = icon(\"futbol\"),\n        title = \"Goleadores por selección\",\n        p(\"Contenido de la pestaña 1\")\n      ),\n      nav_panel(title = \"Goleadores por torneo\", p(\"Contenido de la pestaña 2\"))\n    )\n  )\n)\n\nserver &lt;- function(input, output, session) {}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#evastur",
+    "href": "slides/intro_shiny.html#evastur",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR",
+    "text": "EVASTUR\n\nProyecto con la empresa Dephimática\nEspecializada en estadística pública\nCapacity building en Ciencia de Datos\nSistema de indicadores de turismo sostenible: exploración, visualización, análisis"
   },
   {
-    "objectID": "shiny_layouts.html#componentes---inputs",
-    "href": "shiny_layouts.html#componentes---inputs",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Componentes - inputs",
-    "text": "Componentes - inputs\n\nCajas de texto: numéricas, texto, texto multilínea, fecha, contraseña\nAcciones: botón, botón de tarea, link, descarga, upload, submit\nSelección: checkbox, checkbox group, select, slider, rangos\nSelectize vs select clásico: más opciones\nshinywidgets: amplia variedad de widgets adicionales, como selectize con búsqueda, sliders con rangos personalizados, etc. Otros paquetes que ofrecen componentes adicionales.\nPaneles condicionales: según selecciones en el UI se muestran o no\n\nshiny components | shinywidgets"
+    "objectID": "slides/intro_shiny.html#evastur---dashboard",
+    "href": "slides/intro_shiny.html#evastur---dashboard",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EVASTUR - Dashboard",
+    "text": "EVASTUR - Dashboard\n\n\n🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "shiny_layouts.html#componentes---outputs",
-    "href": "shiny_layouts.html#componentes---outputs",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Componentes - outputs",
-    "text": "Componentes - outputs\n\nTextos: texto, texto HTML, verbatim text\nTablas: tabla renderizada, tabla interactiva (DT, reactable, gt)\nGráficos: gráficos estáticos (ggplot2, base),\nGráficos interactivos: plotly, echarts4r, highcharter, ggiraph, etc.\nMapas: leaflet, mapview, tmap, etc.\nImágenes\nDiagramas: diagrammeR, mermaid, etc.\nValueBox: cajas de valor para mostrar métricas clave de forma destacada\nUI: controles que se generan en el server (porque dependen de inputs o datos)"
+    "objectID": "slides/intro_shiny.html#epe-brasil",
+    "href": "slides/intro_shiny.html#epe-brasil",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "EPE Brasil",
+    "text": "EPE Brasil\n\nWeaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)\nProyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)\nETL, Modelo de datos, visualización\nIndicadores de pobreza energética (UCM)\nPresentado en reunión del G20"
   },
   {
-    "objectID": "shiny_reactive.html#carga-de-datos",
-    "href": "shiny_reactive.html#carga-de-datos",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Carga de datos",
-    "text": "Carga de datos\n\nPermite subir ficheros desde el ordenador del usuario\nfileInput(): input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.\nEn el server, se asigna a objetos que se pueden usar"
+    "objectID": "slides/intro_shiny.html#obepe",
+    "href": "slides/intro_shiny.html#obepe",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "OBEPE",
+    "text": "OBEPE\n\n\n\n\n\nAcknowledgements:   \n\n🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-paneles-condicionales",
-    "href": "shiny_layouts.html#ejemplo-paneles-condicionales",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo: paneles condicionales",
-    "text": "Ejemplo: paneles condicionales\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    checkboxInput(\"chk_partidos\", \"Mostrar número partidos\", value = FALSE),\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    conditionalPanel(\n      condition = \"input.chk_partidos == true\",\n      verbatimTextOutput(\"num_partidos\")\n    )\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    num &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n    paste(\"Número de partidos:\", num)\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#analítica-deportiva",
+    "href": "slides/intro_shiny.html#analítica-deportiva",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Analítica deportiva",
+    "text": "Analítica deportiva"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-ui-dinámica",
-    "href": "shiny_layouts.html#ejemplo-ui-dinámica",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo: UI dinámica",
-    "text": "Ejemplo: UI dinámica\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#proyectos-de-investigación-dicyme",
+    "href": "slides/intro_shiny.html#proyectos-de-investigación-dicyme",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Proyectos de investigación: DICYME",
+    "text": "Proyectos de investigación: DICYME\n\nDynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)\nProyecto de colaboración público-privada con DeNexus TECH SL.\nDashboard (no publicado aún)\nConexión con MongoDB\nApp relacionada: CRAS"
   },
   {
-    "objectID": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
-    "href": "shiny_layouts.html#interacción-con-el-usuario-mensajes",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Interacción con el usuario: mensajes",
-    "text": "Interacción con el usuario: mensajes\n\nshowNotification(): muestra un mensaje temporal en la parte superior de la app, con opciones de tipo (info, success, warning, error), duración, etc.\nshowModal(): muestra un cuadro de diálogo modal con contenido personalizado, como texto, imágenes, inputs, etc.\nshowAlert(): muestra un mensaje de alerta con opciones de tipo, título, texto, etc.\nCon shinywidgets: via sweetalert"
+    "objectID": "slides/intro_shiny.html#aplicación-shiny-cras",
+    "href": "slides/intro_shiny.html#aplicación-shiny-cras",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Aplicación shiny CRAS",
+    "text": "Aplicación shiny CRAS\n\nAnálisis de riesgos\nPrimer paso: se simulan los eventos en n años\nSegundo paso: se simula el gasto de cada evento"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
-    "href": "shiny_layouts.html#ejemplo-botones-y-mensajes-shiny-vanilla",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo botones y mensajes (shiny vanilla)",
-    "text": "Ejemplo botones y mensajes (shiny vanilla)\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje\"),\n  actionLink(\"lnk_mensaje\", \"Mostrar mensaje con link\")\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    showNotification(\n      paste(\"Has seleccionado:\", input$sel_pais),\n      type = \"message\"\n    )\n  })\n  observeEvent(input$lnk_mensaje, {\n    showModal(\n      modalDialog(\n        title = \"Mensaje\",\n        paste(\"Has seleccionado:\", input$sel_pais),\n        footer = tagList(\n          modalButton(\"Cerrar\"),\n          actionButton(\"btn_mas_info\", \"Más info\")\n        )\n      )\n    )\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#resultados",
+    "href": "slides/intro_shiny.html#resultados",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Resultados",
+    "text": "Resultados"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
-    "href": "shiny_layouts.html#ejemplo-shinywidgets---sweetalert",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo shinyWidgets - sweetalert",
-    "text": "Ejemplo shinyWidgets - sweetalert\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(dplyr)\nlibrary(shinyWidgets)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_sidebar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  actionButton(\"btn_mensaje\", \"Mostrar mensaje sweet\"),\n)\n\nserver &lt;- function(input, output, session) {\n  observeEvent(input$btn_mensaje, {\n    show_alert(\n      title = \"Éxito !!\",\n      text = \"Todo en orden\",\n      type = \"success\"\n    )\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#smart-cities",
+    "href": "slides/intro_shiny.html#smart-cities",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Smart Cities",
+    "text": "Smart Cities\n\nCasos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid\nAplicaciones coherentes paso a paso para los casos de uso (cargar datos - visualización - modelización - obtención de resultados)\nAlgunos casos con Shiny, otros con Python o Power BI\nEjemplo: http://www.citizenlabhub.es/cu/55"
   },
   {
-    "objectID": "shiny_layouts.html#validación",
-    "href": "shiny_layouts.html#validación",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Validación",
-    "text": "Validación\n\nvalidate() y need(): permiten validar condiciones en el server y mostrar mensajes de error personalizados en lugar de errores genéricos.\nreq(): requiere que un input o valor esté presente y no sea NULL o vacío, de lo contrario detiene la ejecución. Lo veremos en la siguiente sesión sobre reactividad.\n{shinyvalidate}: ofrece un mayor control sobre la validación, con reglas predefinidas, mensajes personalizados, validación en tiempo real, etc."
+    "objectID": "slides/intro_shiny.html#síagro---animal-production-spc",
+    "href": "slides/intro_shiny.html#síagro---animal-production-spc",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Síagro - Animal production SPC",
+    "text": "Síagro - Animal production SPC\n\n\n\nCRO clinical and nutritional trials\nShiny app for their customers as a value added service\nImportant [productivity improvements]\nSimulation and parameterised reports\n\n\n\n\n\nhttps://www.siagro.es | 🖥️ Live demo 🤞🏻"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-validación",
-    "href": "shiny_layouts.html#ejemplo-validación",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo validación",
-    "text": "Ejemplo validación\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    numericInput(\"year\", \"Selecciona un año:\", value = 2022, min = 1956, max = 2025)\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n    \n  ),\n  nav_panel(title = \"Goles\",\n  plotOutput(\"graf_goles\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$graf_goles &lt;- renderPlot({\n    validate(\n      need(input$year &gt; 2000, \"Solo se muestran datos a partir del año 2000\")\n    )\ndatos &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, year(date) == input$year) |&gt;\n      group_by(tournament) |&gt;\n      summarise(diferencia = sum(home_score - away_score))\n\n    barplot(datos$diferencia, names.arg = datos$tournament, col = \"steelblue\", main = \"Diferencia de goles por torneo\", ylab = \"Diferencia de goles\")\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#placido-app-para-muestreo-de-aceptación",
+    "href": "slides/intro_shiny.html#placido-app-para-muestreo-de-aceptación",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "placido: app para muestreo de aceptación",
+    "text": "placido: app para muestreo de aceptación\n\nResultado de un TFG\nDisponible en: https://dleo.shinyapps.io/placidoproject/\nControl de versiones con git y GitHub: https://github.com/DavidALeo/PlacidoProject/\nDocumentación con {pkgdown}: https://davidaleo.github.io/PlacidoProject/\n\nSlides: emilio.lcano.com/p/seio2023"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-previsualización-de-temas",
-    "href": "shiny_layouts.html#ejemplo-previsualización-de-temas",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo previsualización de temas",
-    "text": "Ejemplo previsualización de temas\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#simulación-de-proceso",
+    "href": "slides/intro_shiny.html#simulación-de-proceso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Simulación de proceso",
+    "text": "Simulación de proceso\n\nSimula la producción de lotes\nSe extraen muestras\nSPC + muestreo de aceptación\nApp disponible en: https://lcano.shinyapps.io/demo-shiny-quality/"
   },
   {
-    "objectID": "shiny_layouts.html#ejemplo-establecer-tema",
-    "href": "shiny_layouts.html#ejemplo-establecer-tema",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Ejemplo establecer tema",
-    "text": "Ejemplo establecer tema\n\nlibrary(shiny)\nlibrary(bslib)\nlibrary(reactable)\nlibrary(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\ngoleadores &lt;- read.csv(\"data/goalscorers.csv\")\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  selected = \"Goleadores\",\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    uiOutput(\"ui_jugadores\")\n  ),\n  nav_panel(\n    title = \"Partidos\"\n  ),\n  nav_panel(title = \"Goleadores\", reactableOutput(\"tabla_jugadores\"))\n)\n\nserver &lt;- function(input, output, session) {\n  output$ui_jugadores &lt;- renderUI({\n    jugadores &lt;- goleadores |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(scorer) |&gt;\n      unique()\n    selectizeInput(\"sel_jugador\", \"Selecciona un jugador:\", choices = jugadores)\n  })\n  output$tabla_jugadores &lt;- renderReactable({\n    goleadores |&gt;\n      filter(home_team == input$sel_pais, scorer == input$sel_jugador) |&gt;\n      reactable()\n  })\n}\n\nshinyApp(ui, server)"
+    "objectID": "slides/intro_shiny.html#caso-de-uso",
+    "href": "slides/intro_shiny.html#caso-de-uso",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Caso de uso",
+    "text": "Caso de uso\n\nGráficos de control de la media, el rango y la desviación típica\nAnálisis de capacidad\nPaquete qcc\nDatos de ejemplo del paquete\n\n\nSe extiende fácilmente para otros datos y paquetes"
   },
   {
-    "objectID": "shiny_reactive.html#contenidos",
-    "href": "shiny_reactive.html#contenidos",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "contenidos",
-    "text": "contenidos\n\nobjetos reactivos: reactive(), reactiveValues(), eventReactive(), observeEvent()\nreq()\nficheros reactivos: fileInput() y descarga de ficheros con downloadHandler()\nadvanced plots: network, alluvial, radar, maps, sankey, etc. con ggiraph y plotly"
+    "objectID": "slides/intro_shiny.html#configuración-inicial",
+    "href": "slides/intro_shiny.html#configuración-inicial",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Configuración inicial",
+    "text": "Configuración inicial\n\nCrear un proyecto en RStudio\nInstalar paquetes shiny, bslib, qcc\nCrear script vacío\nInsertar estructura ui + server (por ejemplo con el snippet)\nIr añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)"
   },
   {
-    "objectID": "shiny_layouts.html#iconos",
-    "href": "shiny_layouts.html#iconos",
-    "title": "Diseño e interacción de usuario con Shiny",
-    "section": "Iconos",
-    "text": "Iconos\n\nMuchos elementos permiten incluir iconos para mejorar la apariencia y la usabilidad\nSe pueden usar los iconos de Font Awesome, Bootstrap Icons, etc.\nArgumento icon en muchos componentes, con función icon() o bs_icon()\nBuscar iconos: https://fontawesome.com/ | https://icons.getbootstrap.com/"
+    "objectID": "slides/intro_shiny.html#estructura-básica-app-shiny",
+    "href": "slides/intro_shiny.html#estructura-básica-app-shiny",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Estructura básica app shiny",
+    "text": "Estructura básica app shiny\n\n\nCódigo\nlibrary(shiny)\n\nui &lt;- fluidPage(\n  \n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#disposición-del-dashboard-layout",
+    "href": "slides/intro_shiny.html#disposición-del-dashboard-layout",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Disposición del dashboard (layout)",
+    "text": "Disposición del dashboard (layout)\n\nbslib tiene muchas opciones\n\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(title = \"Selección\"),\n  nav_panel(title = \"Gráfico de Control\"),\n  nav_panel(title = \"Análisis de la capacidad del proceso\")\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
+    "href": "slides/intro_shiny.html#añadiendo-inputs-y-outputs-al-ui",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo inputs y outputs al ui",
+    "text": "Añadiendo inputs y outputs al ui\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos (fake)\", \n                data(package = \"qcc\")$results[,3])\n  ),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#añadiendo-objetos-reactivos",
+    "href": "slides/intro_shiny.html#añadiendo-objetos-reactivos",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Añadiendo objetos reactivos",
+    "text": "Añadiendo objetos reactivos\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", \n                c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  nav_panel(title = \"Gráfico de Control\",\n            plotOutput(\"grafico_control\"),\n            verbatimTextOutput(\"salida_control\")),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\")\n  )\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$tipo, input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#renderizando-outputs",
+    "href": "slides/intro_shiny.html#renderizando-outputs",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Renderizando outputs",
+    "text": "Renderizando outputs\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
+    "href": "slides/intro_shiny.html#dale-color---ver-cómo-queda-un-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - ver cómo queda un tema",
+    "text": "Dale color - ver cómo queda un tema\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  bs_themer()\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#dale-color---configura-el-tema",
+    "href": "slides/intro_shiny.html#dale-color---configura-el-tema",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Dale color - configura el tema",
+    "text": "Dale color - configura el tema\n\n\nCódigo\nlibrary(shiny)\nlibrary(bslib)\nlibrary(qcc)\n\nui &lt;- page_navbar(\n  theme = bs_theme(bootswatch = \"minty\"),\n  title = \"Control Estadístico de procesos ACME\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectInput(\"tipo\", \"Tipo de gráfico\", c(\"xbar\", \"R\", \"S\" )),\n    numericInput(\"fase1\", \"Fase 1 hasta muestra\", value = 25),\n    sliderInput(\"limites\", \"Límites de especificación\",\n                min = 73.90, max = 74.15,\n                value = c(73.95, 74.05), \n                step = 0.01),\n    selectInput(\"datos\", \"Datos\", data(package = \"qcc\")$results[,3])),\n  \n  nav_panel(title = \"Gráfico de Control\",\n            card(plotOutput(\"grafico_control\"),\n                 verbatimTextOutput(\"salida_control\"),\n                 fill = FALSE)),\n  nav_panel(title = \"Análisis de la capacidad del proceso\",\n            plotOutput(\"grafico_capacidad\"))\n)\n\nserver &lt;- function(input, output, session) {\n  gc &lt;- reactive({\n    req(input$fase1)\n    data(\"pistonrings\")\n    diameter &lt;- qcc.groups(pistonrings$diameter, pistonrings$sample)\n    qcc(diameter[1:as.numeric(input$fase1),], \n        type = input$tipo, plot = FALSE)\n  }) \n  \n  output$grafico_control &lt;- renderPlot({\n    plot(gc())\n  })\n  output$salida_control &lt;- renderText({\n    paste(capture.output(summary(gc())), collapse = \"\\n\")\n  })\n  output$grafico_capacidad &lt;- renderPlot({\n    req(input$tipo == \"xbar\")\n    process.capability(gc(), input$limites)\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "slides/intro_shiny.html#implentación-real",
+    "href": "slides/intro_shiny.html#implentación-real",
+    "title": "Introducción a la visualización mediante dashboards",
+    "section": "Implentación real",
+    "text": "Implentación real\n\nLectura de datos del proceso en tiempo real\nMonitorizar proceso en fase II\nAñadir análisis exploratorio\nAñadir modelos\nMejorar interfaz\nComplejidad de la app"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#guia-docente",
+    "href": "plantilla_presentacion_curso.html#guia-docente",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Guia docente",
+    "text": "Guia docente\n\nTipo: Obligatoria\nPeríodo de impartición: Primer curso, primer semestre\nNº de créditos: 6 ECTS\n\nHoras totales: 150h (60h presenciales / 90h trabajo autónomo)\n\nDepartamento: Departamento de Informática y Estadística\nCampus: Móstoles\nMáster: Análisis de Datos Deportivos\nAula: Aulario I, Seminario 110"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#prof.-emilio-lópez-cano",
+    "href": "plantilla_presentacion_curso.html#prof.-emilio-lópez-cano",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Emilio López Cano",
+    "text": "Prof. Emilio López Cano\n\nE-mail: emilio.lopez@urjc.es\nTutorías: Concertar por el correo del aula virtual\nDespacho: 043, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#prof.-rubén-rodríguez-fernández",
+    "href": "plantilla_presentacion_curso.html#prof.-rubén-rodríguez-fernández",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Rubén Rodríguez Fernández",
+    "text": "Prof. Rubén Rodríguez Fernández\n\nE-mail: ruben.rodriguez@urjc.es\nTutorías: Concertar por el correo del aula virtual\nDespacho: 131, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#prof.-víctor-aceña-gil",
+    "href": "plantilla_presentacion_curso.html#prof.-víctor-aceña-gil",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Prof. Víctor Aceña Gil",
+    "text": "Prof. Víctor Aceña Gil\n\nE-mail: victor.acena@urjc.es\nDespacho: 131, Departamental II, Móstoles\nWeb URJC"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#el-análisis-de-datos-deportivos-está-en-todas-partes",
+    "href": "plantilla_presentacion_curso.html#el-análisis-de-datos-deportivos-está-en-todas-partes",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "El análisis de datos deportivos está en todas partes",
+    "text": "El análisis de datos deportivos está en todas partes\n\nPlataformas de tracking deportivo (Strava, Garmin Connect)\nAnálisis de rendimiento en equipos profesionales\nSistemas de scouting y reclutamiento\nMonitorización biomecánica en tiempo real\nAnalytics en retransmisiones deportivas\nAplicaciones móviles de entrenamiento personalizado"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#python-y-r-dominan-el-análisis-de-datos",
+    "href": "plantilla_presentacion_curso.html#python-y-r-dominan-el-análisis-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Python y R dominan el análisis de datos",
+    "text": "Python y R dominan el análisis de datos\n\n\nPython\n\nNumPy, Pandas, Matplotlib\nScikit-learn, TensorFlow\nJupyter Notebooks\nAPIs y web scraping\n\n\nR\n\nTidyverse (dplyr, ggplot2)\nAnálisis estadístico avanzado\nR Markdown\nVisualizaciones especializadas"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#objetivos",
+    "href": "plantilla_presentacion_curso.html#objetivos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Objetivos",
+    "text": "Objetivos\n\nDominar Python y R para análisis de datos deportivos\nAprender a manipular y limpiar grandes conjuntos de datos\nCrear visualizaciones efectivas de métricas deportivas\nDesarrollar scripts automatizados para análisis en tiempo real\nImplementar buenas prácticas de programación y control de versiones\nAplicar técnicas de análisis a casos reales del deporte"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-1-elementos-básicos-de-programación",
+    "href": "plantilla_presentacion_curso.html#tema-1-elementos-básicos-de-programación",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 1: Elementos básicos de programación",
+    "text": "Tema 1: Elementos básicos de programación\n\nDefinición de variables\nIntroducción a las estructuras de control\nAgrupar funcionalidades en funciones\nDepuración\n\n\nPythonR\n\n\n# Variables y funciones básicas\ndef calcular_imc(peso, altura):\n    \"\"\"Calcula el IMC de un atleta\"\"\"\n    imc = peso / (altura ** 2)\n    return round(imc, 2)\n\natleta_peso = 75  # kg\natleta_altura = 1.80  # metros\nprint(f\"IMC: {calcular_imc(atleta_peso, atleta_altura)}\")\n\n\n# Variables y funciones básicas\ncalcular_imc &lt;- function(peso, altura) {\n  # Calcula el IMC de un atleta\n  imc &lt;- peso / (altura^2)\n  return(round(imc, 2))\n}\n\natleta_peso &lt;- 75    # kg\natleta_altura &lt;- 1.80  # metros\ncat(\"IMC:\", calcular_imc(atleta_peso, atleta_altura))"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-2-estructuras-de-datos",
+    "href": "plantilla_presentacion_curso.html#tema-2-estructuras-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 2: Estructuras de datos",
+    "text": "Tema 2: Estructuras de datos\n\nIntroducción a las estructuras de datos\nVectores, matrices y arrays.\n\n\nPythonR\n\n\nimport numpy as np\nimport pandas as pd\n\n# Crear matriz de rendimiento semanal\nrendimiento = np.array([\n    [85, 92, 78, 88],  # Jugador 1\n    [90, 85, 95, 87]   # Jugador 2\n])\n\n# Convertir a DataFrame para mejor visualización\ndf = pd.DataFrame(rendimiento, \n                  index=['Jugador1', 'Jugador2'],\n                  columns=['Sem1', 'Sem2', 'Sem3', 'Sem4'])\nprint(df)\n\n\n# Crear matriz de rendimiento semanal\nrendimiento &lt;- matrix(\n  c(85, 92, 78, 88, 90, 85, 95, 87), \n  nrow = 2, ncol = 4,\n  dimnames = list(c(\"Jugador1\", \"Jugador2\"), \n                  c(\"Sem1\", \"Sem2\", \"Sem3\", \"Sem4\"))\n)\nprint(rendimiento)"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-3-control-de-versiones",
+    "href": "plantilla_presentacion_curso.html#tema-3-control-de-versiones",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 3: Control de versiones",
+    "text": "Tema 3: Control de versiones\n\nHerramientas de control de versiones\nIntroducción a git\nColaboración a través con git a través de Github"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-4-importación-y-exportación-de-ficheros",
+    "href": "plantilla_presentacion_curso.html#tema-4-importación-y-exportación-de-ficheros",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 4: Importación y exportación de ficheros",
+    "text": "Tema 4: Importación y exportación de ficheros\n\nLectura y escritura de datos en diferentes formatos.\nExcel, JSON, CSV.\n\n\nPythonR\n\n\nimport pandas as pd\n\n# Leer datos de diferentes formatos\ndf_csv = pd.read_csv('resultados.csv')\ndf_excel = pd.read_excel('estadisticas.xlsx', sheet_name='Temporada2024')\n\n# Exportar resultados\ndf_csv.to_json('resultados.json', orient='records')\ndf_csv.to_parquet('resultados.parquet')  # Formato eficiente\n\n\nlibrary(readxl)\nlibrary(jsonlite)\n\n# Leer datos de diferentes formatos\ndf_csv &lt;- read.csv('resultados.csv')\ndf_excel &lt;- read_excel('estadisticas.xlsx', sheet = 'Temporada2024')\n\n# Exportar resultados\nwrite_json(df_csv, 'resultados.json')\nwrite.csv(df_csv, 'resultados_procesados.csv', row.names = FALSE)"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-5-manipulación-de-datos",
+    "href": "plantilla_presentacion_curso.html#tema-5-manipulación-de-datos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 5: Manipulación de datos",
+    "text": "Tema 5: Manipulación de datos\n\nManipulación de datos multidimensionales\nEn R, librerías como Dplyr, tidyr\nEn Python, pandas y numpy\n\n\nPythonR\n\n\nimport pandas as pd\n\n# Pipeline de transformación con pandas\nresultado = (jugadores\n    .query('minutos_jugados &gt; 900')\n    .assign(goles_por_partido = lambda x: x.goles / x.partidos)\n    .sort_values('goles_por_partido', ascending=False)\n    .loc[:, ['nombre', 'goles_por_partido', 'posicion']]\n)\n\n\nlibrary(dplyr)\n\n# Pipeline de transformación\nresultado &lt;- jugadores %&gt;%\n  filter(minutos_jugados &gt; 900) %&gt;%\n  mutate(goles_por_partido = goles / partidos) %&gt;%\n  arrange(desc(goles_por_partido)) %&gt;%\n  select(nombre, goles_por_partido, posicion)"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-6-visualización-de-datos-deportivos",
+    "href": "plantilla_presentacion_curso.html#tema-6-visualización-de-datos-deportivos",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 6: Visualización de datos deportivos",
+    "text": "Tema 6: Visualización de datos deportivos\n\nCreación de visualizaciones de datos\nEnfoque en el ámbito deportivo\nCreación de documentación reproducible con Quarto\n\n\nPythonR\n\n\nimport matplotlib.pyplot as plt\nimport numpy as np\n\n# Gráfico de radar para habilidades\ndef grafico_radar(habilidades, jugador):\n    angles = np.linspace(0, 2*np.pi, len(habilidades), endpoint=False)\n    angles = np.concatenate((angles, [angles[0]]))\n    \n    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(projection='polar'))\n    ax.plot(angles, habilidades + [habilidades[0]], 'b-', linewidth=2)\n    ax.fill(angles, habilidades + [habilidades[0]], alpha=0.3)\n    plt.title(f'Perfil de habilidades - {jugador}')\n    return fig\n\n\nlibrary(ggplot2)\n\n# Gráfico de radar para habilidades\nggplot(habilidades, aes(x = habilidad, y = puntuacion, \n                        group = jugador, color = jugador)) +\n  geom_polygon(alpha = 0.3, fill = NA) +\n  geom_point(size = 3) +\n  coord_polar() + \n  theme_minimal() +\n  labs(title = \"Perfil de Habilidades por Jugador\")"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-7-tratamiento-de-errores",
+    "href": "plantilla_presentacion_curso.html#tema-7-tratamiento-de-errores",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 7: Tratamiento de errores",
+    "text": "Tema 7: Tratamiento de errores\n\nGestión de errores\nTrazas de ejecución (logging)\n\n\nPythonR\n\n\nimport logging\nimport pandas as pd\n\n# Configurar logging\nlogging.basicConfig(level=logging.INFO)\n\ndef procesar_datos_gps(archivo):\n    try:\n        datos = pd.read_csv(archivo)\n        logging.info(f\"Procesados {len(datos)} puntos GPS\")\n        return datos\n    except FileNotFoundError:\n        logging.error(f\"Archivo {archivo} no encontrado\")\n        return None\n    except Exception as e:\n        logging.error(f\"Error inesperado: {e}\")\n        return None\n\n\nlibrary(tryCatch)\nlibrary(futile.logger)\n\n# Configurar logging\nflog.threshold(INFO)\n\nprocesar_datos_gps &lt;- function(archivo) {\n  tryCatch({\n    datos &lt;- read.csv(archivo)\n    flog.info(\"Procesados %s puntos GPS\", nrow(datos))\n    return(datos)\n  }, error = function(e) {\n    flog.error(\"Error al procesar %s: %s\", archivo, e$message)\n    return(NULL)\n  })\n}"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#tema-8-procesos-etl-e-integración",
+    "href": "plantilla_presentacion_curso.html#tema-8-procesos-etl-e-integración",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Tema 8: Procesos ETL e integración",
+    "text": "Tema 8: Procesos ETL e integración\n\nWeb Scrapping de datos\nUtilización de APIs\nCreación de pipelines\n\n\nPythonR\n\n\nimport requests\nimport pandas as pd\n\n# Consumir API de resultados deportivos\ndef obtener_partidos_api():\n    try:\n        response = requests.get('https://api.deportes.com/partidos/hoy')\n        if response.status_code == 200:\n            partidos = response.json()\n            df = pd.DataFrame(partidos)\n            return df[['equipo_local', 'equipo_visitante', 'resultado']]\n    except requests.RequestException as e:\n        print(f\"Error en API: {e}\")\n        return None\n\n\nlibrary(httr)\nlibrary(jsonlite)\n\n# Consumir API de resultados deportivos\nobtener_partidos_api &lt;- function() {\n  tryCatch({\n    response &lt;- GET(\"https://api.deportes.com/partidos/hoy\")\n    if (status_code(response) == 200) {\n      partidos &lt;- fromJSON(content(response, \"text\"))\n      return(partidos[c(\"equipo_local\", \"equipo_visitante\", \"resultado\")])\n    }\n  }, error = function(e) {\n    message(\"Error en API: \", e$message)\n    return(NULL)\n  })\n}"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#metodología-docente",
+    "href": "plantilla_presentacion_curso.html#metodología-docente",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Metodología Docente",
+    "text": "Metodología Docente\n\nAprendizaje basado en proyectos con datos deportivos reales\nClases teóricas combinadas con sesiones prácticas intensivas\nLaboratorios experimentales con ordenador\nTrabajo autónomo guiado con ejercicios progresivos\nPresentaciones orales de proyectos\nTutorías académicas personalizadas"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#lenguajes-de-programación",
+    "href": "plantilla_presentacion_curso.html#lenguajes-de-programación",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Lenguajes de Programación",
+    "text": "Lenguajes de Programación\n\n\nLibrerías Python\n\nPython 3.x (Anaconda distribution)\nNumPy, Pandas, SciPy\nMatplotlib, Seaborn\nJupyter Notebooks\n\n\nLibrerías R\n\nR (última versión estable)\nTidyverse (dplyr, ggplot2, tidyr)\nR Markdown\n\n\nOtras herramientas\n\nGit/GitHub\nPositron"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#sistema-de-evaluación-continua",
+    "href": "plantilla_presentacion_curso.html#sistema-de-evaluación-continua",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Sistema de evaluación continua",
+    "text": "Sistema de evaluación continua\n\nSE1 - Pruebas escritas (20%)\n\nNota mínima: 4\n\nSE2 - Resolución de problemas (20%)\n\nEjercicios prácticos, nota mínima: 4\n\nSE3 - Documentos/Informes (20%)\n\nMemorias de prácticas, nota mínima: 5\n\nSE5 - Evaluación de prácticas (40%)\n\nProyectos de laboratorio, nota mínima: 5\n\n\nNota final: Media ponderada si todas las pruebas superan la nota mínima"
+  },
+  {
+    "objectID": "plantilla_presentacion_curso.html#recursos-y-bibliografía-1",
+    "href": "plantilla_presentacion_curso.html#recursos-y-bibliografía-1",
+    "title": "Programación Orientada al Análisis de Datos",
+    "section": "Recursos y Bibliografía",
+    "text": "Recursos y Bibliografía\n\n\nBibliografía Básica\n\nMatthes, E. (2023). Python Crash Course\nMcKinney, W. (2022). Python for Data Analysis\nWickham, H. et al. (2023). R for Data Science [online]\nCano, E.L. (2024). Introducción al software estadístico R [online]\n\n\nRecursos Online\n\nMaterial en el aula virtual\nDocumentación oficial de Python/R\nJupyter Notebooks con ejemplos deportivos\nDatasets deportivos para practicar\nRepositorios GitHub del curso"
   },
   {
     "objectID": "shiny_reactive.html#reactividad",
@@ -474,6 +1083,13 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "reactive()",
     "text": "reactive()\n\nSe asigna a un nombre como cualquier otro objeto\nDespués se usa llamando al objeto con paréntesis:\n\n\ndatos_reactivos &lt;- reactive({\n  # código para generar los datos\n})\noutput$tabla &lt;- renderTable({\n  datos_reactivos()\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo",
+    "href": "shiny_reactive.html#ejemplo",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo",
+    "text": "Ejemplo\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- reactive({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
   },
   {
     "objectID": "shiny_reactive.html#reactivevalues",
@@ -497,83 +1113,6 @@
     "text": "eventReactive() y observeEvent()\n\nPermiten ejecutar código reactivo en respuesta a eventos específicos, como un clic en un botón\neventReactive() devuelve un valor reactivo que se actualiza cuando ocurre el evento\n\n\nresultado &lt;- eventReactive(input$boton, {\n  # código para generar el resultado\n})\noutput$resultado &lt;- renderText({\n  resultado()\n})\n\n\nobserveEvent() ejecuta código sin devolver un valor, útil para acciones como mostrar mensajes\n\n\ncontador &lt;- reactiveVal(0)\nobserveEvent(input$boton, {\n  contador(contador() + 1)\n})\noutput$contador &lt;- renderText({\n  paste(\"Contador:\", contador())\n})"
   },
   {
-    "objectID": "shiny_reactive.html#req",
-    "href": "shiny_reactive.html#req",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "req()",
-    "text": "req()\n\nFunción que se utiliza para requerir que ciertas condiciones se cumplan antes de ejecutar un bloque de código reactivo\nSi la condición no se cumple, el bloque de código no se ejecuta y se muestra un mensaje de error o se mantiene el estado anterior\n\n\noutput$resultado &lt;- renderText({\n  req(input$texto != \"\") # Requiere que el input de texto no esté vacío\n  paste(\"El texto ingresado es:\", input$texto)\n})"
-  },
-  {
-    "objectID": "shiny_reactive.html#validate",
-    "href": "shiny_reactive.html#validate",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "validate()",
-    "text": "validate()\n\nFunción que se utiliza para validar los inputs antes de ejecutar un bloque de código reactivo\nPermite mostrar mensajes de error personalizados si los inputs no cumplen con ciertos criterios\n\n\noutput$resultado &lt;- renderText({\n  validate(\n    need(input$numero &gt; 0, \"El número debe ser mayor que cero\")\n  )\n  paste(\"El número ingresado es:\", input$numero)\n})"
-  },
-  {
-    "objectID": "shiny_reactive.html#carga-y-descarga-de-ficheros",
-    "href": "shiny_reactive.html#carga-y-descarga-de-ficheros",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Carga y descarga de ficheros",
-    "text": "Carga y descarga de ficheros\n\nfileInput(): input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.\nEn el server, se asigna a objetos que se pueden usar\n\n\n&lt;|input|&gt;fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\")\n\noutput$archivo &lt;- renderTable({\n  req(input$archivo) # Requiere que se haya subido un archivo\n  read.csv(input$archivo$datapath) # Lee el archivo subido\n})\n\n\ndownloadHandler(): permite crear un enlace para descargar archivos generados en la aplicación\n\n\n&lt;|input|&gt;downloadButton(\"descargar\", \"Descargar datos\")\n\noutput$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(datos_reactivos(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)"
-  },
-  {
-    "objectID": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
-    "href": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Gráficos interactivos con ggiraph",
-    "text": "Gráficos interactivos con ggiraph\n\nPermite crear gráficos interactivos a partir de gráficos ggplot2\nAlternativa a plotly (ha dejado de soportar R)\nOpción sencilla: añadir “*_interactive” a las funciones de ggplot2 (e.g., geom_point_interactive(), geom_bar_interactive(), etc.)\nMúltiples opciones y personalización: tooltips, acciones al hacer clic, ejes, etc.\nLibro: https://www.ardata.fr/ggiraph-book/"
-  },
-  {
-    "objectID": "shiny_reactive.html#ejemplo-simple",
-    "href": "shiny_reactive.html#ejemplo-simple",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplo simple",
-    "text": "Ejemplo simple\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(ggiraph); library(ggplot2); library(dplyr)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    girafeOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderGirafe({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point_interactive(aes(tooltip = paste(\"X:\", get(input$varx), \"&lt;br&gt;Y:\", \n      get(input$vary), \"&lt;br&gt;Colour:\", get(input$varcol))))\n    girafe(ggobj = p)\n  })\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)"
-  },
-  {
-    "objectID": "shiny_reactive.html#from-data-to-viz",
-    "href": "shiny_reactive.html#from-data-to-viz",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "From data to viz",
-    "text": "From data to viz\n\nExplora: https://www.data-to-viz.com"
-  },
-  {
-    "objectID": "shiny_reactive.html#mapas-interactivos-con-leaflet",
-    "href": "shiny_reactive.html#mapas-interactivos-con-leaflet",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Mapas interactivos con {leaflet}",
-    "text": "Mapas interactivos con {leaflet}\n\nPermite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.\nNecesaria columna “geometry” con objetos sf (coordenadas, polígonos, etc.)\nPara datos puntuales, puede ser coordenadas x e y solamente\nPara datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc."
-  },
-  {
-    "objectID": "shiny_reactive.html#otros-gráficos-espaciales",
-    "href": "shiny_reactive.html#otros-gráficos-espaciales",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Otros gráficos espaciales",
-    "text": "Otros gráficos espaciales\n\nSe extiende a cualquier “espacio”, por ejemplo: campos de fútbol, pistas de tenis, etc. Ver el paquete sportyR para gráficos de campos deportivos\nTambién a regiones del cuerpo humano, por ejemplo para mostrar zonas de impacto en deportes de contacto. Ver el paquete bodymap o shinybody"
-  },
-  {
-    "objectID": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
-    "href": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Gráficos que incluyen análisis estadísticos",
-    "text": "Gráficos que incluyen análisis estadísticos\n\nggstatsplot: Univariante y multivariante: https://indrajeetpatil.github.io/ggstatsplot/\nggpubr: Menos completo, pero sencillo. https://rpkgs.datanovia.com/ggpubr/"
-  },
-  {
-    "objectID": "shiny_reactive.html#otros-htmlwidgets",
-    "href": "shiny_reactive.html#otros-htmlwidgets",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Otros htmlwidgets",
-    "text": "Otros htmlwidgets\n\n133 registrados: https://gallery.htmlwidgets.org\n{visNetwork} para gráficos de redes\n{ggalluvial} para gráficos aluviales (flujos entre categorías)\n{ggradar} para gráficos de radar\n{networkD3} para gráficos sankey, entre otros\n{dygraphs} para series temporales\n{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc."
-  },
-  {
-    "objectID": "shiny_reactive.html#ejemplo",
-    "href": "shiny_reactive.html#ejemplo",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplo",
-    "text": "Ejemplo\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    )\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Goleadores\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- reactive({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
-  },
-  {
     "objectID": "shiny_reactive.html#ejemplo-eventreactive",
     "href": "shiny_reactive.html#ejemplo-eventreactive",
     "title": "Objetos reactivos y gráficos interactivos",
@@ -586,6 +1125,20 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplo observeEvent() y reactiveVal()",
     "text": "Ejemplo observeEvent() y reactiveVal()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"Calcular número de partidos\")\n  ),\n  nav_panel(\n    title = textOutput(\"partidos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\")\n)\n\nserver &lt;- function(input, output, session) {\n    num &lt;- reactiveVal(\"--\")\n    observeEvent(input$boton, {\n    n &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      nrow()\n    num(n)\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n\n  output$num_partidos &lt;- renderPrint({\n    paste(\"Número de partidos:\", num())\n  })\n  output$partidos &lt;- renderText({\n    paste0(\"Partidos (\", num(), \")\")\n  })\n}\n\nshinyApp(ui, server)"
+  },
+  {
+    "objectID": "shiny_reactive.html#req",
+    "href": "shiny_reactive.html#req",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "req()",
+    "text": "req()\n\nFunción que se utiliza para requerir que ciertas condiciones se cumplan antes de ejecutar un bloque de código reactivo\nSi la condición no se cumple, el bloque de código no se ejecuta y se muestra un mensaje de error o se mantiene el estado anterior\n\n\noutput$resultado &lt;- renderText({\n  req(input$texto != \"\") # Requiere que el input de texto no esté vacío\n  paste(\"El texto ingresado es:\", input$texto)\n})"
+  },
+  {
+    "objectID": "shiny_reactive.html#validate",
+    "href": "shiny_reactive.html#validate",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "validate()",
+    "text": "validate()\n\nFunción que se utiliza para validar los inputs antes de ejecutar un bloque de código reactivo\nPermite mostrar mensajes de error personalizados si los inputs no cumplen con ciertos criterios\n\n\noutput$resultado &lt;- renderText({\n  validate(\n    need(input$numero &gt; 0, \"El número debe ser mayor que cero\")\n  )\n  paste(\"El número ingresado es:\", input$numero)\n})"
   },
   {
     "objectID": "shiny_reactive.html#ejemplo-con-error",
@@ -609,6 +1162,13 @@
     "text": "Ejemplo validate()\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nresultados &lt;- read.csv(\"data/results.csv\")\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados$home_team)\n    ),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    observeEvent(input$boton, {\n    rivales &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  \n  output$tabla_partidos &lt;- renderReactable({\n    resultados |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    validate(need(input$sel_rival, \"Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico.\"))\n    p &lt;- resultados |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n}\n\nshinyApp(ui, server)"
   },
   {
+    "objectID": "shiny_reactive.html#carga-y-descarga-de-ficheros",
+    "href": "shiny_reactive.html#carga-y-descarga-de-ficheros",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Carga y descarga de ficheros",
+    "text": "Carga y descarga de ficheros\n\nfileInput(): input para subir archivos, con opciones de tipo de archivo, múltiples archivos, etc.\nEn el server, se asigna a objetos que se pueden usar\n\n\n&lt;|input|&gt;fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\")\n\noutput$archivo &lt;- renderTable({\n  req(input$archivo) # Requiere que se haya subido un archivo\n  read.csv(input$archivo$datapath) # Lee el archivo subido\n})\n\n\ndownloadHandler(): permite crear un enlace para descargar archivos generados en la aplicación\n\n\n&lt;|input|&gt;downloadButton(\"descargar\", \"Descargar datos\")\n\noutput$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(datos_reactivos(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)"
+  },
+  {
     "objectID": "shiny_reactive.html#ejemplo-carga-y-descarga-de-ficheros",
     "href": "shiny_reactive.html#ejemplo-carga-y-descarga-de-ficheros",
     "title": "Objetos reactivos y gráficos interactivos",
@@ -616,53 +1176,25 @@
     "text": "Ejemplo carga y descarga de ficheros\n\nlibrary(shiny);library(bslib);library(reactable);library(dplyr);library(ggiraph);library(ggplot2)\nui &lt;- page_navbar(\n  title = \"Análisis resultados FIFA\",\n  sidebar = sidebar(\n    title = \"Selección\",\n    fileInput(\"archivo\", \"Subir archivo CSV\", accept = \".csv\"),\n    uiOutput(\"sel_pais_ui\"),\n    actionButton(\"boton\", \"cargar rivales\"),\n    uiOutput(\"sel_rival_ui\")\n  ),\n  nav_panel(\n    title = \"Partidos\",\n    downloadButton(\"descargar\", \"Descargar datos\"),\n    reactableOutput(\"tabla_partidos\"),\n      verbatimTextOutput(\"num_partidos\")\n  ),\n  nav_panel(title = \"Gráfico\",\n    girafeOutput(\"plot\"))\n)\n\nserver &lt;- function(input, output, session) {\n    resultados &lt;- eventReactive(input$archivo, {\n        read.csv(input$archivo$datapath)\n    })\n    observeEvent(input$boton, {\n    rivales &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      pull(away_team) |&gt;\n      unique()\n    output$sel_rival_ui &lt;- renderUI({\n    selectizeInput(\"sel_rival\", \"Selecciona un rival:\", choices = rivales)\n  })\n  })\n  output$sel_pais_ui &lt;- renderUI({\n    req(resultados())\n    selectizeInput(\n      \"sel_pais\",\n      \"Selecciona un país:\",\n      choices = unique(resultados()$home_team)\n    )\n  })\n  output$tabla_partidos &lt;- renderReactable({\n    resultados() |&gt;\n      filter(home_team == input$sel_pais) |&gt;\n      reactable()\n  })\n  output$plot &lt;- renderGirafe({\n    validate(need(input$sel_rival, \"Se requiere un rival. Carga los rivales y selecciona uno para mostrar el gráfico.\"))\n    p &lt;- resultados() |&gt;\n      filter(home_team == input$sel_pais, away_team == input$sel_rival) |&gt;\n      ggplot(aes(x = date, y = home_score)) +\n      geom_line() +\n      geom_point_interactive(aes(tooltip = paste(\"Fecha:\", date, \"&lt;br&gt;Marcador:\", home_score, \"-\", away_score)))\n    girafe(ggobj = p)\n  })\n\n  output$descargar &lt;- downloadHandler(\n  filename = function() {\n    paste(\"datos-\", Sys.Date(), \".csv\", sep = \"\")\n  },\n  content = function(file) {\n    write.csv(resultados(), file) # Escribe los datos reactivos en un archivo CSV\n  }\n)\n\n}\n\nshinyApp(ui, server)\n\nEjercicio: El botón de descarga no funciona si no se han cargado los datos. Modifica el código para que el botón de descarga solo esté disponible cuando se hayan cargado los datos."
   },
   {
-    "objectID": "shiny_advanced.html#módulos-shiny",
-    "href": "shiny_advanced.html#módulos-shiny",
-    "title": "Shiny avanzado",
-    "section": "Módulos shiny",
-    "text": "Módulos shiny\n\nPermiten organizar el código en componentes reutilizables\nCada módulo tiene su propia UI y server, y se puede llamar varias veces en la aplicación principal\nSe crean componentes xxx_server() y xxx_ui() para cada módulo, y se llaman desde el server y UI principal respectivamente\nEl espacio de nombres se maneja automáticamente para evitar conflictos entre módulos y con la app principal"
+    "objectID": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
+    "href": "shiny_reactive.html#gráficos-interactivos-con-ggiraph",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Gráficos interactivos con ggiraph",
+    "text": "Gráficos interactivos con ggiraph\n\nPermite crear gráficos interactivos a partir de gráficos ggplot2\nAlternativa a plotly (ha dejado de soportar R)\nOpción sencilla: añadir “*_interactive” a las funciones de ggplot2 (e.g., geom_point_interactive(), geom_bar_interactive(), etc.)\nMúltiples opciones y personalización: tooltips, acciones al hacer clic, ejes, etc.\nLibro: https://www.ardata.fr/ggiraph-book/"
   },
   {
-    "objectID": "shiny_advanced.html#ejemplo-módulo-simple",
-    "href": "shiny_advanced.html#ejemplo-módulo-simple",
-    "title": "Shiny avanzado",
-    "section": "Ejemplo módulo simple",
-    "text": "Ejemplo módulo simple\n\nlibrary(shiny)  \nlibrary(bslib)\nlibrary(reactable)\nlibrary(ggplot2)\nlibrary(dplyr)\nlibrary(lubridate)\nresultados &lt;- read.csv(\"data/results.csv\")\nseleccion_ui &lt;- function(id) {\n  ns &lt;- NS(id) # Crea un espacio de nombres para el módulo\n  tagList(\n    selectizeInput(ns(\"pais\"), \"Selecciona un país:\", choices = unique(resultados$home_team)),\n    verbatimTextOutput(ns(\"salida\"))\n  )\n}\nseleccion_server &lt;- function(id) {\n  moduleServer(id, function(input, output, session) {\n    output$salida &lt;- renderPrint({\n      paste(\"Selección:\", input$pais)\n    })\n    return(list(pais = reactive(input$pais))) # Devuelve el país seleccionado como un valor reactivo\n  })\n}\n# App principal\nui &lt;- bslib::page_fluid(\n    bslib::navset_card_underline(\n        nav_panel(\"Panel 1\", seleccion_ui(\"mod1\"),\n        plotOutput(\"plot1\")), # Llama al módulo en la UI\n        nav_panel(\"Panel 2\", seleccion_ui(\"mod2\"),\n        reactableOutput(\"tabla2\"))  # Llama al\n    )\n)\nserver &lt;- function(input, output, session) {\n  pais1 &lt;- seleccion_server(\"mod1\") # Llama al módulo en el server\n  pais2 &lt;- seleccion_server(\"mod2\") # Llama al módulo otra vez para la segunda instancia\n  output$plot1 &lt;- renderPlot({\n    # Código para generar el gráfico usando pais1$pais()\n    resultados |&gt; filter(home_team == pais1$pais()) |&gt; group_by(year(as.Date(date))) |&gt; summarise(home_score = sum(home_score)) |&gt; ggplot(aes(x = year(as.Date(date)), y = home_score)) + geom_line()\n  })\n  output$tabla2 &lt;- renderReactable({\n    # Código para generar la tabla usando pais2$pais()\n    resultados |&gt; filter(home_team == pais2$pais()) |&gt; reactable()\n  })\n}\nshinyApp(ui, server)"
+    "objectID": "shiny_reactive.html#ejemplo-simple",
+    "href": "shiny_reactive.html#ejemplo-simple",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo simple",
+    "text": "Ejemplo simple\n\nlibrary(shiny)\nlibrary(palmerpenguins); library(ggiraph); library(ggplot2); library(dplyr)\nui &lt;- fluidPage(title = \"Simple demo app\",\n                sidebarLayout(\n                  sidebarPanel(  \n                    varSelectInput(\"varx\", \"Explanatory variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"vary\", \"Response variable\", penguins |&gt; select(where(is.numeric))),\n                    varSelectInput(\"varcol\", \"Colour variable\", penguins |&gt; select(where(is.factor)))),\n                  mainPanel( \n                    girafeOutput(\"plot\"),\n                    verbatimTextOutput(\"model\")))\n)\nserver &lt;- function(input, output, session){\n  output$plot &lt;- renderGirafe({\n    p &lt;- penguins |&gt; ggplot(aes_string(x = input$varx, y = input$vary, col = input$varcol)) +\n      geom_point_interactive(aes(tooltip = paste(\"X:\", get(input$varx), \"&lt;br&gt;Y:\", \n      get(input$vary), \"&lt;br&gt;Colour:\", get(input$varcol))))\n    girafe(ggobj = p)\n  })\n  output$model &lt;- renderPrint({\n    m &lt;- lm(get(input$vary) ~ get(input$varx) + get(input$varcol), penguins)\n    summary(m)})\n}\nshinyApp(ui = ui, server = server)"
   },
   {
-    "objectID": "shiny_advanced.html#aplicación-shiny-como-paquete",
-    "href": "shiny_advanced.html#aplicación-shiny-como-paquete",
-    "title": "Shiny avanzado",
-    "section": "Aplicación shiny como paquete",
-    "text": "Aplicación shiny como paquete\n\nPara proyectos más grandes, es recomendable organizar la aplicación como un paquete R.\nSe puede usar {golem} para crear la estructura del paquete y gestionar las dependencias.\nO bien crear un paquete manualmente con usethis::create_package(), y organizar el código en carpetas como R/ para funciones, inst/app/ para la aplicación Shiny, etc.\nEsto facilita la reutilización del código, la gestión de versiones, y el despliegue de la aplicación.\nSe recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores."
-  },
-  {
-    "objectID": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
-    "href": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
-    "title": "Shiny avanzado",
-    "section": "Ejemplo estructura de paquete para Shiny",
-    "text": "Ejemplo estructura de paquete para Shiny\nmyshinyapp/\n├── R/\n│   ├── mod_seleccion.R  # Código del módulo de selección\n│   └── utils.R         # Funciones auxiliares\n├── inst/\n│   └── app/\n│       ├── ui.R        # Código de la UI principal\n│       └── server.R    # Código del servidor principal\n├── DESCRIPTION         # Archivo de descripción del paquete\n├── NAMESPACE           # Archivo de exportación de funciones\n└── README.md           # Documentación del paquete"
-  },
-  {
-    "objectID": "shiny_advanced.html#multilenguaje",
-    "href": "shiny_advanced.html#multilenguaje",
-    "title": "Shiny avanzado",
-    "section": "Multilenguaje",
-    "text": "Multilenguaje\n\nEl paquete shiny.i18n permite crear aplicaciones multilenguaje de forma sencilla\nSe define un objeto Translator con los textos en diferentes idiomas, y se utiliza en la UI para mostrar el texto correspondiente al idioma seleccionado\nEl usuario puede cambiar el idioma en tiempo real, y la aplicación se actualizará automáticamente\nLas traducciones se pueden gestionar fácilmente en un archivo CSV o en el código, y se pueden añadir nuevos idiomas sin modificar la lógica de la aplicación\nVer ejemplo en: https://appsilon.github.io/shiny.i18n/articles/basics.html"
-  },
-  {
-    "objectID": "shiny_advanced.html#despliegue",
-    "href": "shiny_advanced.html#despliegue",
-    "title": "Shiny avanzado",
-    "section": "Despliegue",
-    "text": "Despliegue\n\nPara compartir la aplicación con otros usuarios, se puede desplegar en un servidor Shiny (shinyapps.io, Shiny Server, etc.)\nTambién se puede empaquetar como una aplicación de escritorio con golem o shinyDesktop\nEs importante optimizar la aplicación para un buen rendimiento, especialmente si se espera un gran número de usuarios o si se manejan grandes volúmenes de datos\nSe pueden usar herramientas como profvis para identificar cuellos de botella en el rendimiento y optimizar el código\nUna opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda"
-  },
-  {
-    "objectID": "shiny_advanced.html#pruebas",
-    "href": "shiny_advanced.html#pruebas",
-    "title": "Shiny avanzado",
-    "section": "Pruebas",
-    "text": "Pruebas\n\nEs recomendable escribir pruebas para la aplicación Shiny, especialmente para la lógica del servidor y los módulos\nEl paquete testthat se puede usar para escribir pruebas unitarias, y shinytest para pruebas de integración y de interfaz de usuario\nLas pruebas ayudan a garantizar que la aplicación funcione correctamente después de realizar cambios o actualizaciones, y facilitan la detección de errores y la mejora continua de la aplicación\nPaquetes específicos para shiny: shinytest2 para pruebas de interfaz de usuario, shinytest para pruebas de integración, y testthat para pruebas unitarias"
+    "objectID": "shiny_reactive.html#mapas-interactivos-con-leaflet",
+    "href": "shiny_reactive.html#mapas-interactivos-con-leaflet",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Mapas interactivos con {leaflet}",
+    "text": "Mapas interactivos con {leaflet}\n\nPermite crear mapas interactivos con múltiples capas, marcadores, polígonos, etc.\nNecesaria columna “geometry” con objetos sf (coordenadas, polígonos, etc.)\nPara datos puntuales, puede ser coordenadas x e y solamente\nPara datos deportivos, puede ser útil para mostrar ubicaciones de eventos, instalaciones deportivas, etc."
   },
   {
     "objectID": "shiny_reactive.html#mapas-interactivos-con-ggiraph",
@@ -686,46 +1218,25 @@
     "text": "Ejemplo simple con {ggiraph}\n\nlibrary(shiny); library(ggiraph); library(ggplot2); library(sf); library(dplyr)\ncountries_data &lt;- giscoR::gisco_get_countries() |&gt; \n  select(NAME_ENGL, geometry)\nresultados &lt;- read.csv(\"data/results.csv\") |&gt; \n  group_by(home_team) |&gt; \n  summarise(total_partidos = n()) |&gt;\n  inner_join(countries_data, by = c(\"home_team\" = \"NAME_ENGL\")) |&gt; \n  st_as_sf()\nui &lt;- fluidPage(\n  titlePanel(\"Mapa interactivo con ggiraph\"),\n  sidebarLayout(\n    sidebarPanel(\n      selectizeInput(\"pais\", \"Selecciona un país:\", choices = unique(resultados$home_team))\n    ),\n    mainPanel(\n      girafeOutput(\"mapa\")\n    )\n  )\n)\nserver &lt;- function(input, output, session) {\n  output$mapa &lt;- renderGirafe({\n    p &lt;- resultados |&gt; \n      ggplot() +\n      geom_sf_interactive(aes(fill = total_partidos, tooltip = paste0(\"Total  partidos: \", total_partidos, \"&lt;br&gt;País: \", home_team))) +\n      scale_fill_viridis_c() +\n      theme_void()\n    girafe(ggobj = p)\n  })\n}\nshinyApp(ui = ui, server = server)"
   },
   {
+    "objectID": "shiny_reactive.html#otros-gráficos-espaciales",
+    "href": "shiny_reactive.html#otros-gráficos-espaciales",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Otros gráficos espaciales",
+    "text": "Otros gráficos espaciales\n\nSe extiende a cualquier “espacio”, por ejemplo: campos de fútbol, pistas de tenis, etc. Ver el paquete sportyR para gráficos de campos deportivos\nTambién a regiones del cuerpo humano, por ejemplo para mostrar zonas de impacto en deportes de contacto. Ver el paquete bodymap o shinybody"
+  },
+  {
+    "objectID": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
+    "href": "shiny_reactive.html#gráficos-que-incluyen-análisis-estadísticos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Gráficos que incluyen análisis estadísticos",
+    "text": "Gráficos que incluyen análisis estadísticos\n\nggstatsplot: Univariante y multivariante: https://indrajeetpatil.github.io/ggstatsplot/\nggpubr: Menos completo, pero sencillo. https://rpkgs.datanovia.com/ggpubr/"
+  },
+  {
     "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos",
     "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos",
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplos con ggstatsplot - comparaciones grupos",
     "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\nlibrary(palmerpenguins); library(ggstatsplot); library(ggplot2); library(dplyr)\npenguins |&gt; \n  group_by(species) |&gt;\n  summarise(mean_bill_length = mean(bill_length_mm, na.rm = TRUE))\n\n# A tibble: 3 × 2\n  species   mean_bill_length\n  &lt;fct&gt;                &lt;dbl&gt;\n1 Adelie                38.8\n2 Chinstrap             48.8\n3 Gentoo                47.5"
-  },
-  {
-    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante-y-regresión",
-    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante-y-regresión",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplos con ggstatsplot - univariante y regresión",
-    "text": "Ejemplos con ggstatsplot - univariante y regresión"
-  },
-  {
-    "objectID": "shiny_reactive.html#ejemplos-atributos",
-    "href": "shiny_reactive.html#ejemplos-atributos",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplos atributos",
-    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggpiestats(\n    x = species\n  \n  )"
-  },
-  {
-    "objectID": "shiny_reactive.html#paletas-de-colores",
-    "href": "shiny_reactive.html#paletas-de-colores",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Paletas de colores",
-    "text": "Paletas de colores\n\nRColorBrewer: Paletas predefinidas para diferentes tipos de datos (categóricos, secuenciales, divergentes)\nviridis: Paletas perceptualmente uniformes, adecuadas para personas con daltonismo\nggsci: Paletas inspiradas en revistas científicas, marcas, etc.\nggthemes: Paletas inspiradas en temas de gráficos clásicos (e.g., ColorBrewer, Tableau, etc.)\nscico: Paletas científicas con opciones para diferentes tipos de datos y necesidades de visualización\nwesanderson: Paletas inspiradas en las películas de Wes Anderson"
-  },
-  {
-    "objectID": "shiny_reactive.html#recursos",
-    "href": "shiny_reactive.html#recursos",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Recursos",
-    "text": "Recursos\n\nR charts - colors in R\nRColorBrewer, more\nggplot2 book - color scales\nColour palette finder"
-  },
-  {
-    "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
-    "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplo cambio de paleta con ggstatsplot",
-    "text": "Ejemplo cambio de paleta con ggstatsplot\n\nlibrary(ggstatsplot); library(viridis)\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  ) +\n  scale_fill_viridis_d() +\n  scale_color_viridis_d() +\n  theme_minimal()"
   },
   {
     "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-1",
@@ -756,13 +1267,6 @@
     "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  )"
   },
   {
-    "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-5",
-    "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---comparaciones-grupos-5",
-    "title": "Objetos reactivos y gráficos interactivos",
-    "section": "Ejemplos con ggstatsplot - comparaciones grupos",
-    "text": "Ejemplos con ggstatsplot - comparaciones grupos\n\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  )"
-  },
-  {
     "objectID": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante",
     "href": "shiny_reactive.html#ejemplos-con-ggstatsplot---univariante",
     "title": "Objetos reactivos y gráficos interactivos",
@@ -775,6 +1279,13 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplos con ggstatsplot - regresión",
     "text": "Ejemplos con ggstatsplot - regresión\n\nmodelo &lt;- lm(body_mass_g ~ bill_length_mm, data = penguins)\n\nggcoefstats(\n    modelo\n  )"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplos-atributos",
+    "href": "shiny_reactive.html#ejemplos-atributos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplos atributos",
+    "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggpiestats(\n    x = species\n  \n  )"
   },
   {
     "objectID": "shiny_reactive.html#ejemplos-atributos-1",
@@ -798,6 +1309,34 @@
     "text": "Ejemplos atributos\n\npenguins |&gt; \n  ggbarstats(\n    x = species,\n    y = sex,\n    bf.message = FALSE)"
   },
   {
+    "objectID": "shiny_reactive.html#otros-htmlwidgets",
+    "href": "shiny_reactive.html#otros-htmlwidgets",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Otros htmlwidgets",
+    "text": "Otros htmlwidgets\n\n133 registrados: https://gallery.htmlwidgets.org\n{visNetwork} para gráficos de redes\n{ggalluvial} para gráficos aluviales (flujos entre categorías)\n{ggradar} para gráficos de radar\n{networkD3} para gráficos sankey, entre otros\n{dygraphs} para series temporales\n{DiagrammeR} para diagramas de flujo, diagramas de Venn, etc."
+  },
+  {
+    "objectID": "shiny_reactive.html#from-data-to-viz",
+    "href": "shiny_reactive.html#from-data-to-viz",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "From data to viz",
+    "text": "From data to viz\n\nExplora: https://www.data-to-viz.com"
+  },
+  {
+    "objectID": "shiny_reactive.html#paletas-de-colores",
+    "href": "shiny_reactive.html#paletas-de-colores",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Paletas de colores",
+    "text": "Paletas de colores\n\nRColorBrewer: Paletas predefinidas para diferentes tipos de datos (categóricos, secuenciales, divergentes)\nviridis: Paletas perceptualmente uniformes, adecuadas para personas con daltonismo\nggsci: Paletas inspiradas en revistas científicas, marcas, etc.\nggthemes: Paletas inspiradas en temas de gráficos clásicos (e.g., ColorBrewer, Tableau, etc.)\nscico: Paletas científicas con opciones para diferentes tipos de datos y necesidades de visualización\nwesanderson: Paletas inspiradas en las películas de Wes Anderson"
+  },
+  {
+    "objectID": "shiny_reactive.html#recursos",
+    "href": "shiny_reactive.html#recursos",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Recursos",
+    "text": "Recursos\n\nR charts - colors in R\nRColorBrewer, more\nggplot2 book - color scales\nColour palette finder"
+  },
+  {
     "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2",
     "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggplot2",
     "title": "Objetos reactivos y gráficos interactivos",
@@ -810,6 +1349,13 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplo cambio de paleta con ggplot2",
     "text": "Ejemplo cambio de paleta con ggplot2\n\nlibrary(ggplot2); library(ggthemes); library(palmerpenguins)\nggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +\n  geom_point() +\n  ggthemes::scale_color_tableau() +\n  theme_minimal()"
+  },
+  {
+    "objectID": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
+    "href": "shiny_reactive.html#ejemplo-cambio-de-paleta-con-ggstatsplot",
+    "title": "Objetos reactivos y gráficos interactivos",
+    "section": "Ejemplo cambio de paleta con ggstatsplot",
+    "text": "Ejemplo cambio de paleta con ggstatsplot\n\nlibrary(ggstatsplot); library(viridis)\npenguins |&gt; \n  ggstatsplot::ggbetweenstats(\n    x = species,\n    y = bill_length_mm,\n    outlier.tagging = TRUE,\n    bf.message = FALSE,\n    type = \"nonparametric\"\n  ) +\n  scale_fill_viridis_d() +\n  scale_color_viridis_d() +\n  theme_minimal()"
   },
   {
     "objectID": "shiny_reactive.html#ejemplo-paleta-personalizada",
