@@ -207,8 +207,8 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 
 </section>
 <section>
-<section id="objetos-reactivos" class="title-slide slide level1 center">
-<h1>Objetos reactivos</h1>
+<section id="shiny-avanzado" class="title-slide slide level1 center">
+<h1>Shiny avanzado</h1>
 
 </section>
 <section id="módulos-shiny" class="slide level2">
@@ -312,6 +312,18 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 <li><p>Se pueden usar herramientas como <code>profvis</code> para identificar cuellos de botella en el rendimiento y optimizar el código</p></li>
 <li><p>Una opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda</p></li>
 </ul>
+</section>
+<section id="proceso-depliegue-en-posit-connect-cloud-desde-positron" class="slide level2">
+<h2>Proceso depliegue en posit connect cloud desde Positron</h2>
+<ol type="1">
+<li><p>Crear una cuenta en Posit Connect Cloud: https://connect.posit.cloud/</p></li>
+<li><p>Crea un archivo app.R con el código de tu aplicación Shiny. Añade los archivos de datos necesarios en la misma carpeta o en una subcarpeta.</p></li>
+<li><p>Ve al complemento Posit Publisher (en barra de título del documento) y haz clic en “Publish”. Se abrirá una ventana para configurar la publicación.</p></li>
+<li><p>En la sección “Publish to”, selecciona “Posit Connect Cloud” e inicia sesión con tu cuenta.</p></li>
+<li><p>Añade los archivos necesarios en “Project files”, gestiona secretos si es necesario, y otras configuraciones.</p></li>
+<li><p>Haz clic en Deploy Your Project para iniciar el despliegue. Posit Publisher se encargará de subir tu aplicación a Posit Connect Cloud y configurarla para su ejecución.</p></li>
+<li><p>En el panel de control de Posit Connect Cloud puedes gestionar tu aplicación, ver estadísticas de uso, y compartir el enlace con otros usuarios.</p></li>
+</ol>
 </section>
 <section id="pruebas" class="slide level2">
 <h2>Pruebas</h2>

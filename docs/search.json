@@ -1370,5 +1370,12 @@
     "title": "Objetos reactivos y gráficos interactivos",
     "section": "Ejemplo paleta personalizada",
     "text": "Ejemplo paleta personalizada\n\nlibrary(ggplot2); library(ggthemes); library(palmerpenguins)\nggplot(penguins, aes(y = body_mass_g, x = bill_length_mm, col = species)) +\n  geom_point() +\n  scale_color_manual(values = c(\"Adelie\" = \"red\", \"Chinstrap\" = \"green\", \"Gentoo\" = \"blue\")) +\n  theme_bw()"
+  },
+  {
+    "objectID": "shiny_advanced.html#proceso-depliegue-en-posit-connect-cloud-desde-positron",
+    "href": "shiny_advanced.html#proceso-depliegue-en-posit-connect-cloud-desde-positron",
+    "title": "Shiny avanzado",
+    "section": "Proceso depliegue en posit connect cloud desde Positron",
+    "text": "Proceso depliegue en posit connect cloud desde Positron\n\nCrear una cuenta en Posit Connect Cloud: https://connect.posit.cloud/\nCrea un archivo app.R con el código de tu aplicación Shiny. Añade los archivos de datos necesarios en la misma carpeta o en una subcarpeta.\nVe al complemento Posit Publisher (en barra de título del documento) y haz clic en “Publish”. Se abrirá una ventana para configurar la publicación.\nEn la sección “Publish to”, selecciona “Posit Connect Cloud” e inicia sesión con tu cuenta.\nAñade los archivos necesarios en “Project files”, gestiona secretos si es necesario, y otras configuraciones.\nHaz clic en Deploy Your Project para iniciar el despliegue. Posit Publisher se encargará de subir tu aplicación a Posit Connect Cloud y configurarla para su ejecución.\nEn el panel de control de Posit Connect Cloud puedes gestionar tu aplicación, ver estadísticas de uso, y compartir el enlace con otros usuarios."
   }
 ]

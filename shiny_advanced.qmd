@@ -5,7 +5,7 @@ author: "Máster Universitario en Análisis de Datos Deportivos<br/>Universidad 
 code-fold: false
 ---
 
-# Objetos reactivos
+# Shiny avanzado
 
 ## Módulos shiny
 
@@ -124,6 +124,23 @@ myshinyapp/
 * Se pueden usar herramientas como `profvis` para identificar cuellos de botella en el rendimiento y optimizar el código
 
 * Una opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda
+
+## Proceso depliegue en posit connect cloud desde Positron
+
+1. Crear una cuenta en Posit Connect Cloud: https://connect.posit.cloud/
+
+2. Crea un archivo app.R con el código de tu aplicación Shiny. Añade los archivos de datos necesarios en la misma carpeta o en una subcarpeta.
+
+3. Ve al complemento Posit Publisher (en barra de título del documento) y haz clic en "Publish". Se abrirá una ventana para configurar la publicación.
+
+4. En la sección "Publish to", selecciona "Posit Connect Cloud" e inicia sesión con tu cuenta.
+
+5. Añade los archivos necesarios en "Project files", gestiona secretos si es necesario, y otras configuraciones.
+
+6. Haz clic en Deploy Your Project para iniciar el despliegue. Posit Publisher se encargará de subir tu aplicación a Posit Connect Cloud y configurarla para su ejecución.
+
+7. En el panel de control de Posit Connect Cloud puedes gestionar tu aplicación, ver estadísticas de uso, y compartir el enlace con otros usuarios.
+
 
 
 ## Pruebas
