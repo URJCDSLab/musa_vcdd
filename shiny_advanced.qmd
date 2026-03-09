@@ -100,7 +100,7 @@ myshinyapp/
 
 ## Pasos para crear un paquete Shiny
 
-Fuente: [Capítulo 20 de Mastería de R Shiny](https://mastering-shiny.org/scaling-packaging.html)
+Fuente: [Capítulo 20 de Mastering Shiny](https://mastering-shiny.org/scaling-packaging.html)
 
 Otros recursos: [R Packages](https://r-pkgs.org/whole-game.html)
 
