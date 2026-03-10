@@ -21,18 +21,11 @@
     "text": "Aplicación shiny como paquete\n\nPara proyectos más grandes, es recomendable organizar la aplicación como un paquete R.\nSe puede usar {golem} para crear la estructura del paquete y gestionar las dependencias.\nO bien crear un paquete manualmente con usethis::create_package(), y organizar el código en carpetas como R/ para funciones, inst/app/ para la aplicación Shiny, etc.\nEsto facilita la reutilización del código, la gestión de versiones, y el despliegue de la aplicación.\nSe recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores."
   },
   {
-    "objectID": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
-    "href": "shiny_advanced.html#ejemplo-estructura-de-paquete-para-shiny",
-    "title": "Shiny avanzado",
-    "section": "Ejemplo estructura de paquete para Shiny",
-    "text": "Ejemplo estructura de paquete para Shiny\nmyshinyapp/\n├── R/\n│   ├── mod_seleccion.R  # Código del módulo de selección\n│   └── utils.R         # Funciones auxiliares\n├── inst/\n│   └── app/\n│       ├── ui.R        # Código de la UI principal\n│       └── server.R    # Código del servidor principal\n├── DESCRIPTION         # Archivo de descripción del paquete\n├── NAMESPACE           # Archivo de exportación de funciones\n└── README.md           # Documentación del paquete"
-  },
-  {
     "objectID": "shiny_advanced.html#pasos-para-crear-un-paquete-shiny",
     "href": "shiny_advanced.html#pasos-para-crear-un-paquete-shiny",
     "title": "Shiny avanzado",
     "section": "Pasos para crear un paquete Shiny",
-    "text": "Pasos para crear un paquete Shiny\nFuente: Capítulo 20 de Mastería de R Shiny\nOtros recursos: R Packages\n\nCrear la carpeta R donde se guardarán las funciones y módulos del paquete.\nCrear el archivo DESCRIPTION con la información del paquete y las dependencias necesarias."
+    "text": "Pasos para crear un paquete Shiny\nFuente: Capítulo 20 de Mastering Shiny\nOtros recursos: R Packages\nVer ejemplo completo y explicaciones detalladas en este repositorio: https://github.com/URJCDSLab/musavcddpkg\n\nCrear la carpeta R y scripts\nCrear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.\nAñade archivo de documentación del paquete y dependencias.\nOpcional: añadir datos al paquete\nAñadir el código de la aplicación\n\nPara desplegar como paquete: crear script adicional en directorio raíz. Para conectar con bases de datos o usar archivos adicionales, es necesario crear otros archivos (ver el detalle en el repositorio mencionado)"
   },
   {
     "objectID": "shiny_advanced.html#multilenguaje",
