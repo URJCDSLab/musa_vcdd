@@ -100,14 +100,36 @@ myshinyapp/
 
 ## Pasos para crear un paquete Shiny
 
-Fuente: [Capítulo 20 de Mastería de R Shiny](https://mastering-shiny.org/scaling-packaging.html)
+Fuente: [Capítulo 20 de Mastering Shiny](https://mastering-shiny.org/scaling-packaging.html)
 
 Otros recursos: [R Packages](https://r-pkgs.org/whole-game.html)
 
 1. Crear la carpeta R donde se guardarán las funciones y módulos del paquete.
 
-2. Crear el archivo DESCRIPTION con la información del paquete y las dependencias necesarias.
+2. Crear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.
 
+```{r}
+usethis::use_description()
+usethis::use_namespace()
+```
+
+3. Añade archivo de documentación del paquete.
+
+```{r}
+usethis::use_package_doc()
+```
+
+3. Añade las dependencias necesarias (no usamos `library()`). 
+
+  - Añade la dependencia a DESCRIPTION con `usethis::use_package()`
+  - Importa las funciones necesarias en el NAMESPACE o con `usethis::use_import_from()`.
+  
+
+En su lugar, se importan las funciones necesarias en el NAMESPACE o se usan `usethis::use_import_from()` para importar funciones específicas, o añade todas las funciones de un paquete añadiendo `
+
+```{r}
+usethis::use_import_from("shiny")
+```
 
 
 

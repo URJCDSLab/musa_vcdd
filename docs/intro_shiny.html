@@ -6,8 +6,8 @@
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.6.39">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
 
   <meta name="author" content="Máster Universitario en Análisis de Datos Deportivos Universidad Rey Juan Carlos">
   <title>Introducción a la visualización mediante dashboards</title>
@@ -29,8 +29,9 @@
       vertical-align: middle;
     }
     /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
-    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
     pre > code.sourceCode > span:empty { height: 1.2em; }
     .sourceCode { overflow: visible; }
     code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -41,7 +42,7 @@
     }
     @media print {
     pre > code.sourceCode { white-space: pre-wrap; }
-    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
     pre.numberSource code
       { counter-reset: source-line 0; }
@@ -94,7 +95,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-81356f60d1d614b182b680c3c64e4be7.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-a1f5789bb5d93f65b8c2df39b7c5fced.css">
   <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -195,12 +196,12 @@
 
 <section id="title-slide" data-background-image="theme_images/background_fronpage.png" data-background-position="center 70%" data-background-size="33%" class="quarto-title-block center">
   <h1 class="title">Introducción a la visualización mediante dashboards</h1>
-  <p class="subtitle">Visualización y Comunicación de Datos Deportivos</p>
+  <p class="subtitle">Máster Universitario en Análisis de Datos Deportivos, Universidad Rey Juan Carlos</p>
 
 <div class="quarto-title-authors">
 <div class="quarto-title-author">
 <div class="quarto-title-author-name">
-Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan Carlos 
+ 
 </div>
 </div>
 </div>
@@ -230,9 +231,6 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </section>
 <section id="r-for-data-science" class="slide level2">
 <h2>R for Data Science</h2>
-<div>
-
-</div>
 <div class="quarto-layout-panel" data-layout="[[-1], [1], [-1]]">
 <div class="quarto-layout-row">
 <div class="quarto-figure-spacer quarto-layout-cell" style="flex-basis: 100.0%;justify-content: flex-start;">
@@ -403,20 +401,531 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 </div>
 <p>🖥️ Live demo 🤞🏻</p>
 </section>
-<section id="algunos-ejemplos" class="slide level2">
-<h2>Algunos ejemplos</h2>
+<section id="añadiendo-características-interesantes" class="slide level2">
+<h2>Añadiendo características interesantes</h2>
+<div class="columns">
+<div class="column">
+<h3 id="dashboards-1">Dashboards</h3>
 <ul>
-<li><a href="https://dslabapps.es">DSLAB apps</a></li>
-<li><a href="https://shiny.posit.co/r/gallery/">Shiny Gallery</a></li>
+<li><p><a href="https://rstudio.github.io/shinydashboard/">shinydashboard</a></p></li>
+<li><p><a href="https://rinterface.github.io/bs4Dash/index.html">bs4dash</a></p></li>
+<li><p><a href="https://rstudio.github.io/bslib/">bslib</a></p></li>
+</ul>
+<h3 id="configuración">Configuración</h3>
+<ul>
+<li><p>Aplicaciones <span class="red" style="">Multilenguaje</span> with <a href="https://appsilon.github.io/shiny.i18n/index.html">shiny.i18n</a></p></li>
+<li><p>Aplicación como <a href="https://mastering-shiny.org/scaling-packaging.html">paquete</a></p></li>
+</ul>
+</div><div class="column">
+<h3 id="buenas-prácticas-de-ing.soft.">Buenas prácticas de Ing.Soft.</h3>
+<ul>
+<li><p>Versiones de paquetes con <a href="https://rstudio.github.io/renv/index.html">renv</a></p></li>
+<li><p>Pruebas unitarias con <a href="https://testthat.r-lib.org">testthat</a> y <a href="https://rstudio.github.io/shinytest/">shinytest</a></p></li>
+<li><p>Control de versiones e integración continua, e.g., con <a href="https://github.com">GitHub</a></p></li>
+<li><p><a href="https://hosting.analythium.io/running-shiny-server-in-docker/">Despliegue como contenedor Docker</a></p></li>
+</ul>
+</div></div>
+</section>
+<section id="shiny-modules" class="slide level2">
+<h2>Shiny modules</h2>
+<ul>
+<li><p>Componentes reutilizables</p></li>
+<li><p>Con su propio espacio de nombres (<em>namespace</em>)</p></li>
+<li><p>Facilitan pruebas y depuración</p></li>
+<li><p>Complejo de entender al principio</p></li>
+</ul>
+<p>👉<a href="https://shiny.posit.co/r/articles/improve/modules/">Modularizing Shiny app code</a></p>
+</section></section>
+<section>
+<section id="casos-de-éxito-y-ejemplos-en-producción" class="title-slide slide level1 center">
+<h1>Casos de éxito y ejemplos en producción</h1>
+
+</section>
+<section id="afciot---tiva-indicators" class="slide level2">
+<h2>AfCIOT - TiVA indicators</h2>
+<ul>
+<li><p>Joint project with <a href="https://www.uneca.org">UNECA</a>, <a href="https://www.wto.org">WTO</a>, and <a href="https://www.oecd.org">OECD</a></p></li>
+<li><p>International Trade, Environmental and Employment Indicators</p></li>
+<li><p>International and multidisciplinar team</p></li>
+<li><p>Industry and product classification, gap estimation, policy simulation and <span class="red" style="">visualisation</span></p></li>
+<li><p>Key result: A <span class="red" style="">shiny app</span> for reporting, visualisation and policy simulation</p></li>
+<li><p>Several important challenges for the <span class="red" style="">multinational</span> scope</p></li>
+</ul>
+</section>
+<section id="afciot---tiva-indicators-1" class="slide level2">
+<h2>AfCIOT - TiVA indicators</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/afciot.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+<p><span class="ack" style="">Acknowledgements:</span> <img data-src="img/uneca.png" height="50"> <img data-src="img/wto.png" height="50"> <img data-src="img/oecd.png" height="50"></p>
+<div style="text-align:center">
+<p>🖥️ Live demo 🤞🏻</p>
+</div>
+</section></section>
+<section>
+<section id="turismo-sostenible" class="title-slide slide level1 center">
+<h1>Turismo sostenible</h1>
+
+</section>
+<section id="evastur" class="slide level2">
+<h2>EVASTUR</h2>
+<ul>
+<li><p>Proyecto con la empresa <a href="https://www.dephimatica.es">Dephimática</a></p></li>
+<li><p>Especializada en estadística pública</p></li>
+<li><p><em>Capacity building</em> en Ciencia de Datos</p></li>
+<li><p>Sistema de indicadores de turismo sostenible: exploración, visualización, análisis</p></li>
+</ul>
+<!-- <img src="img/dephimatica.png" width="50%"/> -->
+<div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/dephimatica.png" class="quarto-figure quarto-figure-center" style="width:50.0%"></p>
+</figure>
+</div>
+</div>
+</section>
+<section id="evastur---dashboard" class="slide level2">
+<h2>EVASTUR - Dashboard</h2>
+
+<img data-src="img/evastur.png" class="quarto-figure quarto-figure-center r-stretch" style="width:70.0%"><div style="text-align:center">
+<p>🖥️ Live demo 🤞🏻</p>
+</div>
+</section></section>
+<section>
+<section id="indicadores-de-pobreza-energética-en-brasil" class="title-slide slide level1 center">
+<h1>Indicadores de pobreza energética en Brasil</h1>
+
+</section>
+<section id="epe-brasil" class="slide level2">
+<h2>EPE Brasil</h2>
+<ul>
+<li><p>Weaving Connections: A Comprehensive Diagnosis of Access to and Use of Electricity and Essential Services by Low-Income Population (MRC- SP 0366)</p></li>
+<li><p>Proyecto de transferencia con MRC Consultants and Advisors (Grupo Veolia)</p></li>
+<li><p>ETL, Modelo de datos, visualización</p></li>
+<li><p>Indicadores de pobreza energética (UCM)</p></li>
+<li><p>Presentado en reunión del G20</p></li>
+</ul>
+</section>
+<section id="obepe" class="slide level2">
+<h2>OBEPE</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="img/obepe.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+<p><span class="ack" style="">Acknowledgements:</span> <img data-src="img/logo_idb.png" height="50"> <img data-src="img/logo_epe_colors.jpg" height="50"> <img data-src="img/logo_mme.png" height="50"></p>
+<div style="text-align:center">
+<p>🖥️ Live demo 🤞🏻</p>
+</div>
+</section></section>
+<section>
+<section id="deporte-y-ciberseguridad" class="title-slide slide level1 center">
+<h1>Deporte y ciberseguridad</h1>
+
+</section>
+<section id="analítica-deportiva" class="slide level2">
+<h2>Analítica deportiva</h2>
+
+<img data-src="img/pace.png" class="r-stretch"></section>
+<section id="proyectos-de-investigación-dicyme" class="slide level2">
+<h2>Proyectos de investigación: DICYME</h2>
+<ul>
+<li><p>Dynamic Industrial Cyber Risk Modelling based on Evidence (DICYME) research project (CPP2021-009025)</p></li>
+<li><p>Proyecto de colaboración público-privada con DeNexus TECH SL.</p></li>
+<li><p>Dashboard (no publicado aún)</p></li>
+<li><p>Conexión con MongoDB</p></li>
+<li><p>App relacionada: <a href="http://gondor.etsii.urjc.es:3804/">CRAS</a></p></li>
+</ul>
+</section>
+<section id="aplicación-shiny-cras" class="slide level2">
+<h2>Aplicación shiny CRAS</h2>
+<ul>
+<li><p>Análisis de riesgos</p></li>
+<li><p>Primer paso: se simulan los eventos en n años</p></li>
+<li><p>Segundo paso: se simula el gasto de cada evento</p></li>
+</ul>
+</section>
+<section id="resultados" class="slide level2">
+<h2>Resultados</h2>
+
+<img data-src="img/3_results_density.png" class="r-stretch"></section>
+<section id="smart-cities" class="slide level2">
+<h2>Smart Cities</h2>
+<ul>
+<li><p>Casos de uso para turismo, sanidad e infraestructuras de la Comunidad de Madrid</p></li>
+<li><p>Aplicaciones coherentes paso a paso para los casos de uso (cargar datos - visualización - modelización - obtención de resultados)</p></li>
+<li><p>Algunos casos con <span class="red" style="">Shiny</span>, otros con Python o Power BI</p></li>
+<li><p>Ejemplo: <a href="http://www.citizenlabhub.es/cu/55" class="uri">http://www.citizenlabhub.es/cu/55</a></p></li>
 </ul>
 </section></section>
+<section>
+<section id="apps-relacionadas-con-control-de-calidad" class="title-slide slide level1 center">
+<h1>Apps relacionadas con control de calidad</h1>
+
+</section>
+<section id="síagro---animal-production-spc" class="slide level2">
+<h2>Síagro - Animal production SPC</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<ul>
+<li><a href="http://www.testsandtrials.com">CRO clinical and nutritional trials</a></li>
+<li>Shiny app for their customers as a value added service</li>
+<li>Important [<strong>productivity improvements</strong>]</li>
+<li>Simulation and parameterised reports</li>
+</ul>
+</div><div class="column" style="width:60%;">
+<p><img data-src="img/testsapp.png"></p>
+<p><img src="img/tests.png" style="width:50%;margin-left:auto;margin-right:auto;display:block;"></p>
+<div class="small">
+<p><a href="https://www.siagro.es" class="uri">https://www.siagro.es</a> | 🖥️ Live demo 🤞🏻</p>
+</div>
+</div></div>
+</section>
+<section id="placido-app-para-muestreo-de-aceptación" class="slide level2">
+<h2>placido: app para muestreo de aceptación</h2>
+<ul>
+<li><p>Resultado de un TFG</p></li>
+<li><p>Disponible en: <a href="https://dleo.shinyapps.io/placidoproject/">https://dleo.shinyapps.io/placidoproject/</a></p></li>
+<li><p>Control de versiones con git y GitHub: <a href="https://github.com/DavidALeo/PlacidoProject/">https://github.com/DavidALeo/PlacidoProject/</a></p></li>
+<li><p>Documentación con {pkgdown}: <a href="https://davidaleo.github.io/PlacidoProject/">https://davidaleo.github.io/PlacidoProject/</a></p></li>
+</ul>
+<p>Slides: <a href="http://emilio.lcano.com/p/seio2023/">emilio.lcano.com/p/seio2023</a></p>
+</section>
+<section id="simulación-de-proceso" class="slide level2">
+<h2>Simulación de proceso</h2>
+<ul>
+<li><p>Simula la producción de lotes</p></li>
+<li><p>Se extraen muestras</p></li>
+<li><p>SPC + muestreo de aceptación</p></li>
+<li><p>App disponible en: <a href="https://lcano.shinyapps.io/demo-shiny-quality/">https://lcano.shinyapps.io/demo-shiny-quality/</a></p></li>
+</ul>
+</section></section>
+<section>
+<section id="aplicación-shiny-para-spc-paso-a-paso" class="title-slide slide level1 center">
+<h1>Aplicación shiny para SPC paso a paso</h1>
+
+</section>
+<section id="caso-de-uso" class="slide level2">
+<h2>Caso de uso</h2>
+<ul>
+<li><p>Gráficos de control de la media, el rango y la desviación típica</p></li>
+<li><p>Análisis de capacidad</p></li>
+<li><p>Paquete qcc</p></li>
+<li><p>Datos de ejemplo del paquete</p></li>
+</ul>
+<div class="fragment">
+<p>Se extiende fácilmente para otros datos y paquetes</p>
+</div>
+</section>
+<section id="configuración-inicial" class="slide level2">
+<h2>Configuración inicial</h2>
+<ol type="1">
+<li><p>Crear un proyecto en RStudio</p></li>
+<li><p>Instalar paquetes shiny, bslib, qcc</p></li>
+<li><p>Crear script vacío</p></li>
+<li><p>Insertar estructura ui + server (por ejemplo con el <em>snippet</em>)</p></li>
+<li><p>Ir añadiendo el código de los ejemplos de esta presentación (o copiándolo entero, cada ejemplo es autocontenido)</p></li>
+</ol>
+</section>
+<section id="estructura-básica-app-shiny" class="slide level2">
+<h2>Estructura básica app shiny</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">fluidPage</span>(</span>
+<span id="cb2-4"><a></a>  </span>
+<span id="cb2-5"><a></a>)</span>
+<span id="cb2-6"><a></a></span>
+<span id="cb2-7"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb2-8"><a></a>  </span>
+<span id="cb2-9"><a></a>}</span>
+<span id="cb2-10"><a></a></span>
+<span id="cb2-11"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="disposición-del-dashboard-layout" class="slide level2">
+<h2>Disposición del <em>dashboard</em> (<em>layout</em>)</h2>
+<ul>
+<li><a href="https://rstudio.github.io/bslib/articles/dashboards/">bslib</a> tiene muchas opciones</li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb3-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb3-3"><a></a></span>
+<span id="cb3-4"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb3-5"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb3-6"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(<span class="at">title =</span> <span class="st">"Selección"</span>),</span>
+<span id="cb3-7"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>),</span>
+<span id="cb3-8"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>)</span>
+<span id="cb3-9"><a></a>)</span>
+<span id="cb3-10"><a></a></span>
+<span id="cb3-11"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb3-12"><a></a>  </span>
+<span id="cb3-13"><a></a>}</span>
+<span id="cb3-14"><a></a></span>
+<span id="cb3-15"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="añadiendo-inputs-y-outputs-al-ui" class="slide level2">
+<h2>Añadiendo <em>inputs</em> y <em>outputs</em> al <em>ui</em></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" data-code-line-numbers="9-17,20-21,23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb4-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb4-3"><a></a><span class="fu">library</span>(qcc)</span>
+<span id="cb4-4"><a></a></span>
+<span id="cb4-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb4-6"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb4-7"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb4-8"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb4-9"><a></a>    <span class="fu">selectInput</span>(<span class="st">"tipo"</span>, <span class="st">"Tipo de gráfico"</span>, </span>
+<span id="cb4-10"><a></a>                <span class="fu">c</span>(<span class="st">"xbar"</span>, <span class="st">"R"</span>, <span class="st">"S"</span> )),</span>
+<span id="cb4-11"><a></a>    <span class="fu">numericInput</span>(<span class="st">"fase1"</span>, <span class="st">"Fase 1 hasta muestra"</span>, <span class="at">value =</span> <span class="dv">25</span>),</span>
+<span id="cb4-12"><a></a>    <span class="fu">sliderInput</span>(<span class="st">"limites"</span>, <span class="st">"Límites de especificación"</span>,</span>
+<span id="cb4-13"><a></a>                <span class="at">min =</span> <span class="fl">73.90</span>, <span class="at">max =</span> <span class="fl">74.15</span>,</span>
+<span id="cb4-14"><a></a>                <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">73.95</span>, <span class="fl">74.05</span>), </span>
+<span id="cb4-15"><a></a>                <span class="at">step =</span> <span class="fl">0.01</span>),</span>
+<span id="cb4-16"><a></a>    <span class="fu">selectInput</span>(<span class="st">"datos"</span>, <span class="st">"Datos (fake)"</span>, </span>
+<span id="cb4-17"><a></a>                <span class="fu">data</span>(<span class="at">package =</span> <span class="st">"qcc"</span>)<span class="sc">$</span>results[,<span class="dv">3</span>])</span>
+<span id="cb4-18"><a></a>  ),</span>
+<span id="cb4-19"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>,</span>
+<span id="cb4-20"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_control"</span>),</span>
+<span id="cb4-21"><a></a>            <span class="fu">verbatimTextOutput</span>(<span class="st">"salida_control"</span>)),</span>
+<span id="cb4-22"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>,</span>
+<span id="cb4-23"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_capacidad"</span>))</span>
+<span id="cb4-24"><a></a>)</span>
+<span id="cb4-25"><a></a></span>
+<span id="cb4-26"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb4-27"><a></a>  </span>
+<span id="cb4-28"><a></a>}</span>
+<span id="cb4-29"><a></a></span>
+<span id="cb4-30"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="añadiendo-objetos-reactivos" class="slide level2">
+<h2>Añadiendo objetos reactivos</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" data-code-line-numbers="25-32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb5-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb5-3"><a></a><span class="fu">library</span>(qcc)</span>
+<span id="cb5-4"><a></a></span>
+<span id="cb5-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb5-6"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb5-7"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb5-8"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb5-9"><a></a>    <span class="fu">selectInput</span>(<span class="st">"tipo"</span>, <span class="st">"Tipo de gráfico"</span>, </span>
+<span id="cb5-10"><a></a>                <span class="fu">c</span>(<span class="st">"xbar"</span>, <span class="st">"R"</span>, <span class="st">"S"</span> )),</span>
+<span id="cb5-11"><a></a>    <span class="fu">numericInput</span>(<span class="st">"fase1"</span>, <span class="st">"Fase 1 hasta muestra"</span>, <span class="at">value =</span> <span class="dv">25</span>),</span>
+<span id="cb5-12"><a></a>    <span class="fu">sliderInput</span>(<span class="st">"limites"</span>, <span class="st">"Límites de especificación"</span>,</span>
+<span id="cb5-13"><a></a>                <span class="at">min =</span> <span class="fl">73.90</span>, <span class="at">max =</span> <span class="fl">74.15</span>,</span>
+<span id="cb5-14"><a></a>                <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">73.95</span>, <span class="fl">74.05</span>), </span>
+<span id="cb5-15"><a></a>                <span class="at">step =</span> <span class="fl">0.01</span>),</span>
+<span id="cb5-16"><a></a>    <span class="fu">selectInput</span>(<span class="st">"datos"</span>, <span class="st">"Datos"</span>, <span class="fu">data</span>(<span class="at">package =</span> <span class="st">"qcc"</span>)<span class="sc">$</span>results[,<span class="dv">3</span>])),</span>
+<span id="cb5-17"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>,</span>
+<span id="cb5-18"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_control"</span>),</span>
+<span id="cb5-19"><a></a>            <span class="fu">verbatimTextOutput</span>(<span class="st">"salida_control"</span>)),</span>
+<span id="cb5-20"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>,</span>
+<span id="cb5-21"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_capacidad"</span>)</span>
+<span id="cb5-22"><a></a>  )</span>
+<span id="cb5-23"><a></a>)</span>
+<span id="cb5-24"><a></a></span>
+<span id="cb5-25"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb5-26"><a></a>  gc <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb5-27"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>tipo, input<span class="sc">$</span>fase1)</span>
+<span id="cb5-28"><a></a>    <span class="fu">data</span>(<span class="st">"pistonrings"</span>)</span>
+<span id="cb5-29"><a></a>    diameter <span class="ot">&lt;-</span> <span class="fu">qcc.groups</span>(pistonrings<span class="sc">$</span>diameter, pistonrings<span class="sc">$</span>sample)</span>
+<span id="cb5-30"><a></a>    <span class="fu">qcc</span>(diameter[<span class="dv">1</span><span class="sc">:</span><span class="fu">as.numeric</span>(input<span class="sc">$</span>fase1),], </span>
+<span id="cb5-31"><a></a>        <span class="at">type =</span> input<span class="sc">$</span>tipo, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb5-32"><a></a>  }) </span>
+<span id="cb5-33"><a></a>}</span>
+<span id="cb5-34"><a></a></span>
+<span id="cb5-35"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="renderizando-outputs" class="slide level2">
+<h2>Renderizando <em>outputs</em></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6" data-code-line-numbers="34-43"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb6-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb6-3"><a></a><span class="fu">library</span>(qcc)</span>
+<span id="cb6-4"><a></a></span>
+<span id="cb6-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb6-6"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb6-7"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb6-8"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb6-9"><a></a>    <span class="fu">selectInput</span>(<span class="st">"tipo"</span>, <span class="st">"Tipo de gráfico"</span>, <span class="fu">c</span>(<span class="st">"xbar"</span>, <span class="st">"R"</span>, <span class="st">"S"</span> )),</span>
+<span id="cb6-10"><a></a>    <span class="fu">numericInput</span>(<span class="st">"fase1"</span>, <span class="st">"Fase 1 hasta muestra"</span>, <span class="at">value =</span> <span class="dv">25</span>),</span>
+<span id="cb6-11"><a></a>    <span class="fu">sliderInput</span>(<span class="st">"limites"</span>, <span class="st">"Límites de especificación"</span>,</span>
+<span id="cb6-12"><a></a>                <span class="at">min =</span> <span class="fl">73.90</span>, <span class="at">max =</span> <span class="fl">74.15</span>,</span>
+<span id="cb6-13"><a></a>                <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">73.95</span>, <span class="fl">74.05</span>), </span>
+<span id="cb6-14"><a></a>                <span class="at">step =</span> <span class="fl">0.01</span>),</span>
+<span id="cb6-15"><a></a>    <span class="fu">selectInput</span>(<span class="st">"datos"</span>, <span class="st">"Datos"</span>, <span class="fu">data</span>(<span class="at">package =</span> <span class="st">"qcc"</span>)<span class="sc">$</span>results[,<span class="dv">3</span>])),</span>
+<span id="cb6-16"><a></a>  </span>
+<span id="cb6-17"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>,</span>
+<span id="cb6-18"><a></a>            <span class="fu">card</span>(<span class="fu">plotOutput</span>(<span class="st">"grafico_control"</span>),</span>
+<span id="cb6-19"><a></a>                 <span class="fu">verbatimTextOutput</span>(<span class="st">"salida_control"</span>),</span>
+<span id="cb6-20"><a></a>                 <span class="at">fill =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb6-21"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>,</span>
+<span id="cb6-22"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_capacidad"</span>))</span>
+<span id="cb6-23"><a></a>)</span>
+<span id="cb6-24"><a></a></span>
+<span id="cb6-25"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb6-26"><a></a>  gc <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb6-27"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>fase1)</span>
+<span id="cb6-28"><a></a>    <span class="fu">data</span>(<span class="st">"pistonrings"</span>)</span>
+<span id="cb6-29"><a></a>    diameter <span class="ot">&lt;-</span> <span class="fu">qcc.groups</span>(pistonrings<span class="sc">$</span>diameter, pistonrings<span class="sc">$</span>sample)</span>
+<span id="cb6-30"><a></a>    <span class="fu">qcc</span>(diameter[<span class="dv">1</span><span class="sc">:</span><span class="fu">as.numeric</span>(input<span class="sc">$</span>fase1),], </span>
+<span id="cb6-31"><a></a>        <span class="at">type =</span> input<span class="sc">$</span>tipo, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-32"><a></a>  }) </span>
+<span id="cb6-33"><a></a>  </span>
+<span id="cb6-34"><a></a>  output<span class="sc">$</span>grafico_control <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb6-35"><a></a>    <span class="fu">plot</span>(<span class="fu">gc</span>())</span>
+<span id="cb6-36"><a></a>  })</span>
+<span id="cb6-37"><a></a>  output<span class="sc">$</span>salida_control <span class="ot">&lt;-</span> <span class="fu">renderText</span>({</span>
+<span id="cb6-38"><a></a>    <span class="fu">paste</span>(<span class="fu">capture.output</span>(<span class="fu">summary</span>(<span class="fu">gc</span>())), <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb6-39"><a></a>  })</span>
+<span id="cb6-40"><a></a>  output<span class="sc">$</span>grafico_capacidad <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb6-41"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>tipo <span class="sc">==</span> <span class="st">"xbar"</span>)</span>
+<span id="cb6-42"><a></a>    <span class="fu">process.capability</span>(<span class="fu">gc</span>(), input<span class="sc">$</span>limites)</span>
+<span id="cb6-43"><a></a>  })</span>
+<span id="cb6-44"><a></a>}</span>
+<span id="cb6-45"><a></a></span>
+<span id="cb6-46"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="dale-color---ver-cómo-queda-un-tema" class="slide level2">
+<h2>Dale color - ver cómo queda un tema</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" data-code-line-numbers="26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb7-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb7-3"><a></a><span class="fu">library</span>(qcc)</span>
+<span id="cb7-4"><a></a></span>
+<span id="cb7-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb7-6"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb7-7"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb7-8"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb7-9"><a></a>    <span class="fu">selectInput</span>(<span class="st">"tipo"</span>, <span class="st">"Tipo de gráfico"</span>, <span class="fu">c</span>(<span class="st">"xbar"</span>, <span class="st">"R"</span>, <span class="st">"S"</span> )),</span>
+<span id="cb7-10"><a></a>    <span class="fu">numericInput</span>(<span class="st">"fase1"</span>, <span class="st">"Fase 1 hasta muestra"</span>, <span class="at">value =</span> <span class="dv">25</span>),</span>
+<span id="cb7-11"><a></a>    <span class="fu">sliderInput</span>(<span class="st">"limites"</span>, <span class="st">"Límites de especificación"</span>,</span>
+<span id="cb7-12"><a></a>                <span class="at">min =</span> <span class="fl">73.90</span>, <span class="at">max =</span> <span class="fl">74.15</span>,</span>
+<span id="cb7-13"><a></a>                <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">73.95</span>, <span class="fl">74.05</span>), </span>
+<span id="cb7-14"><a></a>                <span class="at">step =</span> <span class="fl">0.01</span>),</span>
+<span id="cb7-15"><a></a>    <span class="fu">selectInput</span>(<span class="st">"datos"</span>, <span class="st">"Datos"</span>, <span class="fu">data</span>(<span class="at">package =</span> <span class="st">"qcc"</span>)<span class="sc">$</span>results[,<span class="dv">3</span>])),</span>
+<span id="cb7-16"><a></a>  </span>
+<span id="cb7-17"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>,</span>
+<span id="cb7-18"><a></a>            <span class="fu">card</span>(<span class="fu">plotOutput</span>(<span class="st">"grafico_control"</span>),</span>
+<span id="cb7-19"><a></a>                 <span class="fu">verbatimTextOutput</span>(<span class="st">"salida_control"</span>),</span>
+<span id="cb7-20"><a></a>                 <span class="at">fill =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb7-21"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>,</span>
+<span id="cb7-22"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_capacidad"</span>))</span>
+<span id="cb7-23"><a></a>)</span>
+<span id="cb7-24"><a></a></span>
+<span id="cb7-25"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb7-26"><a></a>  <span class="fu">bs_themer</span>()</span>
+<span id="cb7-27"><a></a>  gc <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb7-28"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>fase1)</span>
+<span id="cb7-29"><a></a>    <span class="fu">data</span>(<span class="st">"pistonrings"</span>)</span>
+<span id="cb7-30"><a></a>    diameter <span class="ot">&lt;-</span> <span class="fu">qcc.groups</span>(pistonrings<span class="sc">$</span>diameter, pistonrings<span class="sc">$</span>sample)</span>
+<span id="cb7-31"><a></a>    <span class="fu">qcc</span>(diameter[<span class="dv">1</span><span class="sc">:</span><span class="fu">as.numeric</span>(input<span class="sc">$</span>fase1),], </span>
+<span id="cb7-32"><a></a>        <span class="at">type =</span> input<span class="sc">$</span>tipo, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-33"><a></a>  }) </span>
+<span id="cb7-34"><a></a>  </span>
+<span id="cb7-35"><a></a>  output<span class="sc">$</span>grafico_control <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb7-36"><a></a>    <span class="fu">plot</span>(<span class="fu">gc</span>())</span>
+<span id="cb7-37"><a></a>  })</span>
+<span id="cb7-38"><a></a>  output<span class="sc">$</span>salida_control <span class="ot">&lt;-</span> <span class="fu">renderText</span>({</span>
+<span id="cb7-39"><a></a>    <span class="fu">paste</span>(<span class="fu">capture.output</span>(<span class="fu">summary</span>(<span class="fu">gc</span>())), <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb7-40"><a></a>  })</span>
+<span id="cb7-41"><a></a>  output<span class="sc">$</span>grafico_capacidad <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb7-42"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>tipo <span class="sc">==</span> <span class="st">"xbar"</span>)</span>
+<span id="cb7-43"><a></a>    <span class="fu">process.capability</span>(<span class="fu">gc</span>(), input<span class="sc">$</span>limites)</span>
+<span id="cb7-44"><a></a>  })</span>
+<span id="cb7-45"><a></a>}</span>
+<span id="cb7-46"><a></a></span>
+<span id="cb7-47"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="dale-color---configura-el-tema" class="slide level2">
+<h2>Dale color - configura el tema</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" data-code-line-numbers="6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a></a><span class="fu">library</span>(shiny)</span>
+<span id="cb8-2"><a></a><span class="fu">library</span>(bslib)</span>
+<span id="cb8-3"><a></a><span class="fu">library</span>(qcc)</span>
+<span id="cb8-4"><a></a></span>
+<span id="cb8-5"><a></a>ui <span class="ot">&lt;-</span> <span class="fu">page_navbar</span>(</span>
+<span id="cb8-6"><a></a>  <span class="at">theme =</span> <span class="fu">bs_theme</span>(<span class="at">bootswatch =</span> <span class="st">"minty"</span>),</span>
+<span id="cb8-7"><a></a>  <span class="at">title =</span> <span class="st">"Control Estadístico de procesos ACME"</span>,</span>
+<span id="cb8-8"><a></a>  <span class="at">sidebar =</span> <span class="fu">sidebar</span>(</span>
+<span id="cb8-9"><a></a>    <span class="at">title =</span> <span class="st">"Selección"</span>,</span>
+<span id="cb8-10"><a></a>    <span class="fu">selectInput</span>(<span class="st">"tipo"</span>, <span class="st">"Tipo de gráfico"</span>, <span class="fu">c</span>(<span class="st">"xbar"</span>, <span class="st">"R"</span>, <span class="st">"S"</span> )),</span>
+<span id="cb8-11"><a></a>    <span class="fu">numericInput</span>(<span class="st">"fase1"</span>, <span class="st">"Fase 1 hasta muestra"</span>, <span class="at">value =</span> <span class="dv">25</span>),</span>
+<span id="cb8-12"><a></a>    <span class="fu">sliderInput</span>(<span class="st">"limites"</span>, <span class="st">"Límites de especificación"</span>,</span>
+<span id="cb8-13"><a></a>                <span class="at">min =</span> <span class="fl">73.90</span>, <span class="at">max =</span> <span class="fl">74.15</span>,</span>
+<span id="cb8-14"><a></a>                <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">73.95</span>, <span class="fl">74.05</span>), </span>
+<span id="cb8-15"><a></a>                <span class="at">step =</span> <span class="fl">0.01</span>),</span>
+<span id="cb8-16"><a></a>    <span class="fu">selectInput</span>(<span class="st">"datos"</span>, <span class="st">"Datos"</span>, <span class="fu">data</span>(<span class="at">package =</span> <span class="st">"qcc"</span>)<span class="sc">$</span>results[,<span class="dv">3</span>])),</span>
+<span id="cb8-17"><a></a>  </span>
+<span id="cb8-18"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Gráfico de Control"</span>,</span>
+<span id="cb8-19"><a></a>            <span class="fu">card</span>(<span class="fu">plotOutput</span>(<span class="st">"grafico_control"</span>),</span>
+<span id="cb8-20"><a></a>                 <span class="fu">verbatimTextOutput</span>(<span class="st">"salida_control"</span>),</span>
+<span id="cb8-21"><a></a>                 <span class="at">fill =</span> <span class="cn">FALSE</span>)),</span>
+<span id="cb8-22"><a></a>  <span class="fu">nav_panel</span>(<span class="at">title =</span> <span class="st">"Análisis de la capacidad del proceso"</span>,</span>
+<span id="cb8-23"><a></a>            <span class="fu">plotOutput</span>(<span class="st">"grafico_capacidad"</span>))</span>
+<span id="cb8-24"><a></a>)</span>
+<span id="cb8-25"><a></a></span>
+<span id="cb8-26"><a></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb8-27"><a></a>  gc <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb8-28"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>fase1)</span>
+<span id="cb8-29"><a></a>    <span class="fu">data</span>(<span class="st">"pistonrings"</span>)</span>
+<span id="cb8-30"><a></a>    diameter <span class="ot">&lt;-</span> <span class="fu">qcc.groups</span>(pistonrings<span class="sc">$</span>diameter, pistonrings<span class="sc">$</span>sample)</span>
+<span id="cb8-31"><a></a>    <span class="fu">qcc</span>(diameter[<span class="dv">1</span><span class="sc">:</span><span class="fu">as.numeric</span>(input<span class="sc">$</span>fase1),], </span>
+<span id="cb8-32"><a></a>        <span class="at">type =</span> input<span class="sc">$</span>tipo, <span class="at">plot =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-33"><a></a>  }) </span>
+<span id="cb8-34"><a></a>  </span>
+<span id="cb8-35"><a></a>  output<span class="sc">$</span>grafico_control <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb8-36"><a></a>    <span class="fu">plot</span>(<span class="fu">gc</span>())</span>
+<span id="cb8-37"><a></a>  })</span>
+<span id="cb8-38"><a></a>  output<span class="sc">$</span>salida_control <span class="ot">&lt;-</span> <span class="fu">renderText</span>({</span>
+<span id="cb8-39"><a></a>    <span class="fu">paste</span>(<span class="fu">capture.output</span>(<span class="fu">summary</span>(<span class="fu">gc</span>())), <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb8-40"><a></a>  })</span>
+<span id="cb8-41"><a></a>  output<span class="sc">$</span>grafico_capacidad <span class="ot">&lt;-</span> <span class="fu">renderPlot</span>({</span>
+<span id="cb8-42"><a></a>    <span class="fu">req</span>(input<span class="sc">$</span>tipo <span class="sc">==</span> <span class="st">"xbar"</span>)</span>
+<span id="cb8-43"><a></a>    <span class="fu">process.capability</span>(<span class="fu">gc</span>(), input<span class="sc">$</span>limites)</span>
+<span id="cb8-44"><a></a>  })</span>
+<span id="cb8-45"><a></a>}</span>
+<span id="cb8-46"><a></a></span>
+<span id="cb8-47"><a></a><span class="fu">shinyApp</span>(ui, server)</span></code><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="implentación-real" class="slide level2">
+<h2>Implentación real</h2>
+<ul>
+<li><p>Lectura de datos del proceso en tiempo real</p></li>
+<li><p>Monitorizar proceso en fase II</p></li>
+<li><p>Añadir análisis exploratorio</p></li>
+<li><p>Añadir modelos</p></li>
+<li><p>Mejorar interfaz</p></li>
+<li><p>Complejidad de la app</p></li>
+</ul>
+</section></section>
+<section id="ejercicio" class="title-slide slide level1 center">
+<h1>Ejercicio</h1>
+<p>Modifica el código de la aplicación para hacer el análisis en fase 2 tomando el resto de datos como en el ejemplo de la ayuda de la función <code>qcc()</code></p>
+</section>
+
 <section id="preguntas" class="title-slide slide level1 center">
 <h1>Preguntas?</h1>
+<p><svg aria-hidden="true" role="img" viewbox="0 0 512 512" style="height:1em;width:1em;vertical-align:-0.125em;margin-left:auto;margin-right:auto;font-size:inherit;fill:#749dae;overflow:visible;position:relative;"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"></path></svg> <a href="https://x.com/emilopezcano"><span class="citation" data-cites="emilopezcano">(<span><strong>emilopezcano?</strong></span>)</span></a></p>
 <p><a href="https://emilio.lcano.com">http://emilio.lcano.com</a></p>
 <p><span class="red" style="">emilio.lopez@urjc.es</span></p>
+<p>Slides: <a href="http://emilio.lcano.com/p/udc2025">emilio.lcano.com/p/udc2025</a></p>
 <p><br>
 </p>
 <p>¡Gracias!</p>
+<div style="text-align:center">
+<p>🖥️ Live demo 🤞🏻</p>
+</div>
 
 
 <div class="reveal-header">
@@ -667,190 +1176,172 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
     </script>
 
     <script id="quarto-html-after-body" type="application/javascript">
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-      const toggleBodyColorMode = (bsSheetEl) => {
-        const mode = bsSheetEl.getAttribute("data-mode");
-        const bodyEl = window.document.querySelector("body");
-        if (mode === "dark") {
-          bodyEl.classList.add("quarto-dark");
-          bodyEl.classList.remove("quarto-light");
-        } else {
-          bodyEl.classList.add("quarto-light");
-          bodyEl.classList.remove("quarto-dark");
-        }
-      }
-      const toggleBodyColorPrimary = () => {
-        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
-        if (bsSheetEl) {
-          toggleBodyColorMode(bsSheetEl);
-        }
-      }
-      toggleBodyColorPrimary();  
-      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
-      tabsets.forEach(function(tabset) {
-        const tabby = new Tabby('#' + tabset.id);
-      });
-      const isCodeAnnotation = (el) => {
-        for (const clz of el.classList) {
-          if (clz.startsWith('code-annotation-')) {                     
-            return true;
-          }
-        }
-        return false;
-      }
-      const onCopySuccess = function(e) {
-        // button target
-        const button = e.trigger;
-        // don't keep focus
-        button.blur();
-        // flash "checked"
-        button.classList.add('code-copy-button-checked');
-        var currentTitle = button.getAttribute("title");
-        button.setAttribute("title", "Copiado");
-        let tooltip;
-        if (window.bootstrap) {
-          button.setAttribute("data-bs-toggle", "tooltip");
-          button.setAttribute("data-bs-placement", "left");
-          button.setAttribute("data-bs-title", "Copiado");
-          tooltip = new bootstrap.Tooltip(button, 
-            { trigger: "manual", 
-              customClass: "code-copy-button-tooltip",
-              offset: [0, -8]});
-          tooltip.show();    
-        }
-        setTimeout(function() {
-          if (tooltip) {
-            tooltip.hide();
-            button.removeAttribute("data-bs-title");
-            button.removeAttribute("data-bs-toggle");
-            button.removeAttribute("data-bs-placement");
-          }
-          button.setAttribute("title", currentTitle);
-          button.classList.remove('code-copy-button-checked');
-        }, 1000);
-        // clear code selection
-        e.clearSelection();
-      }
-      const getTextToCopy = function(trigger) {
-          const codeEl = trigger.previousElementSibling.cloneNode(true);
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
             }
           }
-          return codeEl.innerText;
-      }
-      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-        text: getTextToCopy
-      });
-      clipboard.on('success', onCopySuccess);
-      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-          text: getTextToCopy,
-          container: window.document.getElementById('quarto-embedded-source-code-modal')
-        });
-        clipboardModal.on('success', onCopySuccess);
-      }
-        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-        var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
-        var isInternal = (href) => {
-            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          return false;
         }
-        // Inspect non-navigation links and adorn them if external
-     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-        for (var i=0; i<links.length; i++) {
-          const link = links[i];
-          if (!isInternal(link.href)) {
-            // undo the damage that might have been done by quarto-nav.js in the case of
-            // links that we want to consider external
-            if (link.dataset.originalHref !== undefined) {
-              link.href = link.dataset.originalHref;
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copiado");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copiado");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
             }
-          }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
         }
-      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-        const config = {
-          allowHTML: true,
-          maxWidth: 500,
-          delay: 100,
-          arrow: false,
-          appendTo: function(el) {
-              return el.closest('section.slide') || el.parentElement;
-          },
-          interactive: true,
-          interactiveBorder: 10,
-          theme: 'light-border',
-          placement: 'bottom-start',
-        };
-        if (contentFn) {
-          config.content = contentFn;
-        }
-        if (onTriggerFn) {
-          config.onTrigger = onTriggerFn;
-        }
-        if (onUntriggerFn) {
-          config.onUntrigger = onUntriggerFn;
-        }
-          config['offset'] = [0,0];
-          config['maxWidth'] = 700;
-        window.tippy(el, config); 
-      }
-      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-      for (var i=0; i<noterefs.length; i++) {
-        const ref = noterefs[i];
-        tippyHover(ref, function() {
-          // use id or data attribute instead here
-          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-          try { href = new URL(href).hash; } catch {}
-          const id = href.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note) {
-            return note.innerHTML;
-          } else {
-            return "";
-          }
-        });
-      }
-      const findCites = (el) => {
-        const parentEl = el.parentElement;
-        if (parentEl) {
-          const cites = parentEl.dataset.cites;
-          if (cites) {
-            return {
-              el,
-              cites: cites.split(' ')
-            };
-          } else {
-            return findCites(el.parentElement)
-          }
-        } else {
-          return undefined;
-        }
-      };
-      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-      for (var i=0; i<bibliorefs.length; i++) {
-        const ref = bibliorefs[i];
-        const citeInfo = findCites(ref);
-        if (citeInfo) {
-          tippyHover(citeInfo.el, function() {
-            var popup = window.document.createElement('div');
-            citeInfo.cites.forEach(function(cite) {
-              var citeDiv = window.document.createElement('div');
-              citeDiv.classList.add('hanging-indent');
-              citeDiv.classList.add('csl-entry');
-              var biblioDiv = window.document.getElementById('ref-' + cite);
-              if (biblioDiv) {
-                citeDiv.innerHTML = biblioDiv.innerHTML;
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
               }
-              popup.appendChild(citeDiv);
-            });
-            return popup.innerHTML;
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
           });
         }
-      }
-    });
-    </script>
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
     
 
 <script src="site_libs/quarto-contrib/metropolis-beamer-1.0.0/add_header.js" defer="true"></script>
