@@ -81,21 +81,6 @@ shinyApp(ui, server)
 
 * Se recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores.
 
-## Ejemplo estructura de paquete para Shiny
-
-```
-myshinyapp/
-├── R/
-│   ├── mod_seleccion.R  # Código del módulo de selección
-│   └── utils.R         # Funciones auxiliares
-├── inst/
-│   └── app/
-│       ├── ui.R        # Código de la UI principal
-│       └── server.R    # Código del servidor principal
-├── DESCRIPTION         # Archivo de descripción del paquete
-├── NAMESPACE           # Archivo de exportación de funciones
-└── README.md           # Documentación del paquete
-``` 
 
 
 ## Pasos para crear un paquete Shiny
@@ -104,33 +89,19 @@ Fuente: [Capítulo 20 de Mastering Shiny](https://mastering-shiny.org/scaling-pa
 
 Otros recursos: [R Packages](https://r-pkgs.org/whole-game.html)
 
-1. Crear la carpeta R donde se guardarán las funciones y módulos del paquete.
+Ver ejemplo completo y explicaciones detalladas en este repositorio: <https://github.com/URJCDSLab/musavcddpkg>
+
+1. Crear la carpeta R y scripts
 
 2. Crear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.
 
-```{r}
-usethis::use_description()
-usethis::use_namespace()
-```
+3. Añade archivo de documentación del paquete y dependencias.
 
-3. Añade archivo de documentación del paquete.
+4. Opcional: añadir datos al paquete
 
-```{r}
-usethis::use_package_doc()
-```
+5. Añadir el código de la aplicación
 
-3. Añade las dependencias necesarias (no usamos `library()`). 
-
-  - Añade la dependencia a DESCRIPTION con `usethis::use_package()`
-  - Importa las funciones necesarias en el NAMESPACE o con `usethis::use_import_from()`.
-  
-
-En su lugar, se importan las funciones necesarias en el NAMESPACE o se usan `usethis::use_import_from()` para importar funciones específicas, o añade todas las funciones de un paquete añadiendo `
-
-```{r}
-usethis::use_import_from("shiny")
-```
-
+Para desplegar como paquete: crear script adicional en directorio raíz. Para conectar con bases de datos o usar archivos adicionales, es necesario crear otros archivos (ver el detalle en el repositorio mencionado)
 
 
 ## Multilenguaje
@@ -158,7 +129,7 @@ usethis::use_import_from("shiny")
 
 * Una opción escalable es usar contenedores Docker para desplegar la aplicación en la nube, lo que facilita la gestión de dependencias y el escalado según la demanda
 
-## Proceso depliegue en posit connect cloud desde Positron
+## Proceso depliegue en posit connect cloud desde Positron (1/2)
 
 1. Crear una cuenta en Posit Connect Cloud: https://connect.posit.cloud/
 
@@ -167,6 +138,8 @@ usethis::use_import_from("shiny")
 3. Ve al complemento Posit Publisher (en barra de título del documento) y haz clic en "Publish". Se abrirá una ventana para configurar la publicación.
 
 4. En la sección "Publish to", selecciona "Posit Connect Cloud" e inicia sesión con tu cuenta.
+
+## Proceso despliegue en posit connect cloud desde Positron (2/2)
 
 5. Añade los archivos necesarios en "Project files", gestiona secretos si es necesario, y otras configuraciones.
 

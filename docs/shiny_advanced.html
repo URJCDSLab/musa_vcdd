@@ -280,6 +280,7 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 <li><p>Se recomienda utilizar {roxygen2} para documentar las funciones y módulos, lo que mejora la mantenibilidad del código y facilita la colaboración con otros desarrolladores.</p></li>
 </ul>
 </section>
+<<<<<<< HEAD
 <section id="ejemplo-estructura-de-paquete-para-shiny" class="slide level2">
 <h2>Ejemplo estructura de paquete para Shiny</h2>
 <pre><code>myshinyapp/
@@ -293,6 +294,21 @@ Máster Universitario en Análisis de Datos Deportivos<br>Universidad Rey Juan C
 ├── DESCRIPTION         # Archivo de descripción del paquete
 ├── NAMESPACE           # Archivo de exportación de funciones
 └── README.md           # Documentación del paquete</code></pre>
+=======
+<section id="pasos-para-crear-un-paquete-shiny" class="slide level2">
+<h2>Pasos para crear un paquete Shiny</h2>
+<p>Fuente: <a href="https://mastering-shiny.org/scaling-packaging.html">Capítulo 20 de Mastering Shiny</a></p>
+<p>Otros recursos: <a href="https://r-pkgs.org/whole-game.html">R Packages</a></p>
+<p>Ver ejemplo completo y explicaciones detalladas en este repositorio: <a href="https://github.com/URJCDSLab/musavcddpkg" class="uri">https://github.com/URJCDSLab/musavcddpkg</a></p>
+<ol type="1">
+<li><p>Crear la carpeta R y scripts</p></li>
+<li><p>Crear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.</p></li>
+<li><p>Añade archivo de documentación del paquete y dependencias.</p></li>
+<li><p>Opcional: añadir datos al paquete</p></li>
+<li><p>Añadir el código de la aplicación</p></li>
+</ol>
+<p>Para desplegar como paquete: crear script adicional en directorio raíz. Para conectar con bases de datos o usar archivos adicionales, es necesario crear otros archivos (ver el detalle en el repositorio mencionado)</p>
+>>>>>>> 74d51d2ea1fe274b175be97f2549d9d165d9788b
 </section>
 <section id="multilenguaje" class="slide level2">
 <h2>Multilenguaje</h2>
