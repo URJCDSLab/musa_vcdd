@@ -95,32 +95,6 @@ Ver ejemplo completo y explicaciones detalladas en este repositorio: <https://gi
 
 2. Crear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.
 
-```{r}
-usethis::use_description()
-usethis::use_namespace()
-```
-
-3. Añade archivo de documentación del paquete.
-
-```{r}
-usethis::use_package_doc()
-```
-
-3. Añade las dependencias necesarias (no usamos `library()`). 
-
-  - Añade la dependencia a DESCRIPTION con `usethis::use_package()`
-  - Importa las funciones necesarias en el NAMESPACE o con `usethis::use_import_from()`.
-  
-
-En su lugar, se importan las funciones necesarias en el NAMESPACE o se usan `usethis::use_import_from()` para importar funciones específicas, o añade todas las funciones de un paquete añadiendo `
-
-```{r}
-usethis::use_import_from("shiny")
-```
-
-
-2. Crear los archivos DESCRIPTION y NAMESPACE con la información del paquete y dependencias.
-
 3. Añade archivo de documentación del paquete y dependencias.
 
 4. Opcional: añadir datos al paquete
